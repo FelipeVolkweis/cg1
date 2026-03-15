@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(ComputerGraphics LANGUAGES CXX)
+project(ComputerGraphics LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,7 +8,9 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
-add_executable(cg src/main.cc)
+file(GLOB_RECURSE SOURCES "src/*.cc")
+list(APPEND SOURCES "3rdparty/glad/src/glad.c")
+add_executable(cg ${SOURCES})
 
 target_link_libraries(cg PRIVATE 
     OpenGL::GL
@@ -16,4 +18,8 @@ target_link_libraries(cg PRIVATE
     Eigen3::Eigen
 )
 
-target_include_directories(cg PRIVATE src)
+target_include_directories(cg PRIVATE 
+    src
+    3rdparty/glad/include
+)
+
