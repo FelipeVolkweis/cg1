@@ -12,10 +12,14 @@ public:
     bool initialize();
     bool finish();
     bool loop();
+
+    Renderer &getRenderer() {
+        return renderer_;
+    }
+
 private:
     GLFWwindow *window_;
     Renderer renderer_;
 };
-
 
 #endif

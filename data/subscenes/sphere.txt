@@ -1,0 +1,1 @@
+sphere 1.0 36 18 color 1.0 0.0 0.0 origin 0.0 0.0 0.0 scale 1.0 1.0 1.0 rot 0.0 0.0 0.0

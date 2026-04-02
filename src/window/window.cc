@@ -1,6 +1,6 @@
 #include "window.h"
 
-#include <glad/glad.h> 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 void resizeCallback(GLFWwindow *window, int width, int height) {
@@ -12,7 +12,11 @@ bool Window::initialize() {
         return false;
     }
 
-    window_ = glfwCreateWindow(640, 480, "OpenGL Window", NULL, NULL);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    window_ = glfwCreateWindow(640, 640, "OpenGL Window", NULL, NULL);
     if (!window_) {
         glfwTerminate();
         return false;
@@ -22,6 +26,10 @@ bool Window::initialize() {
     glfwSetFramebufferSizeCallback(window_, resizeCallback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        return false;
+    }
+
+    if (!renderer_.initialize()) {
         return false;
     }
 
@@ -45,4 +53,3 @@ bool Window::loop() {
 
     return true;
 }
-
