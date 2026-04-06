@@ -33,6 +33,8 @@ void BaseShape::parseCommon(std::istream &is) {
             if (is >> x >> y >> z) {
                 rot = Vec3(x, y, z);
             }
+        } else if (key == "translatable" || key == "rotatable" || key == "scalable") {
+            modifiers_.push_back(key);
         } else {
             Logger::Warn("Unknown common property key: ", key);
         }

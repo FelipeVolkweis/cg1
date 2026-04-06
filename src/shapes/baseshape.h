@@ -43,10 +43,15 @@ public:
         color_ = color;
     }
 
+    const std::vector<std::string> &getModifiers() const {
+        return modifiers_;
+    }
+
 protected:
     std::vector<Vec3> vertices_;
     Transformation transformation_;
     Vec3 color_;
+    std::vector<std::string> modifiers_;
 };
 
 #endif

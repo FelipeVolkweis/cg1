@@ -30,11 +30,10 @@ void Box::generateVertices(float width, float height, float depth) {
         addVertex(v4);
     };
 
-    
-    addFace({-w2, -h2,  d2}, { w2, -h2,  d2}, { w2,  h2,  d2}, {-w2,  h2,  d2});
-    addFace({ w2, -h2, -d2}, {-w2, -h2, -d2}, {-w2,  h2, -d2}, { w2,  h2, -d2});
-    addFace({-w2,  h2,  d2}, { w2,  h2,  d2}, { w2,  h2, -d2}, {-w2,  h2, -d2});
-    addFace({-w2, -h2, -d2}, { w2, -h2, -d2}, { w2, -h2,  d2}, {-w2, -h2,  d2});
-    addFace({ w2, -h2,  d2}, { w2, -h2, -d2}, { w2,  h2, -d2}, { w2,  h2,  d2});
-    addFace({-w2, -h2, -d2}, {-w2, -h2,  d2}, {-w2,  h2,  d2}, {-w2,  h2, -d2});
+    addFace({-w2, -h2, d2}, {w2, -h2, d2}, {w2, h2, d2}, {-w2, h2, d2});
+    addFace({w2, -h2, -d2}, {-w2, -h2, -d2}, {-w2, h2, -d2}, {w2, h2, -d2});
+    addFace({-w2, h2, d2}, {w2, h2, d2}, {w2, h2, -d2}, {-w2, h2, -d2});
+    addFace({-w2, -h2, -d2}, {w2, -h2, -d2}, {w2, -h2, d2}, {-w2, -h2, d2});
+    addFace({w2, -h2, d2}, {w2, -h2, -d2}, {w2, h2, -d2}, {w2, h2, d2});
+    addFace({-w2, -h2, -d2}, {-w2, -h2, d2}, {-w2, h2, d2}, {-w2, h2, -d2});
 }

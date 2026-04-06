@@ -20,7 +20,7 @@ void Torus::generateVertices(float innerRadius, float outerRadius, int sides, in
 
     float ringStep = 2 * M_PI / rings;
     float sideStep = 2 * M_PI / sides;
-    
+
     float tubeRadius = (outerRadius - innerRadius) / 2.0f;
     float mainRadius = innerRadius + tubeRadius;
 
@@ -44,8 +44,12 @@ void Torus::generateVertices(float innerRadius, float outerRadius, int sides, in
             Vec3 p3 = getPos(u2, v1);
             Vec3 p4 = getPos(u2, v2);
 
-            addVertex(p1); addVertex(p2); addVertex(p3);
-            addVertex(p2); addVertex(p4); addVertex(p3);
+            addVertex(p1);
+            addVertex(p2);
+            addVertex(p3);
+            addVertex(p2);
+            addVertex(p4);
+            addVertex(p3);
         }
     }
 }
