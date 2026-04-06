@@ -10,6 +10,9 @@ Este projeto é um motor de renderização 3D simples desenvolvido em C++ utiliz
 - **Interatividade:** Controle em tempo real de objetos marcados como `translatable`, `rotatable` ou `scalable`.
 - **Modo Wireframe:** Alternância entre renderização sólida e em linhas.
 
+## Documentação
+A documentação do projeto é interna por meio de comentários em estilo `Doxygen` nas header files.
+
 ## Pré-requisitos
 
 Para compilar o projeto, você precisará de:
