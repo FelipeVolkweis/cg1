@@ -7,7 +7,7 @@ int main() {
     Window window;
     Scene scene;
 
-    std::string sceneFile = "data/scenes/test.txt";
+    std::string sceneFile = "data/scenes/main.txt";
 
     if (!scene.load(sceneFile)) {
         Logger::Warn("Could not load scene from ", sceneFile);

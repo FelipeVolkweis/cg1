@@ -1,0 +1,7 @@
+cylinder 0.5 3.5 32 color 0.8 0.8 0.8 origin 0.0 0.0 0.0 scale 1.0 1.0 1.0 rot -90 0.0 0.0
+cone 0.5 1.0 32 color 1.0 0.0 0.0 origin 0.0 2.25 0.0 scale 1.0 1.0 1.0 rot -90 0.0 0.0
+
+sphere 0.25 24 12 color 0.0 0.5 1.0 origin 0.0 0.6 -0.8 scale 1.0 1.0 0.2 rot 0.0 0.0 0.0
+
+box 0.1 1.0 0.5 color 1.0 0.0 0.0 origin 0.5 -1.25 0.0 scale 1.0 1.0 1.0 rot 0.0 0.0 0.0
+box 0.1 1.0 0.5 color 1.0 0.0 0.0 origin -0.5 -1.25 0.0 scale 1.0 1.0 1.0 rot 0.0 0.0 0.0

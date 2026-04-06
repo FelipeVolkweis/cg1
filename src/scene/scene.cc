@@ -1,5 +1,10 @@
 #include "scene.h"
 #include "shapes/sphere.h"
+#include "shapes/box.h"
+#include "shapes/cone.h"
+#include "shapes/cylinder.h"
+#include "shapes/torus.h"
+#include "shapes/semisphere.h"
 #include "transformations/rotation.h"
 #include "transformations/scale.h"
 #include "transformations/translation.h"
@@ -66,10 +71,7 @@ bool Scene::load(const std::string &filepath) {
             continue;
         }
 
-        std::unique_ptr<BaseShape> newShape;
-        if (name == "sphere") {
-            newShape = std::make_unique<Sphere>();
-        }
+        auto newShape = makeShape(name);
 
         if (newShape) {
             newShape->parse(iss);
@@ -80,6 +82,25 @@ bool Scene::load(const std::string &filepath) {
     }
 
     return true;
+}
+
+std::unique_ptr<BaseShape> Scene::makeShape(const std::string &name) {
+    std::unique_ptr<BaseShape> newShape;
+    if (name == "sphere") {
+        newShape = std::make_unique<Sphere>();
+    } else if (name == "box") {
+        newShape = std::make_unique<Box>();
+    } else if (name == "cone") {
+        newShape = std::make_unique<Cone>();
+    } else if (name == "cylinder") {
+        newShape = std::make_unique<Cylinder>();
+    } else if (name == "torus") {
+        newShape = std::make_unique<Torus>();
+    } else if (name == "semisphere") {
+        newShape = std::make_unique<SemiSphere>();
+    }
+
+    return newShape;
 }
 
 void Scene::populateRenderer(Renderer &renderer, const Transformation &parentTransform) {

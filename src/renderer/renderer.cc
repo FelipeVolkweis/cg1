@@ -70,11 +70,15 @@ bool Renderer::initialize() {
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
 
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     return true;
 }
 
 void Renderer::render() {
     glUseProgram(shaderProgram_);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const RenderItem &item : items_) {
         const std::vector<Vec3> &vertices = item.shape->getVertices();

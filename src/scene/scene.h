@@ -22,6 +22,8 @@ public:
                           const Transformation &parentTransform = Transformation());
 
 private:
+    std::unique_ptr<BaseShape> makeShape(const std::string &name);
+
     std::vector<std::unique_ptr<BaseShape>> shapes_;
     std::vector<Subscene> subscenes_;
 };
