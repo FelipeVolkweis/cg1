@@ -5,7 +5,8 @@
 
 /**
  * @class Cylinder
- * @brief Represents a 3D cylinder shape, composed of two circular bases and a lateral surface, all approximated by triangles.
+ * @brief Represents a 3D cylinder shape, composed of two circular bases and a lateral surface, all
+ * approximated by triangles.
  */
 class Cylinder : public BaseShape {
 public:

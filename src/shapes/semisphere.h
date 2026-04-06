@@ -5,7 +5,8 @@
 
 /**
  * @class SemiSphere
- * @brief Represents a 3D semi-sphere shape, composed of a hemispherical surface approximated by triangles.
+ * @brief Represents a 3D semi-sphere shape, composed of a hemispherical surface approximated by
+ * triangles.
  */
 class SemiSphere : public BaseShape {
 public:

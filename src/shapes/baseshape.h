@@ -10,7 +10,8 @@
 
 /**
  * @class BaseShape
- * @brief Abstract base class for all 3D shapes, providing common attributes like color and transformations.
+ * @brief Abstract base class for all 3D shapes, providing common attributes like color and
+ * transformations.
  */
 class BaseShape {
 public:

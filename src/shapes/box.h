@@ -5,7 +5,8 @@
 
 /**
  * @class Box
- * @brief Represents a 3D box shape, composed of 6 rectangular faces, each subdivided into 2 triangles.
+ * @brief Represents a 3D box shape, composed of 6 rectangular faces, each subdivided into 2
+ * triangles.
  */
 class Box : public BaseShape {
 public:

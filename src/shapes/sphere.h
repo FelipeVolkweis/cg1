@@ -5,7 +5,8 @@
 
 /**
  * @class Sphere
- * @brief Represents a 3D sphere shape, composed of a spherical surface approximated by triangles arranged in stacks and sectors.
+ * @brief Represents a 3D sphere shape, composed of a spherical surface approximated by triangles
+ * arranged in stacks and sectors.
  */
 class Sphere : public BaseShape {
 public:

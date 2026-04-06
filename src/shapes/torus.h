@@ -5,7 +5,8 @@
 
 /**
  * @class Torus
- * @brief Represents a 3D torus shape, composed of a doughnut-shaped surface approximated by triangles arranged in rings and sides.
+ * @brief Represents a 3D torus shape, composed of a doughnut-shaped surface approximated by
+ * triangles arranged in rings and sides.
  */
 class Torus : public BaseShape {
 public:
