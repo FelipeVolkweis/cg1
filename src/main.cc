@@ -14,9 +14,7 @@ int main() {
     }
 
     if (window.initialize()) {
-        scene.populateRenderer(window.getRenderer());
-
-        window.loop();
+        window.loop(&scene);
         window.finish();
     } else {
         Logger::Error("Failed to initialize application window!");

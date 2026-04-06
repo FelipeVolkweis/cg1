@@ -24,6 +24,10 @@ public:
         items_.push_back({shape, transform});
     }
 
+    void clear() {
+        items_.clear();
+    }
+
 private:
     std::vector<RenderItem> items_;
     uint32_t shaderProgram_ = 0;

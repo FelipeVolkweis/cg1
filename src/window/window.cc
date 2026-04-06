@@ -1,5 +1,9 @@
 #include "window.h"
+#include "scene/scene.h"
 
+#include "transformations/rotation.h"
+#include "transformations/scale.h"
+#include "transformations/translation.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -41,9 +45,55 @@ bool Window::finish() {
     return true;
 }
 
-bool Window::loop() {
+void Window::processInput() {
+    float moveSpeed = 0.05f;
+    float scaleSpeed = 0.05f;
+    float rotSpeed = 2.0f;
+
+    if (glfwGetKey(window_, GLFW_KEY_W) == GLFW_PRESS)
+        transY_ += moveSpeed;
+    if (glfwGetKey(window_, GLFW_KEY_S) == GLFW_PRESS)
+        transY_ -= moveSpeed;
+    if (glfwGetKey(window_, GLFW_KEY_A) == GLFW_PRESS)
+        transX_ -= moveSpeed;
+    if (glfwGetKey(window_, GLFW_KEY_D) == GLFW_PRESS)
+        transX_ += moveSpeed;
+
+    if (glfwGetKey(window_, GLFW_KEY_E) == GLFW_PRESS)
+        scale_ += scaleSpeed;
+    if (glfwGetKey(window_, GLFW_KEY_Q) == GLFW_PRESS)
+        scale_ -= scaleSpeed;
+
+    if (glfwGetKey(window_, GLFW_KEY_R) == GLFW_PRESS)
+        rotY_ += rotSpeed;
+    if (glfwGetKey(window_, GLFW_KEY_T) == GLFW_PRESS)
+        rotY_ -= rotSpeed;
+
+    bool wireframeKey = glfwGetKey(window_, GLFW_KEY_P) == GLFW_PRESS;
+    if (wireframeKey && !wireframeKeyPressed_) {
+        wireframe_ = !wireframe_;
+        if (wireframe_) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        } else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+    }
+    wireframeKeyPressed_ = wireframeKey;
+}
+
+bool Window::loop(Scene *scene) {
     while (!glfwWindowShouldClose(window_)) {
-        glClear(GL_COLOR_BUFFER_BIT);
+        processInput();
+
+        std::unordered_map<std::string, Transformation> modifierTransforms;
+        modifierTransforms["translatable"] = Translation(Vec3(transX_, transY_, transZ_));
+        modifierTransforms["rotatable"] = RotationY(rotY_);
+        modifierTransforms["scalable"] = Scale(Vec3(scale_, scale_, scale_));
+
+        if (scene) {
+            renderer_.clear();
+            scene->populateRenderer(renderer_, modifierTransforms);
+        }
 
         renderer_.render();
 
