@@ -4,6 +4,10 @@
 #include "transformation.h"
 #include "types/vec3.h"
 
+/**
+ * @class Translation
+ * @brief Represents a translation transformation in 3D space.
+ */
 class Translation : public Transformation {
 public:
     Translation(const Vec3 &d) {

@@ -8,6 +8,10 @@
 #include <string>
 #include <vector>
 
+/**
+ * @class BaseShape
+ * @brief Abstract base class for all 3D shapes, providing common attributes like color and transformations.
+ */
 class BaseShape {
 public:
     BaseShape() : color_(1.0f, 1.0f, 1.0f) {}

@@ -3,6 +3,10 @@
 
 #include "types/mat4x4.h"
 
+/**
+ * @class Transformation
+ * @brief Base class for 3D transformations, storing a 4x4 matrix.
+ */
 class Transformation {
 protected:
     Mat4x4 matrix_;

@@ -5,6 +5,10 @@
 
 #define DEG2RAD (M_PI / 180.0f)
 
+/**
+ * @class RotationX
+ * @brief Represents a rotation transformation around the X-axis.
+ */
 class RotationX : public Transformation {
 public:
     RotationX(float angleInDegrees) {
@@ -20,6 +24,10 @@ public:
     }
 };
 
+/**
+ * @class RotationY
+ * @brief Represents a rotation transformation around the Y-axis.
+ */
 class RotationY : public Transformation {
 public:
     RotationY(float angleInDegrees) {
@@ -35,6 +43,10 @@ public:
     }
 };
 
+/**
+ * @class RotationZ
+ * @brief Represents a rotation transformation around the Z-axis.
+ */
 class RotationZ : public Transformation {
 public: 
     RotationZ(float angleInDegrees) {

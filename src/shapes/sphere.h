@@ -3,6 +3,10 @@
 
 #include "baseshape.h"
 
+/**
+ * @class Sphere
+ * @brief Represents a 3D sphere shape, composed of a spherical surface approximated by triangles arranged in stacks and sectors.
+ */
 class Sphere : public BaseShape {
 public:
     Sphere(float radius = 1.0f, int sectors = 36, int stacks = 18);

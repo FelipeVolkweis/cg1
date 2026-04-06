@@ -4,6 +4,10 @@
 #include "transformation.h"
 #include "types/vec3.h"
 
+/**
+ * @class Scale
+ * @brief Represents a scaling transformation in 3D space.
+ */
 class Scale : public Transformation {
 public:
     Scale(const Vec3 &s) {
@@ -17,3 +21,4 @@ public:
 };
 
 #endif 
+ 

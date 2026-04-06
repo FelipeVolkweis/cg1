@@ -3,6 +3,10 @@
 
 #include "baseshape.h"
 
+/**
+ * @class SemiSphere
+ * @brief Represents a 3D semi-sphere shape, composed of a hemispherical surface approximated by triangles.
+ */
 class SemiSphere : public BaseShape {
 public:
     SemiSphere(float radius = 1.0f, int sectors = 36, int stacks = 18);
