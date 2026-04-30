@@ -16,7 +16,7 @@ public:
         return "cone";
     }
 
-    void parse(std::istream &is) override;
+    Transformation parse(std::istream &is) override;
 
 private:
     void generateVertices(float radius, float height, int sectors);

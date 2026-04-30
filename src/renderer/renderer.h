@@ -1,9 +1,10 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "transformations/transformation.h"
 #include <cstdint>
 #include <vector>
+
+#include "transformations/transformation.h"
 
 class BaseShape;
 

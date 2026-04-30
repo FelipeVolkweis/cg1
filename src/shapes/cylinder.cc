@@ -1,17 +1,21 @@
 #include "cylinder.h"
+
 #include <cmath>
 
 Cylinder::Cylinder(float radius, float height, int sectors) {
     generateVertices(radius, height, sectors);
 }
 
-void Cylinder::parse(std::istream &is) {
+Transformation Cylinder::parse(std::istream &is) {
     float r, h;
     int s;
+    Transformation transform;
     if (is >> r >> h >> s) {
         generateVertices(r, h, s);
-        parseCommon(is);
+        transform = parseCommon(is);
     }
+
+    return transform;
 }
 
 void Cylinder::generateVertices(float radius, float height, int sectors) {

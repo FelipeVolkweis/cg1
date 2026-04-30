@@ -16,7 +16,7 @@ public:
         return "torus";
     }
 
-    void parse(std::istream &is) override;
+    Transformation parse(std::istream &is) override;
 
 private:
     void generateVertices(float innerRadius, float outerRadius, int sides, int rings);

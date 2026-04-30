@@ -1,18 +1,21 @@
 #include "cone.h"
+
 #include <cmath>
 
 Cone::Cone(float radius, float height, int sectors) {
     generateVertices(radius, height, sectors);
 }
 
-void Cone::parse(std::istream &is) {
+Transformation Cone::parse(std::istream &is) {
     float radius, height;
     int sectors;
+    Transformation transform;
 
     if (is >> radius >> height >> sectors) {
         generateVertices(radius, height, sectors);
-        parseCommon(is);
+        transform = parseCommon(is);
     }
+    return transform;
 }
 
 void Cone::generateVertices(float radius, float height, int sectors) {

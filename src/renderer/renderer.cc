@@ -1,8 +1,9 @@
 #include "renderer.h"
 
+#include <glad/glad.h>
+
 #include "shapes/baseshape.h"
 #include "utils/logger.h"
-#include <glad/glad.h>
 
 const char *vertexShaderSource = R"(
 #version 330 core

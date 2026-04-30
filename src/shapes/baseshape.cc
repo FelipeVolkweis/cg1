@@ -1,11 +1,13 @@
 #include "baseshape.h"
+
+#include <string>
+
 #include "transformations/rotation.h"
 #include "transformations/scale.h"
 #include "transformations/translation.h"
 #include "utils/logger.h"
-#include <string>
 
-void BaseShape::parseCommon(std::istream &is) {
+Transformation BaseShape::parseCommon(std::istream &is) {
     std::string key;
 
     Vec3 origin(0.0f, 0.0f, 0.0f);
@@ -33,8 +35,6 @@ void BaseShape::parseCommon(std::istream &is) {
             if (is >> x >> y >> z) {
                 rot = Vec3(x, y, z);
             }
-        } else if (key == "translatable" || key == "rotatable" || key == "scalable") {
-            modifiers_.push_back(key);
         } else {
             Logger::Warn("Unknown common property key: ", key);
         }
@@ -43,5 +43,5 @@ void BaseShape::parseCommon(std::istream &is) {
     Transformation finalTransform = Translation(origin) * RotationZ(rot.z()) * RotationY(rot.y()) *
                                     RotationX(rot.x()) * Scale(scale);
 
-    setTransformation(finalTransform);
+    return finalTransform;
 }

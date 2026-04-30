@@ -1,19 +1,23 @@
 #include "sphere.h"
+
 #include <cmath>
 
 Sphere::Sphere(float radius, int sectors, int stacks) {
     generateVertices(radius, sectors, stacks);
 }
 
-void Sphere::parse(std::istream &is) {
+Transformation Sphere::parse(std::istream &is) {
     float radius;
     int sectors, stacks;
+    Transformation transform;
 
     if (is >> radius >> sectors >> stacks) {
         generateVertices(radius, sectors, stacks);
 
-        parseCommon(is);
+        transform = parseCommon(is);
     }
+
+    return transform;
 }
 
 void Sphere::generateVertices(float radius, int sectors, int stacks) {

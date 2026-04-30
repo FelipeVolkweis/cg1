@@ -16,7 +16,7 @@ public:
         return "box";
     }
 
-    void parse(std::istream &is) override;
+    Transformation parse(std::istream &is) override;
 
 private:
     void generateVertices(float width, float height, float depth);

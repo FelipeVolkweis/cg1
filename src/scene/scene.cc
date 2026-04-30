@@ -1,4 +1,10 @@
 #include "scene.h"
+
+#include <fstream>
+#include <sstream>
+#include <stack>
+
+#include "components/mesh.h"
 #include "shapes/box.h"
 #include "shapes/cone.h"
 #include "shapes/cylinder.h"
@@ -9,18 +15,14 @@
 #include "transformations/scale.h"
 #include "transformations/translation.h"
 #include "utils/logger.h"
-#include <fstream>
-#include <sstream>
 
-bool Scene::load(const std::string &filepath) {
+bool Scene::load(const std::string &filepath, std::shared_ptr<Node> root) {
     std::ifstream file(filepath);
     if (!file.is_open()) {
         Logger::Error("Failed to open scene file: ", filepath);
         return false;
     }
 
-    shapes_.clear();
-    subscenes_.clear();
     std::string line;
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#')
@@ -31,21 +33,31 @@ bool Scene::load(const std::string &filepath) {
         iss >> name;
 
         if (name == "subscene") {
-            parseSubscene(iss);
+            auto newNode = parseSubscene(iss);
+            if (newNode) {
+                root->addChild(newNode);
+            }
             continue;
         }
 
         auto newShape = makeShape(name);
-
+        auto node = std::make_shared<Node>();
         if (newShape) {
-            newShape->parse(iss);
-            shapes_.push_back(std::move(newShape));
+            auto transform = newShape->parse(iss);
+            node->setTransform(transform);
+            auto mesh = std::make_shared<Mesh>(std::move(newShape));
+            node->addComponent(mesh);
+            root->addChild(node);
         } else {
             Logger::Warn("Unknown shape/object name in scene file: ", name);
         }
     }
 
     return true;
+}
+
+bool Scene::load(const std::string &filepath) {
+    return this->load(filepath, root_);
 }
 
 std::unique_ptr<BaseShape> Scene::makeShape(const std::string &name) {
@@ -67,12 +79,13 @@ std::unique_ptr<BaseShape> Scene::makeShape(const std::string &name) {
     return newShape;
 }
 
-void Scene::parseSubscene(std::istringstream &iss) {
+std::shared_ptr<Node> Scene::parseSubscene(std::istringstream &iss) {
     std::string subFilepath;
     if (iss >> subFilepath) {
-        auto subscene = std::make_unique<Scene>();
+        auto node = std::make_shared<Node>();
+
         subFilepath = "data/subscenes/" + subFilepath + ".txt";
-        if (subscene->load(subFilepath)) {
+        if (load(subFilepath, node)) {
             std::string key;
             Vec3 origin(0.0f, 0.0f, 0.0f);
             Vec3 scale(1.0f, 1.0f, 1.0f);
@@ -102,49 +115,37 @@ void Scene::parseSubscene(std::istringstream &iss) {
             Transformation finalTransform = Translation(origin) * RotationZ(rot.z()) *
                                             RotationY(rot.y()) * RotationX(rot.x()) * Scale(scale);
 
-            subscenes_.push_back({std::move(subscene), finalTransform, modifiers});
+            node->setTransform(finalTransform);
+
+            return node;
         } else {
             Logger::Warn("Failed to load subscene from ", subFilepath);
         }
     }
+    return nullptr;
 }
 
-void Scene::populateRenderer(
-    Renderer &renderer, const std::unordered_map<std::string, Transformation> &modifierTransforms,
-    const Transformation &parentTransform) {
-    for (const auto &shape : shapes_) {
-        Transformation world = parentTransform * shape->getTransformation();
-        applyDynamicModifiers(world, shape->getModifiers(), modifierTransforms);
+void Scene::populateRenderer(Renderer &renderer) {
+    std::stack<std::pair<std::shared_ptr<Node>, Transformation>> stack;
+    stack.push({root_, Transformation()});
 
-        renderer.addShape(shape.get(), world);
-    }
+    while (!stack.empty()) {
+        auto [currentNode, transform] = stack.top();
+        stack.pop();
 
-    for (const auto &sub : subscenes_) {
-        Transformation world = parentTransform * sub.transform;
-        applyDynamicModifiers(world, sub.modifiers, modifierTransforms);
-
-        sub.scene->populateRenderer(renderer, modifierTransforms, world);
-    }
-}
-
-void Scene::applyDynamicModifiers(
-    Transformation &world, const std::vector<std::string> &modifiers,
-    const std::unordered_map<std::string, Transformation> &modifierTransforms) const {
-    Transformation dynamic;
-    bool hasDynamic = false;
-    for (const auto &m : modifiers) {
-        auto it = modifierTransforms.find(m);
-        if (it != modifierTransforms.end()) {
-            dynamic = it->second * dynamic;
-            hasDynamic = true;
+        if (!currentNode) {
+            continue;
         }
-    }
 
-    if (hasDynamic) {
-        Vec3 origin(world.getTransformationMatrix()(0, 3), world.getTransformationMatrix()(1, 3),
-                    world.getTransformationMatrix()(2, 3));
-        Transformation toOrigin = Translation(Vec3(-origin.x(), -origin.y(), -origin.z()));
-        Transformation backToPos = Translation(origin);
-        world = backToPos * dynamic * toOrigin * world;
+        Transformation currentTransform = transform * currentNode->getTransformation();
+        auto meshComponent = currentNode->getComponent<Mesh>();
+
+        if (meshComponent) {
+            renderer.addShape(meshComponent->getShape(), currentTransform);
+        }
+
+        for (auto child : currentNode->getChildren()) {
+            stack.push({child, currentTransform});
+        }
     }
 }

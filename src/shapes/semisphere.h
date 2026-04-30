@@ -16,7 +16,7 @@ public:
         return "semisphere";
     }
 
-    void parse(std::istream &is) override;
+    Transformation parse(std::istream &is) override;
 
 private:
     void generateVertices(float radius, int sectors, int stacks);

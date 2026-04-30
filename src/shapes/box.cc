@@ -4,13 +4,14 @@ Box::Box(float width, float height, float depth) {
     generateVertices(width, height, depth);
 }
 
-void Box::parse(std::istream &is) {
+Transformation Box::parse(std::istream &is) {
     float w, h, d;
-
+    Transformation transform;
     if (is >> w >> h >> d) {
         generateVertices(w, h, d);
-        parseCommon(is);
+        transform = parseCommon(is);
     }
+    return transform;
 }
 
 void Box::generateVertices(float width, float height, float depth) {

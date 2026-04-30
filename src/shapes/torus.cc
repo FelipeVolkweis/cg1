@@ -1,18 +1,22 @@
 #include "torus.h"
+
 #include <cmath>
 
 Torus::Torus(float innerRadius, float outerRadius, int sides, int rings) {
     generateVertices(innerRadius, outerRadius, sides, rings);
 }
 
-void Torus::parse(std::istream &is) {
+Transformation Torus::parse(std::istream &is) {
     float inner, outer;
     int sides, rings;
+    Transformation transform;
 
     if (is >> inner >> outer >> sides >> rings) {
         generateVertices(inner, outer, sides, rings);
-        parseCommon(is);
+        transform = parseCommon(is);
     }
+
+    return transform;
 }
 
 void Torus::generateVertices(float innerRadius, float outerRadius, int sides, int rings) {

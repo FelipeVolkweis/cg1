@@ -1,18 +1,23 @@
 #include "semisphere.h"
+
 #include <cmath>
 
 SemiSphere::SemiSphere(float radius, int sectors, int stacks) {
     generateVertices(radius, sectors, stacks);
 }
 
-void SemiSphere::parse(std::istream &is) {
+Transformation SemiSphere::parse(std::istream &is) {
     float radius;
     int sectors, stacks;
 
+    Transformation transform;
+
     if (is >> radius >> sectors >> stacks) {
         generateVertices(radius, sectors, stacks);
-        parseCommon(is);
+        transform = parseCommon(is);
     }
+
+    return transform;
 }
 
 void SemiSphere::generateVertices(float radius, int sectors, int stacks) {

@@ -6,3 +6,18 @@ BreakBeforeBraces: Attach
 AccessModifierOffset: -4
 PointerAlignment: Right
 SeparateDefinitionBlocks: Always
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^<glad/glad\.h>'
+    Priority:        1
+  - Regex:           '^<GLFW/glfw3\.h>'
+    Priority:        2
+  - Regex:           '^<Eigen/.*>'
+    Priority:        3
+  - Regex:           '^<[a-z_]+>$'
+    Priority:        4
+  - Regex:           '^<.*>'
+    Priority:        5
+  - Regex:           '^".*"'
+    Priority:        6

@@ -1,11 +1,13 @@
 #include "window.h"
-#include "scene/scene.h"
 
+#include <glad/glad.h>
+
+#include <GLFW/glfw3.h>
+
+#include "scene/scene.h"
 #include "transformations/rotation.h"
 #include "transformations/scale.h"
 #include "transformations/translation.h"
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 void resizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -85,14 +87,9 @@ bool Window::loop(Scene *scene) {
     while (!glfwWindowShouldClose(window_)) {
         processInput();
 
-        std::unordered_map<std::string, Transformation> modifierTransforms;
-        modifierTransforms["translatable"] = Translation(Vec3(transX_, transY_, transZ_));
-        modifierTransforms["rotatable"] = RotationY(rotY_);
-        modifierTransforms["scalable"] = Scale(Vec3(scale_, scale_, scale_));
-
         if (scene) {
             renderer_.clear();
-            scene->populateRenderer(renderer_, modifierTransforms);
+            scene->populateRenderer(renderer_);
         }
 
         renderer_.render();

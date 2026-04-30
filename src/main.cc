@@ -1,11 +1,12 @@
+#include <string>
+
 #include "scene/scene.h"
 #include "utils/logger.h"
 #include "window/window.h"
-#include <string>
 
 int main() {
     Window window;
-    Scene scene;
+    Scene scene(std::make_shared<Node>());
 
     std::string sceneFile = "data/scenes/main.txt";
 

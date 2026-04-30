@@ -1,12 +1,13 @@
 #ifndef BASESHAPE_H
 #define BASESHAPE_H
 
-#include "transformations/transformation.h"
-#include "types/vec3.h"
 #include <istream>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "transformations/transformation.h"
+#include "types/vec3.h"
 
 /**
  * @class BaseShape
@@ -20,9 +21,9 @@ public:
     virtual ~BaseShape() = default;
 
     virtual std::string getName() const = 0;
-    virtual void parse(std::istream &is) = 0;
+    virtual Transformation parse(std::istream &is) = 0;
 
-    void parseCommon(std::istream &is);
+    Transformation parseCommon(std::istream &is);
 
     const std::vector<Vec3> &getVertices() const {
         return vertices_;
@@ -30,14 +31,6 @@ public:
 
     void addVertex(const Vec3 &vertex) {
         vertices_.push_back(vertex);
-    }
-
-    const Transformation &getTransformation() const {
-        return transformation_;
-    }
-
-    void setTransformation(const Transformation &transformation) {
-        transformation_ = transformation;
     }
 
     const Vec3 &getColor() const {
@@ -48,15 +41,9 @@ public:
         color_ = color;
     }
 
-    const std::vector<std::string> &getModifiers() const {
-        return modifiers_;
-    }
-
 protected:
     std::vector<Vec3> vertices_;
-    Transformation transformation_;
     Vec3 color_;
-    std::vector<std::string> modifiers_;
 };
 
 #endif
