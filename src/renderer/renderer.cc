@@ -7,10 +7,14 @@
 
 const char *vertexShaderSource = R"(
 #version 330 core
-layout (location = 0) in vec3 aPos;
-uniform mat4 transform;
+attribute vec3 position;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
 void main() {
-    gl_Position = transform * vec4(aPos, 1.0);
+    gl_Position = projection * view * model * vec4(position, 1.0);
 }
 )";
 
@@ -78,31 +82,39 @@ bool Renderer::initialize() {
 }
 
 void Renderer::render() {
-    glUseProgram(shaderProgram_);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if (auto activeCamera = activeCamera_.lock()) {
+        glUseProgram(shaderProgram_);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (const RenderItem &item : items_) {
-        const std::vector<Vec3> &vertices = item.shape->getVertices();
-        if (vertices.empty())
-            continue;
+        int viewLoc = glGetUniformLocation(shaderProgram_, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, activeCamera->lookAt().data());
 
-        const Mat4x4 &transform = item.transform.getTransformationMatrix();
-        const Vec3 &color = item.shape->getColor();
+        int projLoc = glGetUniformLocation(shaderProgram_, "projection");
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, activeCamera->perspective().data());
 
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vec3), vertices.data(),
-                     GL_DYNAMIC_DRAW);
+        for (const RenderItem &item : items_) {
+            const std::vector<Vec3> &vertices = item.shape->getVertices();
+            if (vertices.empty())
+                continue;
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vec3), (void *)0);
-        glEnableVertexAttribArray(0);
+            const Mat4x4 &model = item.transform.getTransformationMatrix();
+            const Vec3 &color = item.shape->getColor();
 
-        int transformLoc = glGetUniformLocation(shaderProgram_, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform.data());
+            glBindVertexArray(vao_);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vec3), vertices.data(),
+                         GL_DYNAMIC_DRAW);
 
-        int colorLoc = glGetUniformLocation(shaderProgram_, "objectColor");
-        glUniform3f(colorLoc, color.x(), color.y(), color.z());
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vec3), (void *)0);
+            glEnableVertexAttribArray(0);
 
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+            int modelLoc = glGetUniformLocation(shaderProgram_, "model");
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.data());
+
+            int colorLoc = glGetUniformLocation(shaderProgram_, "objectColor");
+            glUniform3f(colorLoc, color.x(), color.y(), color.z());
+
+            glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        }
     }
 }

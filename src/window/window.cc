@@ -4,11 +4,15 @@
 
 #include <GLFW/glfw3.h>
 
+#include "camera/camera.h"
 #include "inputhandler.h"
 #include "scene/scene.h"
 #include "transformations/rotation.h"
 #include "transformations/scale.h"
 #include "transformations/translation.h"
+
+#define WINDOW_WIDTH 960.0f
+#define WINDOW_HEIGHT 540.0f
 
 void resizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -23,7 +27,7 @@ bool Window::initialize() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window_ = glfwCreateWindow(640, 640, "OpenGL Window", NULL, NULL);
+    window_ = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Window", NULL, NULL);
     if (!window_) {
         glfwTerminate();
         return false;
@@ -39,6 +43,10 @@ bool Window::initialize() {
     if (!renderer_.initialize()) {
         return false;
     }
+
+    Perspective p = {45.0f, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f};
+    LookAt l = {Vec3(0, 0, 3), Vec3(0, 0, 0), Vec3(0, 1, 0)};
+    mainCamera_ = std::make_unique<Camera>(p, l);
 
     return true;
 }
@@ -64,6 +72,8 @@ void Window::processInput() {
 bool Window::loop(std::unique_ptr<Scene> scene) {
     while (!glfwWindowShouldClose(window_)) {
         processInput();
+
+        renderer_.setActiveCamera(mainCamera_);
 
         if (scene) {
             renderer_.clear();

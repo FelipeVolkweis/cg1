@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "camera/camera.h"
 #include "renderer/renderer.h"
 
 struct GLFWwindow;
@@ -53,6 +54,7 @@ private:
     GLFWwindow *window_;
     InputHandler *inputHandler_;
     Renderer renderer_;
+    std::shared_ptr<Camera> mainCamera_;
 };
 
 #endif

@@ -2,8 +2,10 @@
 #define RENDERER_H
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
+#include "camera/camera.h"
 #include "transformations/transformation.h"
 
 class BaseShape;
@@ -37,6 +39,10 @@ public:
      */
     void render();
 
+    void setActiveCamera(std::weak_ptr<Camera> camera) {
+        activeCamera_ = camera;
+    }
+
     /**
      * @brief Adds a shape to the rendering queue.
      * @param shape Pointer to the shape to render.
@@ -55,6 +61,7 @@ public:
 
 private:
     std::vector<RenderItem> items_;
+    std::weak_ptr<Camera> activeCamera_;
     uint32_t shaderProgram_ = 0;
     uint32_t vao_ = 0;
     uint32_t vbo_ = 0;
