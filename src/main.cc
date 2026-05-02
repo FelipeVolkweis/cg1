@@ -3,6 +3,7 @@
 #include "components/meshcomponent.h"
 #include "components/rigidbodycomponent.h"
 #include "scene/scene.h"
+#include "scene/sceneparser.h"
 #include "shapes/box.h"
 #include "transformations/translation.h"
 #include "utils/logger.h"
@@ -15,7 +16,7 @@ int main() {
 
     std::string sceneFile = "data/scenes/main.txt";
 
-    if (!scene->load(sceneFile)) {
+    if (!SceneParser::load(sceneFile, root)) {
         Logger::Warn("Could not load scene from ", sceneFile);
     }
 
@@ -28,7 +29,7 @@ int main() {
     // groundNode->addComponent(std::make_shared<MeshComponent>(std::move(ground)));
     // groundNode->addComponent(std::make_shared<RigidBodyComponent>(
     //     scene->getPhysicsEngine(),
-    //     0.0f, 
+    //     0.0f,
     //     std::make_unique<btBoxShape>(btVector3(5.0f, 0.25f, 5.0f))));
     // root->addChild(groundNode);
 
@@ -38,7 +39,7 @@ int main() {
     // boxNode->addComponent(std::make_shared<MeshComponent>(std::make_unique<Box>(1.0f, 1.0f, 1.0f)));
     // boxNode->addComponent(std::make_shared<RigidBodyComponent>(
     //     scene->getPhysicsEngine(),
-    //     1.0f, 
+    //     1.0f,
     //     std::make_unique<btBoxShape>(btVector3(0.5f, 0.5f, 0.5f))));
     // root->addChild(boxNode);
     // --- END TEST ---

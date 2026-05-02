@@ -22,14 +22,6 @@ public:
         physicsEngine_.initialize();
     };
 
-    /**
-     * @brief Loads a scene from a file.
-     * @param filepath Path to the scene file.
-     * @return true if loading was successful, false otherwise.
-     */
-    bool load(const std::string &filepath, std::shared_ptr<Node> root);
-    bool load(const std::string &filepath);
-
     void start();
     /**
      * @brief Updates the physics and components in the scene.
@@ -52,20 +44,11 @@ public:
      */
     void populateRenderer(Renderer &renderer);
 
+    std::shared_ptr<Node> getRoot() const {
+        return root_;
+    }
+
 private:
-    /**
-     * @brief Factory method to create a shape by name.
-     * @param name The name of the shape (e.g., "box", "sphere").
-     * @return Unique pointer to the created shape, or nullptr if unknown.
-     */
-    std::unique_ptr<BaseShape> makeShape(const std::string &name);
-
-    /**
-     * @brief Parses a subscene entry from a stream.
-     * @param iss The input string stream containing subscene data.
-     */
-    std::shared_ptr<Node> parseSubscene(std::istringstream &iss);
-
     std::shared_ptr<Node> root_;
     PhysicsEngine physicsEngine_;
 };
