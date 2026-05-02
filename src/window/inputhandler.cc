@@ -10,9 +10,9 @@ void InputHandler::handleWASD() {
 
     if (glfwGetKey(window_, GLFW_KEY_W) == GLFW_PRESS)
         wasd_[W_KEY] = 1;
-    if (glfwGetKey(window_, GLFW_KEY_S) == GLFW_PRESS)
-        wasd_[A_KEY] = 1;
     if (glfwGetKey(window_, GLFW_KEY_A) == GLFW_PRESS)
+        wasd_[A_KEY] = 1;
+    if (glfwGetKey(window_, GLFW_KEY_S) == GLFW_PRESS)
         wasd_[S_KEY] = 1;
     if (glfwGetKey(window_, GLFW_KEY_D) == GLFW_PRESS)
         wasd_[D_KEY] = 1;

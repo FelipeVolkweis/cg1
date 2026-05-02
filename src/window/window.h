@@ -45,6 +45,14 @@ public:
         return renderer_;
     }
 
+    /**
+     * @brief Returns a pointer to the input handler.
+     * @return Pointer to the InputHandler instance.
+     */
+    InputHandler *getInputHandler() const {
+        return inputHandler_;
+    }
+
 private:
     /**
      * @brief Processes keyboard and mouse input.
