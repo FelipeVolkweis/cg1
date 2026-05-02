@@ -67,7 +67,7 @@ void Scene::update(float dt) {
 
         for (auto &comp : node->getComponents()) {
             comp->onPreUpdate();
-            comp->onUpdate();
+            comp->onUpdate(dt);
             comp->onPostUpdate();
         }
 

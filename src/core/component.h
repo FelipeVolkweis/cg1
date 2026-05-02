@@ -22,7 +22,7 @@ public:
     }
 
     virtual void onPreUpdate() {};
-    virtual void onUpdate() {};
+    virtual void onUpdate(float dt) {};
     virtual void onPostUpdate() {};
 
     virtual bool onEnd() {

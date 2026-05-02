@@ -23,7 +23,7 @@ public:
         }
     }
 
-    void setTransform(Transformation &transform) {
+    void setTransform(const Transformation &transform) {
         transform_ = transform;
     }
 
