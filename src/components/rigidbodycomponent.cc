@@ -21,7 +21,7 @@ bool RigidBodyComponent::onStart() {
     return true;
 }
 
-void RigidBodyComponent::onUpdate() {
+void RigidBodyComponent::onUpdate(float dt) {
     auto node = getNode();
     if (!node || !rigidBody_)
         return;

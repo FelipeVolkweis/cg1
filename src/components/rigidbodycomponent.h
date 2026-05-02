@@ -12,7 +12,7 @@ public:
     ~RigidBodyComponent() override;
 
     bool onStart() override;
-    void onUpdate() override;
+    void onUpdate(float dt) override;
     bool onEnd() override;
 
     RigidBody *getRigidBody() const {
