@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "core/node.h"
+#include "physics/physicsengine.h"
 #include "renderer/renderer.h"
 #include "shapes/baseshape.h"
 #include "transformations/transformation.h"
@@ -17,7 +18,9 @@
  */
 class Scene {
 public:
-    Scene(std::shared_ptr<Node> root) : root_(root) {};
+    Scene(std::shared_ptr<Node> root) : root_(root) {
+        physicsEngine_.initialize();
+    };
 
     /**
      * @brief Loads a scene from a file.
@@ -26,6 +29,22 @@ public:
      */
     bool load(const std::string &filepath, std::shared_ptr<Node> root);
     bool load(const std::string &filepath);
+
+    void start();
+    /**
+     * @brief Updates the physics and components in the scene.
+     * @param dt Time step since the last frame.
+     */
+    void update(float dt);
+
+    void end();
+
+    /**
+     * @brief Gets the physics engine managing this scene.
+     */
+    PhysicsEngine *getPhysicsEngine() {
+        return &physicsEngine_;
+    }
 
     /**
      * @brief Populates the renderer with shapes from the scene and its subscenes.
@@ -46,7 +65,9 @@ private:
      * @param iss The input string stream containing subscene data.
      */
     std::shared_ptr<Node> parseSubscene(std::istringstream &iss);
+
     std::shared_ptr<Node> root_;
+    PhysicsEngine physicsEngine_;
 };
 
 #endif

@@ -6,9 +6,9 @@
 #include "core/component.h"
 #include "shapes/baseshape.h"
 
-class Mesh : public BaseComponent {
+class MeshComponent : public BaseComponent {
 public:
-    Mesh(std::unique_ptr<BaseShape> shape) : shape_(std::move(shape)) {}
+    MeshComponent(std::unique_ptr<BaseShape> shape) : shape_(std::move(shape)) {}
 
     const BaseShape *getShape() {
         return shape_.get();

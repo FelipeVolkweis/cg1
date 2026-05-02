@@ -45,7 +45,7 @@ bool Window::initialize() {
     }
 
     Perspective p = {45.0f, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f};
-    LookAt l = {Vec3(0, 0, 3), Vec3(0, 0, 0), Vec3(0, 1, 0)};
+    LookAt l = {Vec3(0, 0, 5), Vec3(0, 0, 0), Vec3(0, 1, 0)};
     mainCamera_ = std::make_unique<Camera>(p, l);
 
     return true;
@@ -70,12 +70,21 @@ void Window::processInput() {
 }
 
 bool Window::loop(std::unique_ptr<Scene> scene) {
+    float lastFrame = glfwGetTime();
+
+    scene->start();
+
     while (!glfwWindowShouldClose(window_)) {
+        float currentFrame = glfwGetTime();
+        float deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         processInput();
 
         renderer_.setActiveCamera(mainCamera_);
 
         if (scene) {
+            scene->update(deltaTime);
             renderer_.clear();
             scene->populateRenderer(renderer_);
         }
@@ -85,6 +94,8 @@ bool Window::loop(std::unique_ptr<Scene> scene) {
         glfwSwapBuffers(window_);
         glfwPollEvents();
     }
+
+    scene->end();
 
     return true;
 }

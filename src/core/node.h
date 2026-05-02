@@ -17,7 +17,10 @@ public:
     }
 
     void addComponent(std::shared_ptr<BaseComponent> component) {
-        components_.push_back(component);
+        if (component) {
+            component->setNode(shared_from_this());
+            components_.push_back(component);
+        }
     }
 
     void setTransform(Transformation &transform) {

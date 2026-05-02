@@ -4,7 +4,7 @@
 #include <sstream>
 #include <stack>
 
-#include "components/mesh.h"
+#include "components/meshcomponent.h"
 #include "shapes/box.h"
 #include "shapes/cone.h"
 #include "shapes/cylinder.h"
@@ -45,7 +45,7 @@ bool Scene::load(const std::string &filepath, std::shared_ptr<Node> root) {
         if (newShape) {
             auto transform = newShape->parse(iss);
             node->setTransform(transform);
-            auto mesh = std::make_shared<Mesh>(std::move(newShape));
+            auto mesh = std::make_shared<MeshComponent>(std::move(newShape));
             node->addComponent(mesh);
             root->addChild(node);
         } else {
@@ -138,7 +138,7 @@ void Scene::populateRenderer(Renderer &renderer) {
         }
 
         Transformation currentTransform = transform * currentNode->getTransformation();
-        auto meshComponent = currentNode->getComponent<Mesh>();
+        auto meshComponent = currentNode->getComponent<MeshComponent>();
 
         if (meshComponent) {
             renderer.addShape(meshComponent->getShape(), currentTransform);
@@ -146,6 +146,70 @@ void Scene::populateRenderer(Renderer &renderer) {
 
         for (auto child : currentNode->getChildren()) {
             stack.push({child, currentTransform});
+        }
+    }
+}
+
+void Scene::start() {
+    std::stack<std::shared_ptr<Node>> stack;
+    if (root_) {
+        stack.push(root_);
+    }
+
+    while (!stack.empty()) {
+        auto node = stack.top();
+        stack.pop();
+
+        for (auto &comp : node->getComponents()) {
+            comp->onStart();
+        }
+
+        for (auto &child : node->getChildren()) {
+            stack.push(child);
+        }
+    }
+}
+
+void Scene::update(float dt) {
+    physicsEngine_.stepSimulation(dt);
+
+    std::stack<std::shared_ptr<Node>> stack;
+    if (root_) {
+        stack.push(root_);
+    }
+
+    while (!stack.empty()) {
+        auto node = stack.top();
+        stack.pop();
+
+        for (auto &comp : node->getComponents()) {
+            comp->onPreUpdate();
+            comp->onUpdate();
+            comp->onPostUpdate();
+        }
+
+        for (auto &child : node->getChildren()) {
+            stack.push(child);
+        }
+    }
+}
+
+void Scene::end() {
+    std::stack<std::shared_ptr<Node>> stack;
+    if (root_) {
+        stack.push(root_);
+    }
+
+    while (!stack.empty()) {
+        auto node = stack.top();
+        stack.pop();
+
+        for (auto &comp : node->getComponents()) {
+            comp->onEnd();
+        }
+
+        for (auto &child : node->getChildren()) {
+            stack.push(child);
         }
     }
 }
