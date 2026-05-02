@@ -6,16 +6,16 @@
 
 int main() {
     Window window;
-    Scene scene(std::make_shared<Node>());
+    auto scene = std::make_unique<Scene>(std::make_shared<Node>());
 
     std::string sceneFile = "data/scenes/main.txt";
 
-    if (!scene.load(sceneFile)) {
+    if (!scene->load(sceneFile)) {
         Logger::Warn("Could not load scene from ", sceneFile);
     }
 
     if (window.initialize()) {
-        window.loop(&scene);
+        window.loop(std::move(scene));
         window.finish();
     } else {
         Logger::Error("Failed to initialize application window!");

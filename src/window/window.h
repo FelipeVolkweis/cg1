@@ -1,9 +1,12 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <memory>
+
 #include "renderer/renderer.h"
 
 struct GLFWwindow;
+struct InputHandler;
 class Scene;
 
 /**
@@ -31,7 +34,7 @@ public:
      * @param scene Pointer to the scene to be rendered.
      * @return true if the loop completed normally, false on error.
      */
-    bool loop(Scene *scene = nullptr);
+    bool loop(std::unique_ptr<Scene> scene);
 
     /**
      * @brief Returns a reference to the renderer.
@@ -48,14 +51,8 @@ private:
     void processInput();
 
     GLFWwindow *window_;
+    InputHandler *inputHandler_;
     Renderer renderer_;
-    bool wireframe_ = false;
-    bool wireframeKeyPressed_ = false;
-    float transX_ = 0.0f;
-    float transY_ = 0.0f;
-    float transZ_ = 0.0f;
-    float scale_ = 1.0f;
-    float rotY_ = 0.0f;
 };
 
 #endif

@@ -4,6 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include "inputhandler.h"
 #include "scene/scene.h"
 #include "transformations/rotation.h"
 #include "transformations/scale.h"
@@ -27,7 +28,7 @@ bool Window::initialize() {
         glfwTerminate();
         return false;
     }
-
+    inputHandler_ = new InputHandler(window_);
     glfwMakeContextCurrent(window_);
     glfwSetFramebufferSizeCallback(window_, resizeCallback);
 
@@ -44,46 +45,23 @@ bool Window::initialize() {
 
 bool Window::finish() {
     glfwTerminate();
+    delete inputHandler_;
     return true;
 }
 
 void Window::processInput() {
-    float moveSpeed = 0.05f;
-    float scaleSpeed = 0.05f;
-    float rotSpeed = 2.0f;
+    inputHandler_->handleWASD();
+    inputHandler_->handleWireframe_P();
 
-    if (glfwGetKey(window_, GLFW_KEY_W) == GLFW_PRESS)
-        transY_ += moveSpeed;
-    if (glfwGetKey(window_, GLFW_KEY_S) == GLFW_PRESS)
-        transY_ -= moveSpeed;
-    if (glfwGetKey(window_, GLFW_KEY_A) == GLFW_PRESS)
-        transX_ -= moveSpeed;
-    if (glfwGetKey(window_, GLFW_KEY_D) == GLFW_PRESS)
-        transX_ += moveSpeed;
-
-    if (glfwGetKey(window_, GLFW_KEY_E) == GLFW_PRESS)
-        scale_ += scaleSpeed;
-    if (glfwGetKey(window_, GLFW_KEY_Q) == GLFW_PRESS)
-        scale_ -= scaleSpeed;
-
-    if (glfwGetKey(window_, GLFW_KEY_R) == GLFW_PRESS)
-        rotY_ += rotSpeed;
-    if (glfwGetKey(window_, GLFW_KEY_T) == GLFW_PRESS)
-        rotY_ -= rotSpeed;
-
-    bool wireframeKey = glfwGetKey(window_, GLFW_KEY_P) == GLFW_PRESS;
-    if (wireframeKey && !wireframeKeyPressed_) {
-        wireframe_ = !wireframe_;
-        if (wireframe_) {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        } else {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }
+    bool wireframeKey = inputHandler_->getWireframeEnabled();
+    if (wireframeKey) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
-    wireframeKeyPressed_ = wireframeKey;
 }
 
-bool Window::loop(Scene *scene) {
+bool Window::loop(std::unique_ptr<Scene> scene) {
     while (!glfwWindowShouldClose(window_)) {
         processInput();
 
