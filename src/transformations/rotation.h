@@ -2,8 +2,7 @@
 #define ROTATION_H
 
 #include "transformation.h"
-
-#define DEG2RAD (M_PI / 180.0f)
+#include "utils/deg2rad.h"
 
 /**
  * @class RotationX
