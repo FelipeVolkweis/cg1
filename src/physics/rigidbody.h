@@ -7,10 +7,11 @@
 
 #include "transformations/transformation.h"
 
+class BaseShape;
+
 class RigidBody {
 public:
-    RigidBody(float mass, const Transformation &initialTransform,
-              std::unique_ptr<btCollisionShape> shape);
+    RigidBody(float mass, const Transformation &initialTransform, const BaseShape *shape);
     ~RigidBody();
 
     btRigidBody *getBulletRigidBody() const {

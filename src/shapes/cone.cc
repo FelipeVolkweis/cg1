@@ -2,20 +2,23 @@
 
 #include <cmath>
 
+#include <yaml-cpp/yaml.h>
+
 Cone::Cone(float radius, float height, int sectors) {
     generateVertices(radius, height, sectors);
 }
 
-Transformation Cone::parse(std::istream &is) {
-    float radius, height;
-    int sectors;
-    Transformation transform;
-
-    if (is >> radius >> height >> sectors) {
-        generateVertices(radius, height, sectors);
-        transform = parseCommon(is);
-    }
-    return transform;
+void Cone::parse(const YAML::Node &node) {
+    float radius = 1.0f, height = 2.0f;
+    int sectors = 36;
+    if (node["radius"])
+        radius = node["radius"].as<float>();
+    if (node["height"])
+        height = node["height"].as<float>();
+    if (node["sectors"])
+        sectors = node["sectors"].as<int>();
+    generateVertices(radius, height, sectors);
+    parseCommon(node);
 }
 
 void Cone::generateVertices(float radius, float height, int sectors) {

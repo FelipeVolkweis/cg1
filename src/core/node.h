@@ -2,6 +2,7 @@
 #define NODE_H
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "component.h"
@@ -43,6 +44,14 @@ public:
         return components_;
     }
 
+    void setName(const std::string &name) {
+        name_ = name;
+    }
+
+    const std::string &getName() const {
+        return name_;
+    }
+
     template <typename T> std::shared_ptr<T> getComponent() {
         for (auto &comp : components_) {
             auto casted = std::dynamic_pointer_cast<T>(comp);
@@ -53,7 +62,22 @@ public:
         return nullptr;
     }
 
+    static std::shared_ptr<Node> findNodeByName(std::shared_ptr<Node> root,
+                                                const std::string &name) {
+        if (!root)
+            return nullptr;
+        if (root->getName() == name)
+            return root;
+        for (auto &child : root->getChildren()) {
+            if (auto found = findNodeByName(child, name)) {
+                return found;
+            }
+        }
+        return nullptr;
+    }
+
 private:
+    std::string name_;
     std::vector<std::shared_ptr<BaseComponent>> components_;
     std::weak_ptr<Node> parent_;
     std::vector<std::shared_ptr<Node>> children_;

@@ -11,7 +11,7 @@ int main() {
     auto root = std::make_shared<Node>();
     auto scene = std::make_shared<Scene>(root);
 
-    std::string sceneFile = "data/scenes/main.txt";
+    std::string sceneFile = "data/scenes/main.yaml";
 
     if (!window.initialize()) {
         Logger::Error("Failed to initialize application window!");

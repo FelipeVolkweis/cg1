@@ -78,9 +78,9 @@ bool Window::loop(std::shared_ptr<Scene> scene) {
         processInput();
 
         if (scene) {
-            renderer_.setActiveCamera(scene->getActiveCamera());
-
             scene->update(deltaTime);
+            
+            renderer_.setActiveCamera(scene->getActiveCamera());
             renderer_.clear();
             scene->populateRenderer(renderer_);
         }

@@ -1,0 +1,85 @@
+root:
+  name: "MainScene"
+  origin: [0, 0, 0]
+  rotation: [0, 0, 0]
+  scale: [1, 1, 1]
+  children:
+    - name: "Ground"
+      origin: [0, -2, 0]
+      components:
+        - type: "Mesh"
+          shape: "box"
+          width: 100.0
+          height: 0.5
+          depth: 100.0
+          color: [1, 0, 0]
+        - type: "RigidBody"
+          mass: 0.0
+
+    - name: "Car"
+      origin: [0, 3, 0]
+      components:
+        - type: "Mesh"
+          shape: "box"
+          width: 1.5
+          height: 0.5
+          depth: 2.5
+        - type: "Vehicle"
+          mass: 800.0
+          wheels:
+            - node: "WheelFrontLeft"
+              connectionPoint: [-0.8, 0.0, 1.0]
+              suspensionRestLength: 0.6
+              radius: 0.3
+              isFrontWheel: true
+            - node: "WheelFrontRight"
+              connectionPoint: [0.8, 0.0, 1.0]
+              suspensionRestLength: 0.6
+              radius: 0.3
+              isFrontWheel: true
+            - node: "WheelBackLeft"
+              connectionPoint: [-0.8, 0.0, -1.0]
+              suspensionRestLength: 0.6
+              radius: 0.3
+              isFrontWheel: false
+            - node: "WheelBackRight"
+              connectionPoint: [0.8, 0.0, -1.0]
+              suspensionRestLength: 0.6
+              radius: 0.3
+              isFrontWheel: false
+        - type: "CarController"
+      children:
+        - name: "CameraAnchor"
+          origin: [0, 2, -8]
+          rotation: [0, 180, 0]
+          components:
+            - type: "Camera"
+            
+    - name: "WheelFrontLeft"
+      components:
+        - type: "Mesh"
+          shape: "cylinder"
+          radius: 0.3
+          height: 0.2
+          color: [0, 0, 0]
+    - name: "WheelFrontRight"
+      components:
+        - type: "Mesh"
+          shape: "cylinder"
+          radius: 0.3
+          height: 0.2
+          color: [0, 0, 0]
+    - name: "WheelBackLeft"
+      components:
+        - type: "Mesh"
+          shape: "cylinder"
+          radius: 0.3
+          height: 0.2
+          color: [0, 0, 0]
+    - name: "WheelBackRight"
+      components:
+        - type: "Mesh"
+          shape: "cylinder"
+          radius: 0.3
+          height: 0.2
+          color: [0, 0, 0]

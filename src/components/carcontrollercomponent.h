@@ -1,17 +1,26 @@
 #ifndef CARCONTROLLERCOMPONENT_H
 #define CARCONTROLLERCOMPONENT_H
 
+#include <iosfwd>
+#include <memory>
+
 #include "components/vehiclecomponent.h"
 #include "core/component.h"
 #include "window/inputhandler.h"
 
 class CarControllerComponent : public BaseComponent {
 public:
-    CarControllerComponent(InputHandler *inputHandler);
+    CarControllerComponent() = default;
+    CarControllerComponent(InputHandler *inputHandler, float maxEngineForce = 2000.0f,
+                           float maxSteeringAngle = 0.5f, float steeringSensitivity = 3.0f);
+
+    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
+              InputHandler &inputHandler) override;
+
     void onUpdate(float dt) override;
 
 private:
-    InputHandler *inputHandler_;
+    InputHandler *inputHandler_ = nullptr;
     float maxEngineForce_ = 2000.0f;
     float maxSteeringAngle_ = 0.5f;
     float steeringSensitivity_ = 3.0f;

@@ -1,8 +1,8 @@
 #include "vehicle.h"
 
 Vehicle::Vehicle(PhysicsEngine *physicsEngine, float mass, const Transformation &initialTransform,
-                 std::unique_ptr<btCollisionShape> chassisShape) {
-    chassis_ = std::make_unique<RigidBody>(mass, initialTransform, std::move(chassisShape));
+                 const BaseShape *chassisShape) {
+    chassis_ = std::make_unique<RigidBody>(mass, initialTransform, chassisShape);
     chassis_->getBulletRigidBody()->setActivationState(DISABLE_DEACTIVATION);
 
     vehicleRaycaster_ = std::make_unique<btDefaultVehicleRaycaster>(physicsEngine->getWorld());

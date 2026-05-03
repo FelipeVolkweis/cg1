@@ -3,6 +3,13 @@
 
 #include <memory>
 
+class PhysicsEngine;
+struct InputHandler;
+
+namespace YAML {
+class Node;
+}
+
 class Node;
 
 class BaseComponent {
@@ -28,6 +35,9 @@ public:
     virtual bool onEnd() {
         return true;
     }
+
+    virtual void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
+                      InputHandler &inputHandler) {}
 
 protected:
     std::weak_ptr<Node> node_;

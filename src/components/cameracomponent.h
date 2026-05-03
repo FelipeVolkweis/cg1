@@ -9,10 +9,12 @@
 
 class CameraComponent : public BaseComponent {
 public:
+    CameraComponent() = default;
     CameraComponent(Perspective perspective, Vec3 focalPoint = Vec3(0, 0, 0),
                     Vec3 up = Vec3(0, 1, 0));
 
-    static std::shared_ptr<CameraComponent> parse(std::istream &iss, Vec3 &outPosition);
+    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
+              InputHandler &inputHandler) override;
 
     std::shared_ptr<Camera> getCamera() {
         return camera_;

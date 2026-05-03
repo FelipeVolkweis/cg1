@@ -2,22 +2,26 @@
 
 #include <cmath>
 
+#include <yaml-cpp/yaml.h>
+
 Sphere::Sphere(float radius, int sectors, int stacks) {
     generateVertices(radius, sectors, stacks);
 }
 
-Transformation Sphere::parse(std::istream &is) {
-    float radius;
-    int sectors, stacks;
-    Transformation transform;
+void Sphere::parse(const YAML::Node &node) {
+    float radius = 1.0f;
+    int sectors = 36, stacks = 18;
 
-    if (is >> radius >> sectors >> stacks) {
-        generateVertices(radius, sectors, stacks);
+    if (node["radius"])
+        radius = node["radius"].as<float>();
+    if (node["sectors"])
+        sectors = node["sectors"].as<int>();
+    if (node["stacks"])
+        stacks = node["stacks"].as<int>();
 
-        transform = parseCommon(is);
-    }
+    generateVertices(radius, sectors, stacks);
 
-    return transform;
+    parseCommon(node);
 }
 
 void Sphere::generateVertices(float radius, int sectors, int stacks) {

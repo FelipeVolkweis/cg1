@@ -16,7 +16,7 @@ public:
         return "box";
     }
 
-    Transformation parse(std::istream &is) override;
+    void parse(const YAML::Node &node) override;
 
 private:
     void generateVertices(float width, float height, float depth);

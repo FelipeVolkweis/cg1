@@ -2,20 +2,23 @@
 
 #include <cmath>
 
+#include <yaml-cpp/yaml.h>
+
 Cylinder::Cylinder(float radius, float height, int sectors) {
     generateVertices(radius, height, sectors);
 }
 
-Transformation Cylinder::parse(std::istream &is) {
-    float r, h;
-    int s;
-    Transformation transform;
-    if (is >> r >> h >> s) {
-        generateVertices(r, h, s);
-        transform = parseCommon(is);
-    }
-
-    return transform;
+void Cylinder::parse(const YAML::Node &node) {
+    float r = 1.0f, h = 2.0f;
+    int s = 36;
+    if (node["radius"])
+        r = node["radius"].as<float>();
+    if (node["height"])
+        h = node["height"].as<float>();
+    if (node["sectors"])
+        s = node["sectors"].as<int>();
+    generateVertices(r, h, s);
+    parseCommon(node);
 }
 
 void Cylinder::generateVertices(float radius, float height, int sectors) {

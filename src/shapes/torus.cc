@@ -2,21 +2,27 @@
 
 #include <cmath>
 
+#include <yaml-cpp/yaml.h>
+
 Torus::Torus(float innerRadius, float outerRadius, int sides, int rings) {
     generateVertices(innerRadius, outerRadius, sides, rings);
 }
 
-Transformation Torus::parse(std::istream &is) {
-    float inner, outer;
-    int sides, rings;
-    Transformation transform;
+void Torus::parse(const YAML::Node &node) {
+    float inner = 0.5f, outer = 1.0f;
+    int sides = 36, rings = 36;
 
-    if (is >> inner >> outer >> sides >> rings) {
-        generateVertices(inner, outer, sides, rings);
-        transform = parseCommon(is);
-    }
+    if (node["innerRadius"])
+        inner = node["innerRadius"].as<float>();
+    if (node["outerRadius"])
+        outer = node["outerRadius"].as<float>();
+    if (node["sides"])
+        sides = node["sides"].as<int>();
+    if (node["rings"])
+        rings = node["rings"].as<int>();
 
-    return transform;
+    generateVertices(inner, outer, sides, rings);
+    parseCommon(node);
 }
 
 void Torus::generateVertices(float innerRadius, float outerRadius, int sides, int rings) {

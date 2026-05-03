@@ -1,121 +1,91 @@
 #include "sceneparser.h"
 
-#include <fstream>
-#include <sstream>
+#include <iostream>
 
-#include "components/meshcomponent.h"
-#include "shapes/box.h"
-#include "shapes/cone.h"
-#include "shapes/cylinder.h"
-#include "shapes/semisphere.h"
-#include "shapes/sphere.h"
-#include "shapes/torus.h"
+#include <yaml-cpp/yaml.h>
+
+#include "core/componentfactory.h"
 #include "transformations/rotation.h"
 #include "transformations/scale.h"
 #include "transformations/translation.h"
 #include "utils/logger.h"
 
-bool SceneParser::load(const std::string &filepath, std::shared_ptr<Node> root) {
-    std::ifstream file(filepath);
-    if (!file.is_open()) {
-        Logger::Error("Failed to open scene file: ", filepath);
-        return false;
-    }
-
-    std::string line;
-    while (std::getline(file, line)) {
-        if (line.empty() || line[0] == '#')
-            continue;
-
-        std::istringstream iss(line);
-        std::string name;
-        iss >> name;
-
-        if (name == "subscene") {
-            auto newNode = parseSubscene(iss);
-            if (newNode) {
-                root->addChild(newNode);
+bool SceneParser::load(const std::string &filepath, std::shared_ptr<Node> root,
+                       PhysicsEngine &physicsEngine, InputHandler &inputHandler) {
+    YAML::Node config = YAML::LoadFile(filepath);
+    if (config["root"]) {
+        auto rootNode = parseNode(config["root"], physicsEngine, inputHandler);
+        if (rootNode) {
+            for (auto &child : rootNode->getChildren()) {
+                root->addChild(child);
             }
-            continue;
+            for (auto &comp : rootNode->getComponents()) {
+                root->addComponent(comp);
+            }
+            root->setName(rootNode->getName());
+            root->setTransform(rootNode->getTransformation());
         }
-
-        auto newShape = makeShape(name);
-        auto node = std::make_shared<Node>();
-        if (newShape) {
-            auto transform = newShape->parse(iss);
-            node->setTransform(transform);
-            auto mesh = std::make_shared<MeshComponent>(std::move(newShape));
-            node->addComponent(mesh);
-            root->addChild(node);
-        } else {
-            Logger::Warn("Unknown shape/object name in scene file: ", name);
-        }
+        return true;
     }
 
-    return true;
+    Logger::Error("YAML scene file missing 'root' node: ", filepath);
+    return false;
 }
 
-std::unique_ptr<BaseShape> SceneParser::makeShape(const std::string &name) {
-    std::unique_ptr<BaseShape> newShape;
-    if (name == "sphere") {
-        newShape = std::make_unique<Sphere>();
-    } else if (name == "box") {
-        newShape = std::make_unique<Box>();
-    } else if (name == "cone") {
-        newShape = std::make_unique<Cone>();
-    } else if (name == "cylinder") {
-        newShape = std::make_unique<Cylinder>();
-    } else if (name == "torus") {
-        newShape = std::make_unique<Torus>();
-    } else if (name == "semisphere") {
-        newShape = std::make_unique<SemiSphere>();
+std::shared_ptr<Node> SceneParser::parseNode(const YAML::Node &nodeData,
+                                             PhysicsEngine &physicsEngine,
+                                             InputHandler &inputHandler) {
+    auto node = std::make_shared<Node>();
+
+    if (nodeData["name"]) {
+        node->setName(nodeData["name"].as<std::string>());
     }
 
-    return newShape;
-}
+    Vec3 origin(0, 0, 0);
+    if (nodeData["origin"] && nodeData["origin"].IsSequence()) {
+        origin = Vec3(nodeData["origin"][0].as<float>(), nodeData["origin"][1].as<float>(),
+                      nodeData["origin"][2].as<float>());
+    }
 
-std::shared_ptr<Node> SceneParser::parseSubscene(std::istringstream &iss) {
-    std::string subFilepath;
-    if (iss >> subFilepath) {
-        auto node = std::make_shared<Node>();
+    Vec3 rotation(0, 0, 0);
+    if (nodeData["rotation"] && nodeData["rotation"].IsSequence()) {
+        rotation = Vec3(nodeData["rotation"][0].as<float>(), nodeData["rotation"][1].as<float>(),
+                        nodeData["rotation"][2].as<float>());
+    }
 
-        subFilepath = "data/subscenes/" + subFilepath + ".txt";
-        if (load(subFilepath, node)) {
-            std::string key;
-            Vec3 origin(0.0f, 0.0f, 0.0f);
-            Vec3 scale(1.0f, 1.0f, 1.0f);
-            Vec3 rot(0.0f, 0.0f, 0.0f);
-            std::vector<std::string> modifiers;
+    Vec3 scale(1, 1, 1);
+    if (nodeData["scale"] && nodeData["scale"].IsSequence()) {
+        scale = Vec3(nodeData["scale"][0].as<float>(), nodeData["scale"][1].as<float>(),
+                     nodeData["scale"][2].as<float>());
+    }
 
-            while (iss >> key) {
-                if (key == "origin") {
-                    float x, y, z;
-                    if (iss >> x >> y >> z)
-                        origin = Vec3(x, y, z);
-                } else if (key == "scale") {
-                    float x, y, z;
-                    if (iss >> x >> y >> z)
-                        scale = Vec3(x, y, z);
-                } else if (key == "rot") {
-                    float x, y, z;
-                    if (iss >> x >> y >> z)
-                        rot = Vec3(x, y, z);
-                } else if (key == "translatable" || key == "rotatable" || key == "scalable") {
-                    modifiers.push_back(key);
+    Transformation transform = Translation(origin) * RotationZ(rotation.z()) *
+                               RotationY(rotation.y()) * RotationX(rotation.x()) * Scale(scale);
+    node->setTransform(transform);
+
+    if (nodeData["components"] && nodeData["components"].IsSequence()) {
+        for (auto compData : nodeData["components"]) {
+            if (compData["type"]) {
+                std::string type = compData["type"].as<std::string>();
+                auto comp = ComponentFactory::getInstance().createComponent(type);
+                if (comp) {
+                    comp->load(compData, physicsEngine, inputHandler);
+                    node->addComponent(comp);
                 } else {
-                    Logger::Warn("Unknown subscene property key: ", key);
+                    Logger::Warn("Unknown component type: ", type);
                 }
             }
-
-            Transformation finalTransform = Translation(origin) * RotationZ(rot.z()) *
-                                            RotationY(rot.y()) * RotationX(rot.x()) * Scale(scale);
-
-            node->setTransform(finalTransform);
-
-            return node;
-        } else {
-            Logger::Warn("Failed to load subscene from ", subFilepath);
         }
     }
-    return nullptr;
+
+    if (nodeData["children"] && nodeData["children"].IsSequence()) {
+        for (auto childData : nodeData["children"]) {
+            auto childNode = parseNode(childData, physicsEngine, inputHandler);
+            if (childNode) {
+                node->addChild(childNode);
+            }
+        }
+    }
+
+    return node;
 }

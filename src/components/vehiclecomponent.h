@@ -1,14 +1,23 @@
 #ifndef VEHICLECOMPONENT_H
 #define VEHICLECOMPONENT_H
 
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "core/component.h"
 #include "physics/physicsengine.h"
 #include "physics/vehicle/vehicle.h"
+#include "transformations/transformation.h"
 
 class VehicleComponent : public BaseComponent {
 public:
-    VehicleComponent(PhysicsEngine *physicsEngine, float mass,
-                     std::unique_ptr<btCollisionShape> shape);
+    VehicleComponent() = default;
+    VehicleComponent(PhysicsEngine *physicsEngine, float mass);
+
+    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
+              InputHandler &inputHandler) override;
 
     bool onStart() override;
     void onUpdate(float dt) override;
@@ -22,11 +31,10 @@ public:
                   float suspensionRestLength, float wheelRadius, bool isFrontWheel);
 
 private:
-    PhysicsEngine *physicsEngine_;
+    PhysicsEngine *physicsEngine_ = nullptr;
     std::unique_ptr<Vehicle> vehicle_;
 
-    float initialMass_;
-    std::unique_ptr<btCollisionShape> initialShape_;
+    float initialMass_ = 0.0f;
 
     struct WheelData {
         std::shared_ptr<Node> node;
@@ -36,7 +44,16 @@ private:
         bool isFrontWheel;
     };
 
+    struct ParsedWheelData {
+        std::string nodeName;
+        btVector3 connectionPoint;
+        float suspensionRestLength;
+        float radius;
+        bool isFrontWheel;
+    };
+
     std::vector<WheelData> wheelsToInitialize_;
+    std::vector<ParsedWheelData> parsedWheels_;
     std::vector<std::shared_ptr<Node>> activeWheelNodes_;
 };
 

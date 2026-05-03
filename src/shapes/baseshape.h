@@ -1,13 +1,15 @@
 #ifndef BASESHAPE_H
 #define BASESHAPE_H
 
-#include <istream>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "transformations/transformation.h"
 #include "types/vec3.h"
+
+namespace YAML {
+class Node;
+}
 
 /**
  * @class BaseShape
@@ -21,9 +23,9 @@ public:
     virtual ~BaseShape() = default;
 
     virtual std::string getName() const = 0;
-    virtual Transformation parse(std::istream &is) = 0;
+    virtual void parse(const YAML::Node &node) = 0;
 
-    Transformation parseCommon(std::istream &is);
+    void parseCommon(const YAML::Node &node);
 
     const std::vector<Vec3> &getVertices() const {
         return vertices_;

@@ -16,7 +16,7 @@ public:
         return "torus";
     }
 
-    Transformation parse(std::istream &is) override;
+    void parse(const YAML::Node &node) override;
 
 private:
     void generateVertices(float innerRadius, float outerRadius, int sides, int rings);

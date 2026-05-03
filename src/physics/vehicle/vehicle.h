@@ -9,10 +9,12 @@
 #include "physics/rigidbody.h"
 #include "transformations/transformation.h"
 
+class BaseShape;
+
 class Vehicle {
 public:
     Vehicle(PhysicsEngine *physicsEngine, float mass, const Transformation &initialTransform,
-            std::unique_ptr<btCollisionShape> chassisShape);
+            const BaseShape *chassisShape);
     ~Vehicle();
 
     void addToWorld(btDiscreteDynamicsWorld *world);

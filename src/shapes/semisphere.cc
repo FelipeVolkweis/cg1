@@ -2,22 +2,25 @@
 
 #include <cmath>
 
+#include <yaml-cpp/yaml.h>
+
 SemiSphere::SemiSphere(float radius, int sectors, int stacks) {
     generateVertices(radius, sectors, stacks);
 }
 
-Transformation SemiSphere::parse(std::istream &is) {
-    float radius;
-    int sectors, stacks;
+void SemiSphere::parse(const YAML::Node &node) {
+    float radius = 1.0f;
+    int sectors = 36, stacks = 18;
 
-    Transformation transform;
+    if (node["radius"])
+        radius = node["radius"].as<float>();
+    if (node["sectors"])
+        sectors = node["sectors"].as<int>();
+    if (node["stacks"])
+        stacks = node["stacks"].as<int>();
 
-    if (is >> radius >> sectors >> stacks) {
-        generateVertices(radius, sectors, stacks);
-        transform = parseCommon(is);
-    }
-
-    return transform;
+    generateVertices(radius, sectors, stacks);
+    parseCommon(node);
 }
 
 void SemiSphere::generateVertices(float radius, int sectors, int stacks) {

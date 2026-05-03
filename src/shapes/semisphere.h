@@ -16,7 +16,7 @@ public:
         return "semisphere";
     }
 
-    Transformation parse(std::istream &is) override;
+    void parse(const YAML::Node &node) override;
 
 private:
     void generateVertices(float radius, int sectors, int stacks);

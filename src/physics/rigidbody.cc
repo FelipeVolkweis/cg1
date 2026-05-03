@@ -1,8 +1,16 @@
 #include "rigidbody.h"
 
-RigidBody::RigidBody(float mass, const Transformation &initialTransform,
-                     std::unique_ptr<btCollisionShape> shape)
-    : shape_(std::move(shape)) {
+#include <stdexcept>
+
+#include "shapes/baseshape.h"
+
+RigidBody::RigidBody(float mass, const Transformation &initialTransform, const BaseShape *shape) {
+    auto hull = std::make_unique<btConvexHullShape>();
+    for (const auto &v : shape->getVertices()) {
+        hull->addPoint(btVector3(v.x(), v.y(), v.z()), false);
+    }
+    hull->recalcLocalAabb();
+    shape_ = std::move(hull);
 
     const Mat4x4 &mat = initialTransform.getTransformationMatrix();
     btTransform bulletTransform;

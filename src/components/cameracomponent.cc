@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <yaml-cpp/yaml.h>
+
 #include "core/node.h"
 
 CameraComponent::CameraComponent(Perspective perspective, Vec3 focalPoint, Vec3 up)
@@ -10,36 +12,48 @@ CameraComponent::CameraComponent(Perspective perspective, Vec3 focalPoint, Vec3 
     camera_ = std::make_shared<Camera>(perspective, lookAt);
 }
 
-std::shared_ptr<CameraComponent> CameraComponent::parse(std::istream &iss, Vec3 &outPosition) {
-    std::string key;
-    Perspective p = {45.0f, 16.0f / 9.0f, 0.1f, 100.0f};
-    Vec3 focal(0, 0, 0);
-    Vec3 up(0, 1, 0);
-    outPosition = Vec3(0, 0, 0);
+void CameraComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
+                           InputHandler &inputHandler) {
 
-    while (iss >> key) {
-        if (key == "perspective") {
-            iss >> p.fovy >> p.aspect >> p.zNear >> p.zFar;
-        } else if (key == "pos") {
-            iss >> outPosition.x() >> outPosition.y() >> outPosition.z();
-        } else if (key == "focal") {
-            iss >> focal.x() >> focal.y() >> focal.z();
-        } else if (key == "up") {
-            iss >> up.x() >> up.y() >> up.z();
-        }
+    Perspective p = {45.0f, 16.0f / 9.0f, 0.1f, 100.0f};
+    if (data["fov"])
+        p.fovy = data["fov"].as<float>();
+    if (data["aspect"])
+        p.aspect = data["aspect"].as<float>();
+    if (data["near"])
+        p.zNear = data["near"].as<float>();
+    if (data["far"])
+        p.zFar = data["far"].as<float>();
+
+    focalPoint_ = Vec3(0, 0, 0);
+    if (data["focal"] && data["focal"].IsSequence()) {
+        focalPoint_ = Vec3(data["focal"][0].as<float>(), data["focal"][1].as<float>(),
+                           data["focal"][2].as<float>());
     }
 
-    return std::make_shared<CameraComponent>(p, focal, up);
+    up_ = Vec3(0, 1, 0);
+    if (data["up"] && data["up"].IsSequence()) {
+        up_ = Vec3(data["up"][0].as<float>(), data["up"][1].as<float>(), data["up"][2].as<float>());
+    }
+
+    LookAt lookAt = {Vec3(0, 0, 0), focalPoint_, up_};
+    camera_ = std::make_shared<Camera>(p, lookAt);
 }
 
 void CameraComponent::onUpdate(float dt) {
     auto node = getNode();
-    if (node) {
-        Mat4x4 transform = node->getTransformation().getTransformationMatrix();
-        Vec3 position = transform.block<3, 1>(0, 3);
+    if (node && camera_) {
+        Transformation globalTransform;
+        auto current = node;
+        while (current != nullptr) {
+            globalTransform = current->getTransformation() * globalTransform;
+            current = current->getParent();
+        }
 
-        Vec3 forward = transform.block<3, 1>(0, 2) * -1.0f;
-        Vec3 up = transform.block<3, 1>(0, 1);
+        Mat4x4 mat = globalTransform.getTransformationMatrix();
+        Vec3 position = mat.block<3, 1>(0, 3);
+        Vec3 forward = mat.block<3, 1>(0, 2) * -1.0f;
+        Vec3 up = mat.block<3, 1>(0, 1);
 
         camera_->setPosition(position);
         camera_->setFocalPoint(position + forward);

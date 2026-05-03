@@ -16,7 +16,7 @@ public:
         return "cone";
     }
 
-    Transformation parse(std::istream &is) override;
+    void parse(const YAML::Node &node) override;
 
 private:
     void generateVertices(float radius, float height, int sectors);

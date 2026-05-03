@@ -1,20 +1,44 @@
 #include "rigidbodycomponent.h"
 
-#include "core/node.h"
+#include <iostream>
 
-RigidBodyComponent::RigidBodyComponent(PhysicsEngine *physicsEngine, float mass,
-                                       std::unique_ptr<btCollisionShape> shape)
-    : physicsEngine_(physicsEngine), initialMass_(mass), initialShape_(std::move(shape)) {}
+#include <yaml-cpp/yaml.h>
+
+#include "components/meshcomponent.h"
+#include "core/node.h"
+#include "utils/logger.h"
+
+RigidBodyComponent::RigidBodyComponent(PhysicsEngine *physicsEngine, float mass)
+    : physicsEngine_(physicsEngine), initialMass_(mass) {}
 
 RigidBodyComponent::~RigidBodyComponent() = default;
+
+void RigidBodyComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
+                              InputHandler &inputHandler) {
+    physicsEngine_ = &physicsEngine;
+    if (data["mass"])
+        initialMass_ = data["mass"].as<float>();
+}
 
 bool RigidBodyComponent::onStart() {
     auto node = getNode();
     if (!node)
         return false;
 
-    rigidBody_ = std::make_unique<RigidBody>(initialMass_, node->getTransformation(),
-                                             std::move(initialShape_));
+    const BaseShape *shape = nullptr;
+    auto meshComp = node->getComponent<MeshComponent>();
+    if (meshComp) {
+        shape = meshComp->getShape();
+    }
+
+    if (!shape) {
+        Logger::Warn(
+            "RigidBodyComponent started without a BaseShape (from MeshComponent) on node: ",
+            node->getName());
+        return false;
+    }
+
+    rigidBody_ = std::make_unique<RigidBody>(initialMass_, node->getTransformation(), shape);
 
     physicsEngine_->getWorld()->addRigidBody(rigidBody_->getBulletRigidBody());
 

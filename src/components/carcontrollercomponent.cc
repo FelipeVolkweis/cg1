@@ -1,11 +1,27 @@
 #include "carcontrollercomponent.h"
 
 #include <algorithm>
+#include <iostream>
+
+#include <yaml-cpp/yaml.h>
 
 #include "core/node.h"
 
-CarControllerComponent::CarControllerComponent(InputHandler *inputHandler)
-    : inputHandler_(inputHandler) {}
+CarControllerComponent::CarControllerComponent(InputHandler *inputHandler, float maxEngineForce,
+                                               float maxSteeringAngle, float steeringSensitivity)
+    : inputHandler_(inputHandler), maxEngineForce_(maxEngineForce),
+      maxSteeringAngle_(maxSteeringAngle), steeringSensitivity_(steeringSensitivity) {}
+
+void CarControllerComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
+                                  InputHandler &inputHandler) {
+    inputHandler_ = &inputHandler;
+    if (data["force"])
+        maxEngineForce_ = data["force"].as<float>();
+    if (data["angle"])
+        maxSteeringAngle_ = data["angle"].as<float>();
+    if (data["sensitivity"])
+        steeringSensitivity_ = data["sensitivity"].as<float>();
+}
 
 void CarControllerComponent::onUpdate(float dt) {
     auto node = getNode();
