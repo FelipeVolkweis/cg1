@@ -1,8 +1,0 @@
-box 1.0 1.0 1.0 color 0.7 0.7 0.7 origin 0.0 0.0 0.0 scale 1.0 1.0 1.0 rot 0.0 0.0 0.0
-
-box 2.5 0.8 0.05 color 0.1 0.1 0.4 origin -1.8 0.0 0.0 scale 1.0 1.0 1.0 rot 0.0 0.0 0.0
-
-box 2.5 0.8 0.05 color 0.1 0.1 0.4 origin 1.8 0.0 0.0 scale 1.0 1.0 1.0 rot 0.0 0.0 0.0
-
-cylinder 0.1 0.6 12 color 0.4 0.4 0.4 origin 0.0 0.8 0.0 scale 1.0 1.0 1.0 rot -90 0.0 0.0
-semisphere 0.4 24 12 color 0.0 0.8 1.0 origin 0.0 1.1 0.0 scale 1.0 1.0 1.0 rot -90.0 0.0 0.0
