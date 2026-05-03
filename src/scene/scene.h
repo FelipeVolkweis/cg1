@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "camera/camera.h"
+#include "components/cameracomponent.h"
 #include "core/node.h"
 #include "physics/physicsengine.h"
 #include "renderer/renderer.h"
@@ -35,8 +36,8 @@ public:
     /**
      * @brief Gets the physics engine managing this scene.
      */
-    PhysicsEngine *getPhysicsEngine() {
-        return &physicsEngine_;
+    PhysicsEngine &getPhysicsEngine() {
+        return physicsEngine_;
     }
 
     /**
@@ -47,10 +48,6 @@ public:
 
     std::shared_ptr<Camera> getActiveCamera();
 
-    const std::vector<std::shared_ptr<Camera>> &getCameras() const {
-        return cameras_;
-    }
-
     std::shared_ptr<Node> getRoot() const {
         return root_;
     }
@@ -58,7 +55,7 @@ public:
 private:
     std::shared_ptr<Node> root_;
     PhysicsEngine physicsEngine_;
-    std::vector<std::shared_ptr<Camera>> cameras_;
+    std::vector<std::shared_ptr<CameraComponent>> cameras_;
 };
 
 #endif

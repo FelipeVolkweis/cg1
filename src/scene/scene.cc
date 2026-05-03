@@ -47,7 +47,7 @@ void Scene::start() {
 
         auto cameraComp = node->getComponent<CameraComponent>();
         if (cameraComp) {
-            cameras_.push_back(cameraComp->getCamera());
+            cameras_.push_back(cameraComp);
         }
 
         for (auto &comp : node->getComponents()) {
@@ -108,5 +108,28 @@ std::shared_ptr<Camera> Scene::getActiveCamera() {
     if (cameras_.empty()) {
         return nullptr;
     }
-    return cameras_[0];
+
+    auto &firstCam = cameras_[0];
+
+    auto node = firstCam->getNode();
+    Transformation globalTransform;
+
+    while (node != nullptr) {
+        globalTransform = node->getTransformation() * globalTransform;
+        node = node->getParent();
+    }
+
+    Mat4x4 mat = globalTransform.getTransformationMatrix();
+    Vec3 position = mat.block<3, 1>(0, 3);
+    Vec3 forward = mat.block<3, 1>(0, 2) * -1.0f;
+    Vec3 up = mat.block<3, 1>(0, 1);
+
+    auto camera = firstCam->getCamera();
+    if (camera) {
+        camera->setPosition(position);
+        camera->setFocalPoint(position + forward);
+        camera->setUp(up);
+    }
+
+    return camera;
 }
