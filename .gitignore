@@ -13,7 +13,6 @@ tmp/
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -155,9 +154,3 @@ dependencies/
 /logs
 
 cmake-build-debug/
-
-/data/**/*.bin
-/data/**/*.dat
-/data/**/*.png
-
-/docs/diagrams/out/

@@ -7,7 +7,7 @@
 RigidBody::RigidBody(float mass, const Transformation &initialTransform, const BaseShape *shape) {
     auto hull = std::make_unique<btConvexHullShape>();
     for (const auto &v : shape->getVertices()) {
-        hull->addPoint(btVector3(v.x(), v.y(), v.z()), false);
+        hull->addPoint(btVector3(v.position.x(), v.position.y(), v.position.z()), false);
     }
     hull->recalcLocalAabb();
     shape_ = std::move(hull);

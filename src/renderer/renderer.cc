@@ -3,27 +3,42 @@
 #include <glad/glad.h>
 
 #include "shapes/baseshape.h"
+#include "texture.h"
 #include "utils/logger.h"
 
 const char *vertexShaderSource = R"(
 #version 330 core
-attribute vec3 position;
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
+layout (location = 3) in vec3 aColor;
+
+out vec2 TexCoord;
+out vec3 VertColor;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
 void main() {
-    gl_Position = projection * view * model * vec4(position, 1.0);
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    TexCoord = aTexCoords;
+    VertColor = aColor;
 }
 )";
 
 const char *fragmentShaderSource = R"(
 #version 330 core
 out vec4 FragColor;
+
+in vec2 TexCoord;
+in vec3 VertColor;
+
+uniform sampler2D texture_diffuse;
 uniform vec3 objectColor;
+
 void main() {
-    FragColor = vec4(objectColor, 1.0f);
+    FragColor = texture(texture_diffuse, TexCoord) * vec4(objectColor, 1.0) * vec4(VertColor, 1.0);
 }
 )";
 
@@ -32,8 +47,12 @@ Renderer::~Renderer() {
         glDeleteVertexArrays(1, &vao_);
     if (vbo_)
         glDeleteBuffers(1, &vbo_);
+    if (ebo_)
+        glDeleteBuffers(1, &ebo_);
     if (shaderProgram_)
         glDeleteProgram(shaderProgram_);
+    if (whiteTextureId_)
+        glDeleteTextures(1, &whiteTextureId_);
 }
 
 uint32_t Renderer::compileShader(uint32_t type, const char *source) {
@@ -74,9 +93,12 @@ bool Renderer::initialize() {
 
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
+    glGenBuffers(1, &ebo_);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+
+    whiteTextureId_ = Texture::createWhiteTexture();
 
     return true;
 }
@@ -92,8 +114,12 @@ void Renderer::render() {
         int projLoc = glGetUniformLocation(shaderProgram_, "projection");
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, activeCamera->perspective().data());
 
+        glActiveTexture(GL_TEXTURE0);
+        int textureLoc = glGetUniformLocation(shaderProgram_, "texture_diffuse");
+        glUniform1i(textureLoc, 0);
+
         for (const RenderItem &item : items_) {
-            const std::vector<Vec3> &vertices = item.shape->getVertices();
+            const std::vector<Vertex> &vertices = item.shape->getVertices();
             if (vertices.empty())
                 continue;
 
@@ -102,17 +128,35 @@ void Renderer::render() {
 
             glBindVertexArray(vao_);
             glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vec3), vertices.data(),
+            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(),
                          GL_DYNAMIC_DRAW);
 
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vec3), (void *)0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
             glEnableVertexAttribArray(0);
+
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                                  (void *)offsetof(Vertex, normal));
+            glEnableVertexAttribArray(1);
+
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                                  (void *)offsetof(Vertex, texCoords));
+            glEnableVertexAttribArray(2);
+
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                                  (void *)offsetof(Vertex, color));
+            glEnableVertexAttribArray(3);
 
             int modelLoc = glGetUniformLocation(shaderProgram_, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.data());
 
             int colorLoc = glGetUniformLocation(shaderProgram_, "objectColor");
             glUniform3f(colorLoc, color.x(), color.y(), color.z());
+
+            uint32_t texToBind = item.shape->getTextureId();
+            if (texToBind == 0) {
+                texToBind = whiteTextureId_;
+            }
+            glBindTexture(GL_TEXTURE_2D, texToBind);
 
             glDrawArrays(GL_TRIANGLES, 0, vertices.size());
         }

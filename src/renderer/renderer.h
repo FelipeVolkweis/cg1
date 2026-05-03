@@ -65,6 +65,7 @@ private:
     uint32_t shaderProgram_ = 0;
     uint32_t vao_ = 0;
     uint32_t vbo_ = 0;
+    uint32_t ebo_ = 0;
 
     /**
      * @brief Compiles a shader from source.
@@ -73,6 +74,8 @@ private:
      * @return The compiled shader handle, or 0 on failure.
      */
     uint32_t compileShader(uint32_t type, const char *source);
+
+    uint32_t whiteTextureId_ = 0;
 };
 
 #endif

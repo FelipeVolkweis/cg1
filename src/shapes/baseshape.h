@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "types/vec3.h"
+#include "types/vertex.h"
 
 namespace YAML {
 class Node;
@@ -18,7 +19,7 @@ class Node;
  */
 class BaseShape {
 public:
-    BaseShape() : color_(1.0f, 1.0f, 1.0f) {}
+    BaseShape() : color_(1.0f, 1.0f, 1.0f), textureId_(0) {}
 
     virtual ~BaseShape() = default;
 
@@ -27,11 +28,11 @@ public:
 
     void parseCommon(const YAML::Node &node);
 
-    const std::vector<Vec3> &getVertices() const {
+    const std::vector<Vertex> &getVertices() const {
         return vertices_;
     }
 
-    void addVertex(const Vec3 &vertex) {
+    void addVertex(const Vertex &vertex) {
         vertices_.push_back(vertex);
     }
 
@@ -43,9 +44,18 @@ public:
         color_ = color;
     }
 
+    uint32_t getTextureId() const {
+        return textureId_;
+    }
+
+    void setTextureId(uint32_t id) {
+        textureId_ = id;
+    }
+
 protected:
-    std::vector<Vec3> vertices_;
+    std::vector<Vertex> vertices_;
     Vec3 color_;
+    uint32_t textureId_;
 };
 
 #endif

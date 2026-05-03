@@ -5,6 +5,7 @@
 #include "shapes/box.h"
 #include "shapes/cone.h"
 #include "shapes/cylinder.h"
+#include "shapes/modelshape.h"
 #include "shapes/semisphere.h"
 #include "shapes/sphere.h"
 #include "shapes/torus.h"
@@ -25,6 +26,8 @@ void MeshComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
             shape_ = std::make_unique<Torus>();
         } else if (shapeType == "semisphere") {
             shape_ = std::make_unique<SemiSphere>();
+        } else if (shapeType == "model") {
+            shape_ = std::make_unique<ModelShape>();
         }
 
         if (shape_) {
