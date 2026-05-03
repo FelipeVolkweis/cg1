@@ -35,7 +35,7 @@ public:
      * @param scene Pointer to the scene to be rendered.
      * @return true if the loop completed normally, false on error.
      */
-    bool loop(std::unique_ptr<Scene> scene);
+    bool loop(std::shared_ptr<Scene> scene);
 
     /**
      * @brief Returns a reference to the renderer.
@@ -62,7 +62,6 @@ private:
     GLFWwindow *window_;
     InputHandler *inputHandler_;
     Renderer renderer_;
-    std::shared_ptr<Camera> mainCamera_;
 };
 
 #endif

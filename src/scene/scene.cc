@@ -2,6 +2,7 @@
 
 #include <stack>
 
+#include "components/cameracomponent.h"
 #include "components/meshcomponent.h"
 #include "transformations/rotation.h"
 #include "transformations/scale.h"
@@ -34,6 +35,7 @@ void Scene::populateRenderer(Renderer &renderer) {
 }
 
 void Scene::start() {
+    cameras_.clear();
     std::stack<std::shared_ptr<Node>> stack;
     if (root_) {
         stack.push(root_);
@@ -42,6 +44,11 @@ void Scene::start() {
     while (!stack.empty()) {
         auto node = stack.top();
         stack.pop();
+
+        auto cameraComp = node->getComponent<CameraComponent>();
+        if (cameraComp) {
+            cameras_.push_back(cameraComp->getCamera());
+        }
 
         for (auto &comp : node->getComponents()) {
             comp->onStart();
@@ -95,4 +102,11 @@ void Scene::end() {
             stack.push(child);
         }
     }
+}
+
+std::shared_ptr<Camera> Scene::getActiveCamera() {
+    if (cameras_.empty()) {
+        return nullptr;
+    }
+    return cameras_[0];
 }

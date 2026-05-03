@@ -21,6 +21,30 @@ public:
     Mat4x4 lookAt();
     Mat4x4 perspective();
 
+    void setPosition(const Vec3 &position) {
+        position_ = position;
+    }
+
+    void setFocalPoint(const Vec3 &focalPoint) {
+        focalPoint_ = focalPoint;
+    }
+
+    void setUp(const Vec3 &up) {
+        up_ = up;
+    }
+
+    const Vec3 &getPosition() const {
+        return position_;
+    }
+
+    const Vec3 &getFocalPoint() const {
+        return focalPoint_;
+    }
+
+    const Vec3 &getUp() const {
+        return up_;
+    }
+
 private:
     float fovy_;
     float aspect_;

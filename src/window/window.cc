@@ -44,10 +44,6 @@ bool Window::initialize() {
         return false;
     }
 
-    Perspective p = {45.0f, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f};
-    LookAt l = {Vec3(0, 0, 5), Vec3(0, 0, 0), Vec3(0, 1, 0)};
-    mainCamera_ = std::make_unique<Camera>(p, l);
-
     return true;
 }
 
@@ -69,7 +65,7 @@ void Window::processInput() {
     }
 }
 
-bool Window::loop(std::unique_ptr<Scene> scene) {
+bool Window::loop(std::shared_ptr<Scene> scene) {
     float lastFrame = glfwGetTime();
 
     scene->start();
@@ -81,9 +77,9 @@ bool Window::loop(std::unique_ptr<Scene> scene) {
 
         processInput();
 
-        renderer_.setActiveCamera(mainCamera_);
-
         if (scene) {
+            renderer_.setActiveCamera(scene->getActiveCamera());
+
             scene->update(deltaTime);
             renderer_.clear();
             scene->populateRenderer(renderer_);
