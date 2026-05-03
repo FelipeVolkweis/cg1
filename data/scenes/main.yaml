@@ -79,7 +79,7 @@ root:
           components:
             - type: "Mesh"
               shape: "model" 
-              path: "data/models/van.obj"
+              path: "data/models/van/van.obj"
     - name: "WheelFrontLeft"
       components:
         - type: "Mesh"
