@@ -17,7 +17,7 @@ root:
           mass: 0.0
 
     - name: "Car"
-      origin: [0, 3, 0]
+      origin: [0, 2, 0]
       components:
         - type: "Mesh"
           shape: "box"
@@ -50,14 +50,14 @@ root:
         - type: "CarController"
       children:
         - name: "CameraAnchor"
-          origin: [0, 2, -8]
+          origin: [0, 1.5, -10]
           rotation: [0, 180, 0]
           components:
             - type: "Camera"
         - name: "CarVisuals"
           rotation: [0, -90, 0]
           scale: [0.5, 0.5, 0.5]
-          origin: [0, -1.05, -1]
+          origin: [0, -1.25, -1]
           components:
             - type: "Mesh"
               shape: "model" 
