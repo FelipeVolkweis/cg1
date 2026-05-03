@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "camera/camera.h"
+#include "renderer/skybox.h"
 #include "transformations/transformation.h"
 
 class BaseShape;
@@ -59,9 +60,14 @@ public:
         items_.clear();
     }
 
+    void setSkybox(std::shared_ptr<Skybox> skybox) {
+        skybox_ = skybox;
+    }
+
 private:
     std::vector<RenderItem> items_;
     std::weak_ptr<Camera> activeCamera_;
+    std::shared_ptr<Skybox> skybox_;
     uint32_t shaderProgram_ = 0;
     uint32_t vao_ = 0;
     uint32_t vbo_ = 0;

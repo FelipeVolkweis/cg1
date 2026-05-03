@@ -10,12 +10,29 @@
 #include "transformations/translation.h"
 #include "utils/logger.h"
 
-bool SceneParser::load(const std::string &filepath, std::shared_ptr<Node> root,
-                       PhysicsEngine &physicsEngine, InputHandler &inputHandler) {
+bool SceneParser::load(const std::string &filepath, std::shared_ptr<Scene> scene,
+                       InputHandler &inputHandler) {
     YAML::Node config = YAML::LoadFile(filepath);
+
+    if (config["skybox"]) {
+        auto skyboxData = config["skybox"];
+        if (skyboxData["faces"] && skyboxData["faces"].IsSequence()) {
+            std::vector<std::string> faces;
+            for (auto face : skyboxData["faces"]) {
+                faces.push_back(face.as<std::string>());
+            }
+            if (faces.size() == 6) {
+                scene->setSkybox(std::make_shared<Skybox>(faces));
+            } else {
+                Logger::Warn("Skybox faces must be 6, but found ", faces.size());
+            }
+        }
+    }
+
     if (config["root"]) {
-        auto rootNode = parseNode(config["root"], physicsEngine, inputHandler);
+        auto rootNode = parseNode(config["root"], scene->getPhysicsEngine(), inputHandler);
         if (rootNode) {
+            auto root = scene->getRoot();
             for (auto &child : rootNode->getChildren()) {
                 root->addChild(child);
             }

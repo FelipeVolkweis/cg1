@@ -110,8 +110,13 @@ bool Renderer::initialize() {
 
 void Renderer::render() {
     if (auto activeCamera = activeCamera_.lock()) {
-        glUseProgram(shaderProgram_);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        if (skybox_) {
+            skybox_->render(activeCamera->lookAt(), activeCamera->perspective());
+        }
+
+        glUseProgram(shaderProgram_);
 
         int viewLoc = glGetUniformLocation(shaderProgram_, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, activeCamera->lookAt().data());

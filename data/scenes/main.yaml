@@ -1,3 +1,11 @@
+skybox:
+  faces:
+    - "data/skybox/px.png"
+    - "data/skybox/nx.png"
+    - "data/skybox/py.png"
+    - "data/skybox/ny.png"
+    - "data/skybox/pz.png"
+    - "data/skybox/nz.png"
 root:
   name: "MainScene"
   origin: [0, 0, 0]
@@ -23,27 +31,27 @@ root:
           shape: "box"
           width: 1.5
           height: 0.5
-          depth: 2.5
+          depth: 4.5
         - type: "Vehicle"
           mass: 800.0
           wheels:
             - node: "WheelFrontLeft"
-              connectionPoint: [-0.8, 0.0, 1.6]
+              connectionPoint: [-0.8, 0.0, 1.2]
               suspensionRestLength: 0.6
               radius: 0.3
               isFrontWheel: true
             - node: "WheelFrontRight"
-              connectionPoint: [0.8, 0.0, 1.6]
+              connectionPoint: [0.8, 0.0, 1.2]
               suspensionRestLength: 0.6
               radius: 0.3
               isFrontWheel: true
             - node: "WheelBackLeft"
-              connectionPoint: [-0.8, 0.0, -1.0]
+              connectionPoint: [-0.8, 0.0, -1.3]
               suspensionRestLength: 0.6
               radius: 0.3
               isFrontWheel: false
             - node: "WheelBackRight"
-              connectionPoint: [0.8, 0.0, -1.0]
+              connectionPoint: [0.8, 0.0, -1.3]
               suspensionRestLength: 0.6
               radius: 0.3
               isFrontWheel: false
@@ -59,7 +67,7 @@ root:
               orbitRadius: 7
               lookSensitivity: 75
         - name: "InnerCameraAnchor"
-          origin: [0.5, 0.7, 1.35]
+          origin: [0.5, 0.5, 0.9]
           rotation: [0, 180, 0]
           components:
             - type: "Camera"
@@ -67,7 +75,7 @@ root:
         - name: "CarVisuals"
           rotation: [0, -90, 0]
           scale: [0.5, 0.5, 0.5]
-          origin: [0, -1.25, -1]
+          origin: [0, -1.25, -1.35]
           components:
             - type: "Mesh"
               shape: "model" 
@@ -78,25 +86,25 @@ root:
           shape: "cylinder"
           radius: 0.3
           height: 0.2
-          color: [0, 0, 0]
+          color: [0.1, 0.1, 0.1]
     - name: "WheelFrontRight"
       components:
         - type: "Mesh"
           shape: "cylinder"
           radius: 0.3
           height: 0.2
-          color: [0, 0, 0]
+          color: [0.1, 0.1, 0.1]
     - name: "WheelBackLeft"
       components:
         - type: "Mesh"
           shape: "cylinder"
           radius: 0.3
           height: 0.2
-          color: [0, 0, 0]
+          color: [0.1, 0.1, 0.1]
     - name: "WheelBackRight"
       components:
         - type: "Mesh"
           shape: "cylinder"
           radius: 0.3
           height: 0.2
-          color: [0, 0, 0]
+          color: [0.1, 0.1, 0.1]

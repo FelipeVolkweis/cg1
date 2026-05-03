@@ -12,7 +12,7 @@
 class OrbitalCameraControllerComponent : public BaseComponent, public Enableable {
 public:
     OrbitalCameraControllerComponent() = default;
-    OrbitalCameraControllerComponent(InputHandler *inputHandler, float maxPitch, float maxYaw,
+    OrbitalCameraControllerComponent(InputHandler *inputHandler, float maxPitch, float minPitch,
                                      float lookSensitivity, Vec3 orbitTarget, float orbitRadius);
 
     void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
@@ -23,7 +23,7 @@ public:
 private:
     InputHandler *inputHandler_ = nullptr;
     float maxPitch_ = 89.0f;
-    float maxYaw_ = 360.0f;
+    float minPitch_ = 0;
     float lookSensitivity_ = 50.0f;
 
     float pitch_ = 0.0f;

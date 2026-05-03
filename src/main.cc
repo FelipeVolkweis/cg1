@@ -18,7 +18,7 @@ int main() {
         return -1;
     }
 
-    if (!SceneParser::load(sceneFile, root, scene->getPhysicsEngine(), window.getInputHandler())) {
+    if (!SceneParser::load(sceneFile, scene, window.getInputHandler())) {
         Logger::Warn("Could not load scene from ", sceneFile);
     }
 

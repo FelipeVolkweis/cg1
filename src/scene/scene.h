@@ -11,6 +11,7 @@
 #include "core/node.h"
 #include "physics/physicsengine.h"
 #include "renderer/renderer.h"
+#include "renderer/skybox.h"
 #include "shapes/baseshape.h"
 #include "transformations/transformation.h"
 
@@ -40,6 +41,14 @@ public:
         return physicsEngine_;
     }
 
+    void setSkybox(std::shared_ptr<Skybox> skybox) {
+        skybox_ = skybox;
+    }
+
+    std::shared_ptr<Skybox> getSkybox() const {
+        return skybox_;
+    }
+
     /**
      * @brief Populates the renderer with shapes from the scene and its subscenes.
      * @param renderer The renderer to populate.
@@ -56,6 +65,7 @@ private:
     std::shared_ptr<Node> root_;
     PhysicsEngine physicsEngine_;
     std::vector<std::shared_ptr<CameraComponent>> cameras_;
+    std::shared_ptr<Skybox> skybox_;
 };
 
 #endif

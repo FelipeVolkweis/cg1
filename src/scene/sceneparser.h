@@ -4,9 +4,8 @@
 #include <memory>
 #include <string>
 
-#include "core/node.h"
+#include "scene/scene.h"
 
-class PhysicsEngine;
 struct InputHandler;
 
 namespace YAML {
@@ -15,8 +14,8 @@ class Node;
 
 class SceneParser {
 public:
-    static bool load(const std::string &filepath, std::shared_ptr<Node> root,
-                     PhysicsEngine &physicsEngine, InputHandler &inputHandler);
+    static bool load(const std::string &filepath, std::shared_ptr<Scene> scene,
+                     InputHandler &inputHandler);
 
 private:
     static std::shared_ptr<Node> parseNode(const YAML::Node &nodeData, PhysicsEngine &physicsEngine,

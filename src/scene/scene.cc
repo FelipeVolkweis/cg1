@@ -10,6 +10,7 @@
 #include "utils/logger.h"
 
 void Scene::populateRenderer(Renderer &renderer) {
+    renderer.setSkybox(skybox_);
     std::stack<std::pair<std::shared_ptr<Node>, Transformation>> stack;
     stack.push({root_, Transformation()});
 

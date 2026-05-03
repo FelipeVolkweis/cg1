@@ -13,6 +13,7 @@
 
 #define WINDOW_WIDTH 960.0f
 #define WINDOW_HEIGHT 540.0f
+#define WINDOW_NAME "Car Crash Simulator 2009"
 
 void resizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -27,7 +28,7 @@ bool Window::initialize() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window_ = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Window", NULL, NULL);
+    window_ = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME, NULL, NULL);
     if (!window_) {
         glfwTerminate();
         return false;

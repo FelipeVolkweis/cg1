@@ -10,11 +10,11 @@
 #include "transformations/translation.h"
 
 OrbitalCameraControllerComponent::OrbitalCameraControllerComponent(InputHandler *inputHandler,
-                                                                   float maxPitch, float maxYaw,
+                                                                   float maxPitch, float minPitch,
                                                                    float lookSensitivity,
                                                                    Vec3 orbitTarget,
                                                                    float orbitRadius)
-    : inputHandler_(inputHandler), maxPitch_(maxPitch), maxYaw_(maxYaw),
+    : inputHandler_(inputHandler), maxPitch_(maxPitch), minPitch_(minPitch),
       lookSensitivity_(lookSensitivity), pitch_(0.0f), yaw_(0.0f), orbitTarget_(orbitTarget),
       orbitRadius_(orbitRadius) {}
 
@@ -23,8 +23,8 @@ void OrbitalCameraControllerComponent::load(const YAML::Node &data, PhysicsEngin
     inputHandler_ = &inputHandler;
     if (data["maxPitch"])
         maxPitch_ = data["maxPitch"].as<float>();
-    if (data["maxYaw"])
-        maxYaw_ = data["maxYaw"].as<float>();
+    if (data["minPitch"])
+        minPitch_ = data["minPitch"].as<float>();
     if (data["sensitivity"])
         lookSensitivity_ = data["sensitivity"].as<float>();
     if (data["yaw"])
@@ -55,8 +55,7 @@ void OrbitalCameraControllerComponent::onUpdate(float dt) {
     yaw_ += yawInput * lookSensitivity_ * dt;
     pitch_ += pitchInput * lookSensitivity_ * dt;
 
-    pitch_ = std::clamp(pitch_, -maxPitch_, maxPitch_);
-    yaw_ = std::clamp(yaw_, -maxYaw_, maxYaw_);
+    pitch_ = std::clamp(pitch_, -maxPitch_, minPitch_);
 
     RotationX rotX(pitch_);
     RotationY rotY(yaw_);
