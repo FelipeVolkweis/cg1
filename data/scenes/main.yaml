@@ -54,7 +54,14 @@ root:
           rotation: [0, 180, 0]
           components:
             - type: "Camera"
-            
+        - name: "CarVisuals"
+          rotation: [0, -90, 0]
+          scale: [0.5, 0.5, 0.5]
+          origin: [0, -1.05, -1]
+          components:
+            - type: "Mesh"
+              shape: "model" 
+              path: "data/models/van.obj"
     - name: "WheelFrontLeft"
       components:
         - type: "Mesh"
