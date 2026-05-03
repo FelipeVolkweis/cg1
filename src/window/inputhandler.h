@@ -10,10 +10,15 @@ public:
     InputHandler(GLFWwindow *window);
 
     void handleWASD();
+    void handleIJKL();
     void handleWireframe_P();
 
-    Vec2 getYAxisInputVector();
-    Vec2 getXAxisInputVector();
+    std::pair<int, int> getWindowDimensions() const;
+
+    Vec2 getMainYAxisInputVector();
+    Vec2 getMainXAxisInputVector();
+    Vec2 getSecondaryYAxisInputVector();
+    Vec2 getSecondaryXAxisInputVector();
     bool getWireframeEnabled();
 
     const int W_KEY = 0;
@@ -21,8 +26,14 @@ public:
     const int S_KEY = 2;
     const int D_KEY = 3;
 
+    const int I_KEY = 0;
+    const int J_KEY = 1;
+    const int K_KEY = 2;
+    const int L_KEY = 3;
+
 private:
     int wasd_[4];
+    int ijkl_[4];
     bool wireframe_;
     bool wireframeKeyPressed_;
     GLFWwindow *window_;

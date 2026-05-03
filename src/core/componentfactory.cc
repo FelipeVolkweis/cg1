@@ -1,8 +1,10 @@
 #include "componentfactory.h"
 
 #include "components/cameracomponent.h"
+#include "components/cameracontrollercomponent.h"
 #include "components/carcontrollercomponent.h"
 #include "components/meshcomponent.h"
+#include "components/orbitalcameracontrollercomponent.h"
 #include "components/rigidbodycomponent.h"
 #include "components/vehiclecomponent.h"
 
@@ -12,6 +14,10 @@ ComponentFactory::ComponentFactory() {
     registerComponent("CarController", []() { return std::make_shared<CarControllerComponent>(); });
     registerComponent("RigidBody", []() { return std::make_shared<RigidBodyComponent>(); });
     registerComponent("Vehicle", []() { return std::make_shared<VehicleComponent>(); });
+    registerComponent("CameraController",
+                      []() { return std::make_shared<CameraControllerComponent>(); });
+    registerComponent("OrbitalCameraController",
+                      []() { return std::make_shared<OrbitalCameraControllerComponent>(); });
 }
 
 ComponentFactory &ComponentFactory::getInstance() {

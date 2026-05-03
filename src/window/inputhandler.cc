@@ -18,6 +18,21 @@ void InputHandler::handleWASD() {
         wasd_[D_KEY] = 1;
 }
 
+void InputHandler::handleIJKL() {
+    for (int i = 0; i < 4; i++) {
+        ijkl_[i] = 0;
+    }
+
+    if (glfwGetKey(window_, GLFW_KEY_I) == GLFW_PRESS)
+        ijkl_[I_KEY] = 1;
+    if (glfwGetKey(window_, GLFW_KEY_J) == GLFW_PRESS)
+        ijkl_[J_KEY] = 1;
+    if (glfwGetKey(window_, GLFW_KEY_K) == GLFW_PRESS)
+        ijkl_[K_KEY] = 1;
+    if (glfwGetKey(window_, GLFW_KEY_L) == GLFW_PRESS)
+        ijkl_[L_KEY] = 1;
+}
+
 void InputHandler::handleWireframe_P() {
     bool wireframeKey = glfwGetKey(window_, GLFW_KEY_P) == GLFW_PRESS;
     if (wireframeKey && !wireframeKeyPressed_) {
@@ -26,14 +41,28 @@ void InputHandler::handleWireframe_P() {
     wireframeKeyPressed_ = wireframeKey;
 }
 
-Vec2 InputHandler::getYAxisInputVector() {
+Vec2 InputHandler::getMainYAxisInputVector() {
     return Vec2(wasd_[W_KEY], wasd_[S_KEY]);
 }
 
-Vec2 InputHandler::getXAxisInputVector() {
+Vec2 InputHandler::getMainXAxisInputVector() {
     return Vec2(wasd_[A_KEY], wasd_[D_KEY]);
+}
+
+Vec2 InputHandler::getSecondaryYAxisInputVector() {
+    return Vec2(ijkl_[I_KEY], ijkl_[K_KEY]);
+}
+
+Vec2 InputHandler::getSecondaryXAxisInputVector() {
+    return Vec2(ijkl_[J_KEY], ijkl_[L_KEY]);
 }
 
 bool InputHandler::getWireframeEnabled() {
     return wireframe_;
+}
+
+std::pair<int, int> InputHandler::getWindowDimensions() const {
+    std::pair<int, int> dims;
+    glfwGetWindowSize(window_, &dims.first, &dims.second);
+    return dims;
 }

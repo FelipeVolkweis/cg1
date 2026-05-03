@@ -2,6 +2,7 @@
 #define TRANSFORMATION_H
 
 #include "types/mat4x4.h"
+#include "types/vec3.h"
 
 /**
  * @class Transformation
@@ -29,6 +30,10 @@ public:
     Transformation &operator*=(const Transformation &rhs) {
         matrix_ = matrix_ * rhs.getTransformationMatrix();
         return *this;
+    }
+
+    const Vec3 getPosition() const {
+        return Vec3(matrix_(0, 3), matrix_(1, 3), matrix_(2, 3));
     }
 };
 

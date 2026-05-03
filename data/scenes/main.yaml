@@ -28,12 +28,12 @@ root:
           mass: 800.0
           wheels:
             - node: "WheelFrontLeft"
-              connectionPoint: [-0.8, 0.0, 1.0]
+              connectionPoint: [-0.8, 0.0, 1.6]
               suspensionRestLength: 0.6
               radius: 0.3
               isFrontWheel: true
             - node: "WheelFrontRight"
-              connectionPoint: [0.8, 0.0, 1.0]
+              connectionPoint: [0.8, 0.0, 1.6]
               suspensionRestLength: 0.6
               radius: 0.3
               isFrontWheel: true
@@ -50,10 +50,13 @@ root:
         - type: "CarController"
       children:
         - name: "CameraAnchor"
-          origin: [0, 1.5, -10]
+          origin: [0, 1.5, -6]
           rotation: [0, 180, 0]
           components:
             - type: "Camera"
+            - type: "OrbitalCameraController"
+              orbitRadius: 7
+              lookSensitivity: 75
         - name: "CarVisuals"
           rotation: [0, -90, 0]
           scale: [0.5, 0.5, 0.5]

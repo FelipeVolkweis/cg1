@@ -35,13 +35,13 @@ void CarControllerComponent::onUpdate(float dt) {
     auto car = vehicleComp->getVehicle();
 
     float throttleInput =
-        inputHandler_->getYAxisInputVector().x() - inputHandler_->getYAxisInputVector().y();
+        inputHandler_->getMainYAxisInputVector().x() - inputHandler_->getMainYAxisInputVector().y();
 
     car->applyEngineForce(throttleInput * maxEngineForce_, 2);
     car->applyEngineForce(throttleInput * maxEngineForce_, 3);
 
     float steerInput =
-        inputHandler_->getXAxisInputVector().x() - inputHandler_->getXAxisInputVector().y();
+        inputHandler_->getMainXAxisInputVector().x() - inputHandler_->getMainXAxisInputVector().y();
 
     if (steerInput != 0.0f) {
         currentSteering_ += steerInput * steeringSensitivity_ * dt;

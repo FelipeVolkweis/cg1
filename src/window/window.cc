@@ -55,6 +55,7 @@ bool Window::finish() {
 
 void Window::processInput() {
     inputHandler_->handleWASD();
+    inputHandler_->handleIJKL();
     inputHandler_->handleWireframe_P();
 
     bool wireframeKey = inputHandler_->getWireframeEnabled();
