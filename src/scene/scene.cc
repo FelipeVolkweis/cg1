@@ -109,5 +109,11 @@ std::shared_ptr<Camera> Scene::getActiveCamera() {
         return nullptr;
     }
 
+    for (const auto &camera : cameras_) {
+        if (camera->isEnabled()) {
+            return camera->getCamera();
+        }
+    }
+
     return cameras_[0]->getCamera();
 }

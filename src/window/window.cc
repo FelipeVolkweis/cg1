@@ -57,6 +57,7 @@ void Window::processInput() {
     inputHandler_->handleWASD();
     inputHandler_->handleIJKL();
     inputHandler_->handleWireframe_P();
+    inputHandler_->handleCameraCycle_C();
 
     bool wireframeKey = inputHandler_->getWireframeEnabled();
     if (wireframeKey) {

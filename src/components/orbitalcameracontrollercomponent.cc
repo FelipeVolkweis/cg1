@@ -39,6 +39,9 @@ void OrbitalCameraControllerComponent::load(const YAML::Node &data, PhysicsEngin
 }
 
 void OrbitalCameraControllerComponent::onUpdate(float dt) {
+    if (!isEnabled())
+        return;
+
     auto node = getNode();
     if (!node || !inputHandler_)
         return;

@@ -1,7 +1,8 @@
 #include "inputhandler.h"
 
 InputHandler::InputHandler(GLFWwindow *window)
-    : window_(window), wireframe_(false), wireframeKeyPressed_(false) {}
+    : window_(window), wireframe_(false), wireframeKeyPressed_(false), cycleClicked_(0),
+      cycleKeyPressed_(false) {}
 
 void InputHandler::handleWASD() {
     for (int i = 0; i < 4; i++) {
@@ -39,6 +40,14 @@ void InputHandler::handleWireframe_P() {
         wireframe_ = !wireframe_;
     }
     wireframeKeyPressed_ = wireframeKey;
+}
+
+void InputHandler::handleCameraCycle_C() {
+    bool cycleKey = glfwGetKey(window_, GLFW_KEY_C) == GLFW_PRESS;
+    if (cycleKey && !cycleKeyPressed_) {
+        cycleClicked_++;
+    }
+    cycleKeyPressed_ = cycleKey;
 }
 
 Vec2 InputHandler::getMainYAxisInputVector() {

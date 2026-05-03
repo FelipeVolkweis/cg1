@@ -5,10 +5,11 @@
 
 #include "components/vehiclecomponent.h"
 #include "core/component.h"
+#include "core/enableable.h"
 #include "types/vec3.h"
 #include "window/inputhandler.h"
 
-class CameraControllerComponent : public BaseComponent {
+class CameraControllerComponent : public BaseComponent, public Enableable {
 public:
     CameraControllerComponent() = default;
     CameraControllerComponent(InputHandler *inputHandler, float maxPitch, float maxYaw,

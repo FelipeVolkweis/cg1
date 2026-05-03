@@ -6,8 +6,9 @@
 
 #include "camera/camera.h"
 #include "core/component.h"
+#include "core/enableable.h"
 
-class CameraComponent : public BaseComponent {
+class CameraComponent : public BaseComponent, public Enableable {
 public:
     CameraComponent() = default;
     CameraComponent(Perspective perspective, Vec3 focalPoint = Vec3(0, 0, 0),

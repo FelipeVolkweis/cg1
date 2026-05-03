@@ -2,6 +2,7 @@
 
 #include "components/cameracomponent.h"
 #include "components/cameracontrollercomponent.h"
+#include "components/cameracyclecomponent.h"
 #include "components/carcontrollercomponent.h"
 #include "components/meshcomponent.h"
 #include "components/orbitalcameracontrollercomponent.h"
@@ -18,6 +19,7 @@ ComponentFactory::ComponentFactory() {
                       []() { return std::make_shared<CameraControllerComponent>(); });
     registerComponent("OrbitalCameraController",
                       []() { return std::make_shared<OrbitalCameraControllerComponent>(); });
+    registerComponent("CameraCycle", []() { return std::make_shared<CameraCycleComponent>(); });
 }
 
 ComponentFactory &ComponentFactory::getInstance() {

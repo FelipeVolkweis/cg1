@@ -48,8 +48,9 @@ root:
               radius: 0.3
               isFrontWheel: false
         - type: "CarController"
+        - type: "CameraCycle"
       children:
-        - name: "CameraAnchor"
+        - name: "OuterCameraAnchor"
           origin: [0, 1.5, -6]
           rotation: [0, 180, 0]
           components:
@@ -57,6 +58,12 @@ root:
             - type: "OrbitalCameraController"
               orbitRadius: 7
               lookSensitivity: 75
+        - name: "InnerCameraAnchor"
+          origin: [0.5, 0.7, 1.35]
+          rotation: [0, 180, 0]
+          components:
+            - type: "Camera"
+            - type: "CameraController"
         - name: "CarVisuals"
           rotation: [0, -90, 0]
           scale: [0.5, 0.5, 0.5]

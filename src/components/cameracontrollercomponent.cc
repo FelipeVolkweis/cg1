@@ -30,6 +30,9 @@ void CameraControllerComponent::load(const YAML::Node &data, PhysicsEngine &phys
 }
 
 void CameraControllerComponent::onUpdate(float dt) {
+    if (!isEnabled())
+        return;
+
     auto node = getNode();
     if (!node || !inputHandler_)
         return;

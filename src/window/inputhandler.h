@@ -12,6 +12,7 @@ public:
     void handleWASD();
     void handleIJKL();
     void handleWireframe_P();
+    void handleCameraCycle_C();
 
     std::pair<int, int> getWindowDimensions() const;
 
@@ -20,6 +21,10 @@ public:
     Vec2 getSecondaryYAxisInputVector();
     Vec2 getSecondaryXAxisInputVector();
     bool getWireframeEnabled();
+
+    uint32_t getNumberOfCameraCycleRequests() const {
+        return cycleClicked_;
+    }
 
     const int W_KEY = 0;
     const int A_KEY = 1;
@@ -37,6 +42,9 @@ private:
     bool wireframe_;
     bool wireframeKeyPressed_;
     GLFWwindow *window_;
+
+    uint32_t cycleClicked_ = 0;
+    bool cycleKeyPressed_ = false;
 };
 
 #endif

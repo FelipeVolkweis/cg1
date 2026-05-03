@@ -5,10 +5,11 @@
 
 #include "components/vehiclecomponent.h"
 #include "core/component.h"
+#include "core/enableable.h"
 #include "types/vec3.h"
 #include "window/inputhandler.h"
 
-class OrbitalCameraControllerComponent : public BaseComponent {
+class OrbitalCameraControllerComponent : public BaseComponent, public Enableable {
 public:
     OrbitalCameraControllerComponent() = default;
     OrbitalCameraControllerComponent(InputHandler *inputHandler, float maxPitch, float maxYaw,
