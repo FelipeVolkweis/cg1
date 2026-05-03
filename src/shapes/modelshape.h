@@ -7,7 +7,9 @@
 
 class ModelShape : public BaseShape {
 public:
-    ModelShape() = default;
+    ModelShape() {
+        isModel_ = true;
+    }
 
     std::string getName() const override {
         return "model";

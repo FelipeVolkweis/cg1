@@ -13,6 +13,17 @@ class Node;
 }
 
 /**
+ * @struct MeshGroup
+ * @brief Defines a range of vertices that share the same texture.
+ */
+struct MeshGroup {
+    uint32_t textureId;
+    size_t start;
+    size_t count;
+    bool isTransparent;
+};
+
+/**
  * @class BaseShape
  * @brief Abstract base class for all 3D shapes, providing common attributes like color and
  * transformations.
@@ -52,10 +63,33 @@ public:
         textureId_ = id;
     }
 
+    const std::vector<MeshGroup> &getGroups() const {
+        return groups_;
+    }
+
+    void addGroup(const MeshGroup &group) {
+        groups_.push_back(group);
+    }
+
+    void clearGroups() {
+        groups_.clear();
+    }
+
+    bool hasColor() const {
+        return hasColor_;
+    }
+
+    bool isModel() const {
+        return isModel_;
+    }
+
 protected:
     std::vector<Vertex> vertices_;
     Vec3 color_;
     uint32_t textureId_;
+    std::vector<MeshGroup> groups_;
+    bool hasColor_ = false;
+    bool isModel_ = false;
 };
 
 #endif

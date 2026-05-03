@@ -75,6 +75,8 @@ private:
      */
     uint32_t compileShader(uint32_t type, const char *source);
 
+    void setupRenderingStep(const RenderItem &item);
+
     uint32_t whiteTextureId_ = 0;
 };
 

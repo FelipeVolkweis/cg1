@@ -11,10 +11,10 @@ const char *vertexShaderSource = R"(
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoords;
-layout (location = 3) in vec3 aColor;
+layout (location = 3) in vec4 aColor;
 
 out vec2 TexCoord;
-out vec3 VertColor;
+out vec4 VertColor;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -32,13 +32,15 @@ const char *fragmentShaderSource = R"(
 out vec4 FragColor;
 
 in vec2 TexCoord;
-in vec3 VertColor;
+in vec4 VertColor;
 
 uniform sampler2D texture_diffuse;
 uniform vec3 objectColor;
 
 void main() {
-    FragColor = texture(texture_diffuse, TexCoord) * vec4(objectColor, 1.0) * vec4(VertColor, 1.0);
+    vec4 texColor = texture(texture_diffuse, TexCoord);
+
+    FragColor = texColor * vec4(objectColor, 1.0f) * VertColor;
 }
 )";
 
@@ -98,6 +100,9 @@ bool Renderer::initialize() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     whiteTextureId_ = Texture::createWhiteTexture();
 
     return true;
@@ -118,47 +123,93 @@ void Renderer::render() {
         int textureLoc = glGetUniformLocation(shaderProgram_, "texture_diffuse");
         glUniform1i(textureLoc, 0);
 
+        glDepthMask(GL_TRUE);
         for (const RenderItem &item : items_) {
+            if (!item.shape->hasColor() && !item.shape->isModel()) {
+                continue;
+            }
+
             const std::vector<Vertex> &vertices = item.shape->getVertices();
             if (vertices.empty())
                 continue;
 
-            const Mat4x4 &model = item.transform.getTransformationMatrix();
-            const Vec3 &color = item.shape->getColor();
+            setupRenderingStep(item);
 
-            glBindVertexArray(vao_);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(),
-                         GL_DYNAMIC_DRAW);
-
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
-            glEnableVertexAttribArray(0);
-
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                                  (void *)offsetof(Vertex, normal));
-            glEnableVertexAttribArray(1);
-
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                                  (void *)offsetof(Vertex, texCoords));
-            glEnableVertexAttribArray(2);
-
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                                  (void *)offsetof(Vertex, color));
-            glEnableVertexAttribArray(3);
-
-            int modelLoc = glGetUniformLocation(shaderProgram_, "model");
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.data());
-
-            int colorLoc = glGetUniformLocation(shaderProgram_, "objectColor");
-            glUniform3f(colorLoc, color.x(), color.y(), color.z());
-
-            uint32_t texToBind = item.shape->getTextureId();
-            if (texToBind == 0) {
-                texToBind = whiteTextureId_;
+            const auto &groups = item.shape->getGroups();
+            if (groups.empty()) {
+                uint32_t texToBind = item.shape->getTextureId();
+                if (texToBind == 0) {
+                    texToBind = whiteTextureId_;
+                }
+                glBindTexture(GL_TEXTURE_2D, texToBind);
+                glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+            } else {
+                for (const auto &group : groups) {
+                    if (group.isTransparent)
+                        continue;
+                    uint32_t texToBind = group.textureId;
+                    if (texToBind == 0) {
+                        texToBind = whiteTextureId_;
+                    }
+                    glBindTexture(GL_TEXTURE_2D, texToBind);
+                    glDrawArrays(GL_TRIANGLES, group.start, group.count);
+                }
             }
-            glBindTexture(GL_TEXTURE_2D, texToBind);
+        }
 
-            glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        for (const RenderItem &item : items_) {
+            const auto &groups = item.shape->getGroups();
+            bool hasTransparent = false;
+            for (const auto &g : groups) {
+                if (g.isTransparent) {
+                    hasTransparent = true;
+                    break;
+                }
+            }
+            if (!hasTransparent)
+                continue;
+
+            setupRenderingStep(item);
+
+            for (const auto &group : groups) {
+                if (!group.isTransparent)
+                    continue;
+                uint32_t texToBind = group.textureId;
+                if (texToBind == 0) {
+                    texToBind = whiteTextureId_;
+                }
+                glBindTexture(GL_TEXTURE_2D, texToBind);
+                glDrawArrays(GL_TRIANGLES, group.start, group.count);
+            }
         }
     }
+}
+
+void Renderer::setupRenderingStep(const RenderItem &item) {
+    const std::vector<Vertex> &vertices = item.shape->getVertices();
+    const Mat4x4 &model = item.transform.getTransformationMatrix();
+    const Vec3 &color = item.shape->getColor();
+
+    glBindVertexArray(vao_);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(),
+                 GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (void *)offsetof(Vertex, normal));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (void *)offsetof(Vertex, texCoords));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (void *)offsetof(Vertex, color));
+    glEnableVertexAttribArray(3);
+
+    int modelLoc = glGetUniformLocation(shaderProgram_, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.data());
+
+    int colorLoc = glGetUniformLocation(shaderProgram_, "objectColor");
+    glUniform3f(colorLoc, color.x(), color.y(), color.z());
 }

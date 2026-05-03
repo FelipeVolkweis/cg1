@@ -12,6 +12,7 @@ void BaseShape::parseCommon(const YAML::Node &node) {
         if (colorNode.IsSequence() && colorNode.size() == 3) {
             color_ =
                 Vec3(colorNode[0].as<float>(), colorNode[1].as<float>(), colorNode[2].as<float>());
+            hasColor_ = true;
         }
     }
 }
