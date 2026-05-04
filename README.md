@@ -1,13 +1,13 @@
 # Computação Gráfica
 
-Este projeto é um motor de renderização 3D simples desenvolvido em C++ utilizando OpenGL. Ele permite o carregamento de cenas a partir de arquivos de texto, suporta algumas primitivas geométricas e transformações espaciais básicas.
+Este projeto é um motor de renderização 3D simples desenvolvido em C++ utilizando OpenGL. Ele permite o carregamento de cenas a partir de arquivos YAML.
 
 ## Funcionalidades
 
-- **Renderização de Primitivas:** Suporte para Cubos, Cones, Cilindros, Esferas, Toros e Semiesferas.
-- **Sistema de Cenas:** Carregamento dinâmico de cenas (`data/scenes/main.txt`) e subcenas (`data/subscenes/*.txt`).
-- **Transformações:** Suporte a Translação, Rotação e Escala.
-- **Interatividade:** Controle em tempo real de objetos marcados como `translatable`, `rotatable` ou `scalable`.
+- **Renderização de Primitivas:** Suporte para Cubos, Cones, Cilindros, Esferas, Toros e Semiesferas, além de modelos 3D (`.obj`).
+- **Sistema de Cenas:** Carregamento dinâmico de cenas via YAML (`data/scenes/main.yaml`).
+- **Transformações Hierárquicas:** Suporte a Translação, Rotação, Escala e cálculo dinâmico de posições globais de cena (nós parent-child).
+- **Engine de Física:** Integração com Bullet Physics para Corpos Rígidos e Veículos, com suporte a colisões.
 - **Modo Wireframe:** Alternância entre renderização sólida e em linhas.
 
 ## Documentação
@@ -21,8 +21,11 @@ Para compilar o projeto, você precisará de:
 - **OpenGL**
 - **GLFW3**
 - **Eigen3**
+- **Bullet Physics**
+- **yaml-cpp**
+- **tinyobjloader**
 
-As bibliotecas **GLAD** já estão incluídas no diretório `3rdparty`.
+As bibliotecas **GLAD** e **stb_image** já estão incluídas no diretório `3rdparty`.
 
 ## Como Compilar
 
@@ -55,13 +58,14 @@ make run
 
 ## Controles
 
-- **W, A, S, D:** Move objetos marcados como `translatable`.
-- **Q, E:** Altera a escala de objetos marcados como `scalable`.
-- **R, T:** Rotaciona no eixo Y objetos marcados como `rotatable`.
+- **W, A, S, D:** Movimenta o veículo.
+- **I, J, K, L:** Rotaciona a camera.
+- **Espaço:** Freia o veículo.
+- **C:** Troca de camera entre primeira pessoa e orbital.
 - **P:** Alterna o modo Wireframe.
 
 ## Estrutura do Projeto
 
 - `src/`: Código-fonte (renderer, scene, shapes, transformations).
-- `data/`: Definições de cenas e subcenas em arquivos `.txt`.
-- `3rdparty/`: Dependências externas (GLAD).
+- `data/`: Definições de cenas em arquivos **YAML**
+- `3rdparty/`: Dependências externas (GLAD e stb_image).
