@@ -13,6 +13,7 @@ public:
     void handleIJKL();
     void handleWireframe_P();
     void handleCameraCycle_C();
+    void handleBrakes_SpaceBar();
 
     std::pair<int, int> getWindowDimensions() const;
 
@@ -24,6 +25,10 @@ public:
 
     uint32_t getNumberOfCameraCycleRequests() const {
         return cycleClicked_;
+    }
+
+    bool isSpaceBarHeldDown() const {
+        return spaceHeldDown_;
     }
 
     const int W_KEY = 0;
@@ -45,6 +50,7 @@ private:
 
     uint32_t cycleClicked_ = 0;
     bool cycleKeyPressed_ = false;
+    bool spaceHeldDown_ = false;
 };
 
 #endif

@@ -50,6 +50,12 @@ void InputHandler::handleCameraCycle_C() {
     cycleKeyPressed_ = cycleKey;
 }
 
+void InputHandler::handleBrakes_SpaceBar() {
+    bool spaceBar = glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS;
+    spaceHeldDown_ = spaceBar;
+}
+
+
 Vec2 InputHandler::getMainYAxisInputVector() {
     return Vec2(wasd_[W_KEY], wasd_[S_KEY]);
 }

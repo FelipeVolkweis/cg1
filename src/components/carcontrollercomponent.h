@@ -12,7 +12,7 @@ class CarControllerComponent : public BaseComponent {
 public:
     CarControllerComponent() = default;
     CarControllerComponent(InputHandler *inputHandler, float maxEngineForce = 2000.0f,
-                           float maxSteeringAngle = 0.5f, float steeringSensitivity = 3.0f);
+                           float maxSteeringAngle = 0.5f, float steeringSensitivity = 3.0f, float breakForce = 100.0f);
 
     void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
               InputHandler &inputHandler) override;
@@ -24,6 +24,7 @@ private:
     float maxEngineForce_ = 2000.0f;
     float maxSteeringAngle_ = 0.5f;
     float steeringSensitivity_ = 3.0f;
+    float brakeForce_ = 100.0f;
 
     float currentSteering_ = 0.0f;
 };

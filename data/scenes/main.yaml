@@ -84,7 +84,7 @@ root:
           height: 0.5
           depth: 4.5
         - type: "Vehicle"
-          mass: 800.0
+          mass: 1600.0
           wheels:
             - node: "WheelFrontLeft"
               connectionPoint: [-0.8, 0.0, 1.2]
@@ -107,6 +107,10 @@ root:
               radius: 0.3
               isFrontWheel: false
         - type: "CarController"
+          force: 1200.0
+          angle: 25.0
+          sensitivity: 2.0
+          brake: 120.0
         - type: "CameraCycle"
       children:
         - name: "OuterCameraAnchor"
