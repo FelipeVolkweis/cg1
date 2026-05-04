@@ -13,20 +13,64 @@ root:
   scale: [1, 1, 1]
   children:
     - name: "Ground"
-      origin: [0, -2, 0]
+      origin: [0, 0, 0]
       components:
         - type: "Mesh"
           shape: "box"
           width: 120.0
           height: 0.5
           depth: 100.0
-          color: [1, 0, 0]
+          color: [0.4, 0.4, 0.4]
+        - type: "RigidBody"
+          mass: 0.0
+    - name: "Wall1"
+      origin: [0, 0, -50]
+      components:
+        - type: "Mesh"
+          shape: "box"
+          width: 120.0
+          height: 2
+          depth: 1
+          color: [0.4, 0.4, 0.8]
+        - type: "RigidBody"
+          mass: 0.0
+    - name: "Wall2"
+      origin: [0, 0, 50]
+      components:
+        - type: "Mesh"
+          shape: "box"
+          width: 120.0
+          height: 2
+          depth: 1
+          color: [0.4, 0.4, 0.8]
+        - type: "RigidBody"
+          mass: 0.0
+    - name: "Wall3"
+      origin: [60, 0, 0]
+      components:
+        - type: "Mesh"
+          shape: "box"
+          width: 1
+          height: 2
+          depth: 100.0
+          color: [0.4, 0.4, 0.8]
+        - type: "RigidBody"
+          mass: 0.0
+    - name: "Wall4"
+      origin: [-60, 0, 0]
+      components:
+        - type: "Mesh"
+          shape: "box"
+          width: 1
+          height: 2
+          depth: 100.0
+          color: [0.4, 0.4, 0.8]
         - type: "RigidBody"
           mass: 0.0
     - name: "RoadVisuals"
       rotation: [0, 0, 0]
       scale: [5, 1, 5]
-      origin: [0, -1.75, -1.35]
+      origin: [0, 0.25, -1.35]
       components:
         - type: "Mesh"
           shape: "model" 
