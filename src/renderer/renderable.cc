@@ -27,7 +27,8 @@ void Renderable::initializeOnGPU() {
                           (void *)offsetof(Vertex, color));
     glEnableVertexAttribArray(3);
 }
-void Renderable::render(const Mat4x4 &model, bool renderTranslucent){
+
+void Renderable::render(const Mat4x4 &model, bool renderTranslucent) {
     glBindVertexArray(vao_);
 
     int modelLoc = glGetUniformLocation(shaderProgram_, "model");
@@ -37,9 +38,8 @@ void Renderable::render(const Mat4x4 &model, bool renderTranslucent){
     int textureLoc = glGetUniformLocation(shaderProgram_, "texture_diffuse");
     glUniform1i(textureLoc, 0);
 
-    for (const auto &mesh : *meshGroups_) { 
-        if (renderTranslucent && mesh.translucent || 
-            !renderTranslucent && !mesh.translucent) {
+    for (const auto &mesh : *meshGroups_) {
+        if (renderTranslucent && mesh.translucent || !renderTranslucent && !mesh.translucent) {
             if (mesh.translucent) {
                 glDepthMask(GL_FALSE);
             } else {
@@ -50,7 +50,7 @@ void Renderable::render(const Mat4x4 &model, bool renderTranslucent){
             glDrawArrays(GL_TRIANGLES, mesh.start, mesh.count);
         }
     }
-    
+
     glDepthMask(GL_TRUE);
 }
 
