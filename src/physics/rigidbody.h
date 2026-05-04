@@ -16,7 +16,7 @@ class RigidBody {
 public:
     /**
      * @brief Constructs a new RigidBody object.
-     * 
+     *
      * @param mass The mass of the rigid body.
      * @param initialTransform The initial transformation of the rigid body.
      * @param shape The shape of the rigid body.

@@ -21,7 +21,7 @@ class Camera {
 public:
     /**
      * @brief Constructs a new Camera object.
-     * 
+     *
      * @param perspective The perspective projection parameters.
      * @param lookAt The look-at parameters.
      */
@@ -29,14 +29,14 @@ public:
 
     /**
      * @brief Calculates the look-at matrix.
-     * 
+     *
      * @return Mat4x4 The look-at matrix.
      */
     Mat4x4 lookAt();
 
     /**
      * @brief Calculates the perspective projection matrix.
-     * 
+     *
      * @return Mat4x4 The perspective projection matrix.
      */
     Mat4x4 perspective();

@@ -18,7 +18,7 @@ class Vehicle {
 public:
     /**
      * @brief Constructs a new Vehicle object.
-     * 
+     *
      * @param physicsEngine Pointer to the physics engine.
      * @param mass The mass of the vehicle's chassis.
      * @param initialTransform The initial transformation of the vehicle.
@@ -33,7 +33,7 @@ public:
 
     /**
      * @brief Adds a wheel to the vehicle.
-     * 
+     *
      * @param connectionPointCS0 The connection point of the wheel in chassis space.
      * @param suspensionRestLength The rest length of the suspension.
      * @param wheelRadius The radius of the wheel.
@@ -44,7 +44,7 @@ public:
 
     /**
      * @brief Applies engine force to a specific wheel.
-     * 
+     *
      * @param force The force to apply.
      * @param wheelIndex The index of the wheel.
      */
@@ -52,7 +52,7 @@ public:
 
     /**
      * @brief Sets the steering value for a specific wheel.
-     * 
+     *
      * @param steering The steering value.
      * @param wheelIndex The index of the wheel.
      */
@@ -60,7 +60,7 @@ public:
 
     /**
      * @brief Sets the brake force for a specific wheel.
-     * 
+     *
      * @param brake The brake force.
      * @param wheelIndex The index of the wheel.
      */

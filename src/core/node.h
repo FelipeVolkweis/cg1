@@ -11,7 +11,7 @@
 /**
  * @class Node
  * @brief Represents a node in the scene graph.
- * 
+ *
  * Nodes can have a parent, multiple children, and multiple components.
  * They also handle transformations in local and world space.
  */

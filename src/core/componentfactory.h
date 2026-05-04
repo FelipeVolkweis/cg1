@@ -11,7 +11,7 @@
 /**
  * @class ComponentFactory
  * @brief Factory class for creating components by their type name.
- * 
+ *
  * This class follows the Singleton pattern.
  */
 class ComponentFactory {
