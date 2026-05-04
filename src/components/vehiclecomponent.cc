@@ -75,7 +75,7 @@ bool VehicleComponent::onStart() {
     }
 
     vehicle_ =
-        std::make_unique<Vehicle>(physicsEngine_, initialMass_, node->getTransformation(), shape);
+        std::make_unique<Vehicle>(physicsEngine_, initialMass_, node->getWorldTransform(), shape);
 
     vehicle_->addToWorld(physicsEngine_->getWorld());
 

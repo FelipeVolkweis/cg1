@@ -40,6 +40,15 @@ public:
         return transform_;
     }
 
+    Transformation getWorldTransform() const {
+        Transformation world = transform_;
+        auto p = parent_.lock();
+        if (p) {
+            world = p->getWorldTransform() * world;
+        }
+        return world;
+    }
+
     std::vector<std::shared_ptr<BaseComponent>> getComponents() {
         return components_;
     }

@@ -38,7 +38,7 @@ bool RigidBodyComponent::onStart() {
         return false;
     }
 
-    rigidBody_ = std::make_unique<RigidBody>(initialMass_, node->getTransformation(), shape);
+    rigidBody_ = std::make_unique<RigidBody>(initialMass_, node->getWorldTransform(), shape);
 
     physicsEngine_->getWorld()->addRigidBody(rigidBody_->getBulletRigidBody());
 
