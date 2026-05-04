@@ -35,6 +35,7 @@ public:
     void onUpdate(float dt) override;
 
 private:
+    InputHandler *inputHandler_;
     std::shared_ptr<Camera> camera_;
     Vec3 focalPoint_;
     Vec3 up_;

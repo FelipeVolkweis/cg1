@@ -53,6 +53,10 @@ public:
         up_ = up;
     }
 
+    void setAspect(float aspect) {
+        aspect_ = aspect;
+    }
+
     const Vec3 &getPosition() const {
         return position_;
     }
