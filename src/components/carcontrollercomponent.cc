@@ -9,9 +9,11 @@
 #include "utils/deg2rad.h"
 
 CarControllerComponent::CarControllerComponent(InputHandler *inputHandler, float maxEngineForce,
-                                               float maxSteeringAngle, float steeringSensitivity, float brakeForce)
+                                               float maxSteeringAngle, float steeringSensitivity,
+                                               float brakeForce)
     : inputHandler_(inputHandler), maxEngineForce_(maxEngineForce),
-      maxSteeringAngle_(maxSteeringAngle), steeringSensitivity_(steeringSensitivity), brakeForce_(brakeForce) {}
+      maxSteeringAngle_(maxSteeringAngle), steeringSensitivity_(steeringSensitivity),
+      brakeForce_(brakeForce) {}
 
 void CarControllerComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
                                   InputHandler &inputHandler) {

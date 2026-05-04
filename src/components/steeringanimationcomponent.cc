@@ -1,12 +1,11 @@
 #include "steeringanimationcomponent.h"
 
-#include "carcontrollercomponent.h"
-
 #include <algorithm>
 #include <iostream>
 
 #include <yaml-cpp/yaml.h>
 
+#include "carcontrollercomponent.h"
 #include "core/node.h"
 #include "transformations/rotation.h"
 #include "utils/deg2rad.h"

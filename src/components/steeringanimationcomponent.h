@@ -2,6 +2,7 @@
 #define STEERINGANIMATIONCOMPONENT_H
 
 #include <string>
+
 #include "core/component.h"
 #include "transformations/transformation.h"
 

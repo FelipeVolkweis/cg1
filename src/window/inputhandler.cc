@@ -55,7 +55,6 @@ void InputHandler::handleBrakes_SpaceBar() {
     spaceHeldDown_ = spaceBar;
 }
 
-
 Vec2 InputHandler::getMainYAxisInputVector() {
     return Vec2(wasd_[W_KEY], wasd_[S_KEY]);
 }

@@ -7,8 +7,8 @@
 #include "components/meshcomponent.h"
 #include "components/orbitalcameracontrollercomponent.h"
 #include "components/rigidbodycomponent.h"
-#include "components/vehiclecomponent.h"
 #include "components/steeringanimationcomponent.h"
+#include "components/vehiclecomponent.h"
 
 ComponentFactory::ComponentFactory() {
     registerComponent("Camera", []() { return std::make_shared<CameraComponent>(); });
@@ -21,7 +21,8 @@ ComponentFactory::ComponentFactory() {
     registerComponent("OrbitalCameraController",
                       []() { return std::make_shared<OrbitalCameraControllerComponent>(); });
     registerComponent("CameraCycle", []() { return std::make_shared<CameraCycleComponent>(); });
-    registerComponent("SteeringAnimation", []() { return std::make_shared<SteeringAnimationComponent>(); });
+    registerComponent("SteeringAnimation",
+                      []() { return std::make_shared<SteeringAnimationComponent>(); });
 }
 
 ComponentFactory &ComponentFactory::getInstance() {

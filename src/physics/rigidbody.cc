@@ -21,9 +21,12 @@ RigidBody::RigidBody(float mass, const Transformation &initialTransform, const B
     shape_->setLocalScaling(btVector3(scaleX, scaleY, scaleZ));
 
     Mat4x4 normalizedMat = mat;
-    if (scaleX > 0) normalizedMat.block<3, 1>(0, 0) /= scaleX;
-    if (scaleY > 0) normalizedMat.block<3, 1>(0, 1) /= scaleY;
-    if (scaleZ > 0) normalizedMat.block<3, 1>(0, 2) /= scaleZ;
+    if (scaleX > 0)
+        normalizedMat.block<3, 1>(0, 0) /= scaleX;
+    if (scaleY > 0)
+        normalizedMat.block<3, 1>(0, 1) /= scaleY;
+    if (scaleZ > 0)
+        normalizedMat.block<3, 1>(0, 2) /= scaleZ;
 
     btTransform bulletTransform;
     bulletTransform.setFromOpenGLMatrix(normalizedMat.data());
@@ -75,9 +78,12 @@ void RigidBody::setTransform(const Transformation &transform) {
     shape_->setLocalScaling(btVector3(scaleX, scaleY, scaleZ));
 
     Mat4x4 normalizedMat = mat;
-    if (scaleX > 0) normalizedMat.block<3, 1>(0, 0) /= scaleX;
-    if (scaleY > 0) normalizedMat.block<3, 1>(0, 1) /= scaleY;
-    if (scaleZ > 0) normalizedMat.block<3, 1>(0, 2) /= scaleZ;
+    if (scaleX > 0)
+        normalizedMat.block<3, 1>(0, 0) /= scaleX;
+    if (scaleY > 0)
+        normalizedMat.block<3, 1>(0, 1) /= scaleY;
+    if (scaleZ > 0)
+        normalizedMat.block<3, 1>(0, 2) /= scaleZ;
 
     btTransform bulletTransform;
     bulletTransform.setFromOpenGLMatrix(normalizedMat.data());
