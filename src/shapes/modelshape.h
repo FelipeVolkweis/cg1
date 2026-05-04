@@ -5,6 +5,10 @@
 
 #include "baseshape.h"
 
+/**
+ * @class ModelShape
+ * @brief Represents a shape loaded from a 3D model file.
+ */
 class ModelShape : public BaseShape {
 public:
     ModelShape() {

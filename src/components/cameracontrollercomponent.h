@@ -9,9 +9,21 @@
 #include "types/vec3.h"
 #include "window/inputhandler.h"
 
+/**
+ * @class CameraControllerComponent
+ * @brief Component that handles camera movement and rotation based on input.
+ */
 class CameraControllerComponent : public BaseComponent, public Enableable {
 public:
     CameraControllerComponent() = default;
+
+    /**
+     * @brief Constructor for CameraControllerComponent.
+     * @param inputHandler Pointer to the input handler.
+     * @param maxPitch Maximum pitch angle.
+     * @param maxYaw Maximum yaw angle.
+     * @param lookSensitivity Look sensitivity.
+     */
     CameraControllerComponent(InputHandler *inputHandler, float maxPitch, float maxYaw,
                               float lookSensitivity);
 

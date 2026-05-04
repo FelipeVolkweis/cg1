@@ -1,6 +1,10 @@
 #ifndef ENABLEABLE_H
 #define ENABLEABLE_H
 
+/**
+ * @class Enableable
+ * @brief A simple class to manage an enabled/disabled state.
+ */
 class Enableable {
 public:
     Enableable() = default;

@@ -35,12 +35,22 @@ public:
 
     void addRenderable(Renderable renderable);
 
+    /**
+     * @brief Checks if a renderable with the given ID exists in the renderer.
+     * @param id The unique ID of the renderable.
+     * @return true if it exists, false otherwise.
+     */
     bool isRenderableHere(uint64_t id) {
         return renderables_.find(id) != renderables_.end();
     }
 
-    void setRenderableTransformation(uint64_t id, const Transformation &tranformation) {
-        transforms_[id] = tranformation;
+    /**
+     * @brief Sets the transformation matrix for a specific renderable.
+     * @param id The unique ID of the renderable.
+     * @param transformation The transformation to apply.
+     */
+    void setRenderableTransformation(uint64_t id, const Transformation &transformation) {
+        transforms_[id] = transformation;
     }
 
     void setSkybox(std::shared_ptr<Skybox> skybox) {

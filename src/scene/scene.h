@@ -26,18 +26,22 @@ public:
         physicsEngine_.initialize();
     };
 
+    /**
+     * @brief Starts the scene and its components.
+     */
     void start();
+
     /**
      * @brief Updates the physics and components in the scene.
      * @param dt Time step since the last frame.
      */
     void update(float dt);
 
+    /**
+     * @brief Finalizes the scene and its components.
+     */
     void end();
 
-    /**
-     * @brief Gets the physics engine managing this scene.
-     */
     PhysicsEngine &getPhysicsEngine() {
         return physicsEngine_;
     }
@@ -56,8 +60,16 @@ public:
      */
     void populateRenderer(Renderer &renderer);
 
+    /**
+     * @brief Gets the currently active camera in the scene.
+     * @return Shared pointer to the active camera.
+     */
     std::shared_ptr<Camera> getActiveCamera();
 
+    /**
+     * @brief Gets the root node of the scene hierarchy.
+     * @return Shared pointer to the root node.
+     */
     std::shared_ptr<Node> getRoot() const {
         return root_;
     }

@@ -8,9 +8,19 @@
 #include "physics/physicsengine.h"
 #include "physics/rigidbody.h"
 
+/**
+ * @class RigidBodyComponent
+ * @brief Component that adds rigid body physics properties to a Node.
+ */
 class RigidBodyComponent : public BaseComponent {
 public:
     RigidBodyComponent() = default;
+
+    /**
+     * @brief Constructor for RigidBodyComponent.
+     * @param physicsEngine Pointer to the physics engine.
+     * @param mass Mass of the rigid body.
+     */
     RigidBodyComponent(PhysicsEngine *physicsEngine, float mass);
     ~RigidBodyComponent() override;
 

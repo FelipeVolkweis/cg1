@@ -9,9 +9,23 @@
 #include "types/vec3.h"
 #include "window/inputhandler.h"
 
+/**
+ * @class OrbitalCameraControllerComponent
+ * @brief Component that handles orbital camera movement around a target.
+ */
 class OrbitalCameraControllerComponent : public BaseComponent, public Enableable {
 public:
     OrbitalCameraControllerComponent() = default;
+
+    /**
+     * @brief Constructor for OrbitalCameraControllerComponent.
+     * @param inputHandler Pointer to the input handler.
+     * @param maxPitch Maximum pitch angle.
+     * @param minPitch Minimum pitch angle.
+     * @param lookSensitivity Look sensitivity.
+     * @param orbitTarget The target point to orbit around.
+     * @param orbitRadius The radius of the orbit.
+     */
     OrbitalCameraControllerComponent(InputHandler *inputHandler, float maxPitch, float minPitch,
                                      float lookSensitivity, Vec3 orbitTarget, float orbitRadius);
 

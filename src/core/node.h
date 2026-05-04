@@ -8,8 +8,19 @@
 #include "component.h"
 #include "transformations/transformation.h"
 
+/**
+ * @class Node
+ * @brief Represents a node in the scene graph.
+ * 
+ * Nodes can have a parent, multiple children, and multiple components.
+ * They also handle transformations in local and world space.
+ */
 class Node : public std::enable_shared_from_this<Node> {
 public:
+    /**
+     * @brief Constructor for Node.
+     * Initializes the node with a unique ID.
+     */
     Node() : id_(lastId_++) {}
 
     void addChild(std::shared_ptr<Node> child) {
@@ -42,6 +53,10 @@ public:
         return transform_;
     }
 
+    /**
+     * @brief Gets the world-space transformation of this node.
+     * @return The world-space transformation.
+     */
     Transformation getWorldTransform() const {
         Transformation world = transform_;
         auto p = parent_.lock();
@@ -63,6 +78,11 @@ public:
         return name_;
     }
 
+    /**
+     * @brief Gets a component of a specific type attached to this node.
+     * @tparam T The type of the component to get.
+     * @return A shared pointer to the component, or nullptr if not found.
+     */
     template <typename T> std::shared_ptr<T> getComponent() {
         for (auto &comp : components_) {
             auto casted = std::dynamic_pointer_cast<T>(comp);
@@ -73,6 +93,12 @@ public:
         return nullptr;
     }
 
+    /**
+     * @brief Finds a node by its name starting from a root node.
+     * @param root The root node to start searching from.
+     * @param name The name of the node to find.
+     * @return A shared pointer to the found node, or nullptr if not found.
+     */
     static std::shared_ptr<Node> findNodeByName(std::shared_ptr<Node> root,
                                                 const std::string &name) {
         if (!root)
@@ -87,6 +113,10 @@ public:
         return nullptr;
     }
 
+    /**
+     * @brief Gets the unique ID of this node.
+     * @return The unique ID.
+     */
     uint64_t getId() {
         return id_;
     }

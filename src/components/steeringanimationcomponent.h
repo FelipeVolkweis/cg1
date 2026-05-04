@@ -6,6 +6,10 @@
 #include "core/component.h"
 #include "transformations/transformation.h"
 
+/**
+ * @class SteeringAnimationComponent
+ * @brief Component that handles the visual animation of a steering wheel.
+ */
 class SteeringAnimationComponent : public BaseComponent {
 public:
     SteeringAnimationComponent() = default;

@@ -11,9 +11,19 @@
 #include "physics/vehicle/vehicle.h"
 #include "transformations/transformation.h"
 
+/**
+ * @class VehicleComponent
+ * @brief Component that represents a vehicle in the physics simulation.
+ */
 class VehicleComponent : public BaseComponent {
 public:
     VehicleComponent() = default;
+
+    /**
+     * @brief Constructor for VehicleComponent.
+     * @param physicsEngine Pointer to the physics engine.
+     * @param mass Mass of the vehicle.
+     */
     VehicleComponent(PhysicsEngine *physicsEngine, float mass);
 
     void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
@@ -27,6 +37,14 @@ public:
         return vehicle_.get();
     }
 
+    /**
+     * @brief Adds a wheel to the vehicle.
+     * @param wheelNode Shared pointer to the Node representing the wheel.
+     * @param connectionPointCS0 Connection point in chassis space.
+     * @param suspensionRestLength Rest length of the suspension.
+     * @param wheelRadius Radius of the wheel.
+     * @param isFrontWheel True if it's a front wheel, false otherwise.
+     */
     void addWheel(std::shared_ptr<Node> wheelNode, const btVector3 &connectionPointCS0,
                   float suspensionRestLength, float wheelRadius, bool isFrontWheel);
 
@@ -36,6 +54,10 @@ private:
 
     float initialMass_ = 0.0f;
 
+    /**
+     * @struct WheelData
+     * @brief Internal structure to store wheel initialization data.
+     */
     struct WheelData {
         std::shared_ptr<Node> node;
         btVector3 connectionPoint;
@@ -44,6 +66,10 @@ private:
         bool isFrontWheel;
     };
 
+    /**
+     * @struct ParsedWheelData
+     * @brief Internal structure to store wheel data parsed from configuration.
+     */
     struct ParsedWheelData {
         std::string nodeName;
         btVector3 connectionPoint;

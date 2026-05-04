@@ -6,10 +6,18 @@
 #include "core/component.h"
 #include "shapes/baseshape.h"
 
+/**
+ * @class MeshComponent
+ * @brief Component that represents a 3D mesh.
+ */
 class MeshComponent : public BaseComponent {
 public:
     MeshComponent() = default;
 
+    /**
+     * @brief Constructor for MeshComponent with a shape.
+     * @param shape Unique pointer to the BaseShape.
+     */
     MeshComponent(std::unique_ptr<BaseShape> shape) : shape_(std::move(shape)) {}
 
     void load(const YAML::Node &data, PhysicsEngine &physicsEngine,

@@ -25,8 +25,17 @@ public:
     virtual ~BaseShape() = default;
 
     virtual std::string getName() const = 0;
+
+    /**
+     * @brief Parses shape-specific data from a YAML node.
+     * @param node The YAML node containing shape data.
+     */
     virtual void parse(const YAML::Node &node) = 0;
 
+    /**
+     * @brief Parses common shape data from a YAML node (e.g., color, texture).
+     * @param node The YAML node containing shape data.
+     */
     void parseCommon(const YAML::Node &node);
 
     const std::vector<Vertex> &getVertices() const {
@@ -45,14 +54,6 @@ public:
         color_ = color;
     }
 
-    uint32_t getTextureId() const {
-        return textureId_;
-    }
-
-    void setTextureId(uint32_t id) {
-        textureId_ = id;
-    }
-
     bool hasColor() const {
         return hasColor_;
     }
@@ -61,6 +62,11 @@ public:
         return isModel_;
     }
 
+    /**
+     * @brief Converts the shape to a Renderable object.
+     * @param id The unique ID (from Node) for the Renderable.
+     * @return The Renderable object.
+     */
     Renderable asRenderable(uint64_t id) const {
         return Renderable(id, vertices_, meshGroups_);
     }

@@ -9,6 +9,10 @@
 
 class Node;
 
+/**
+ * @struct MeshGroup
+ * @brief Represents a group of meshes with the same texture and translucency.
+ */
 struct MeshGroup {
     uint32_t textureId;
     size_t start;
@@ -17,10 +21,20 @@ struct MeshGroup {
     bool translucent;
 };
 
+/**
+ * @class Renderable
+ * @brief Represents an object that can be rendered on the GPU.
+ */
 class Renderable {
 public:
     Renderable() : id_(-1) {}
 
+    /**
+     * @brief Constructs a Renderable with vertices and mesh groups.
+     * @param id Unique identifier for the renderable.
+     * @param vertices Shared pointer to a vector of vertices.
+     * @param meshGroups Shared pointer to a vector of mesh groups.
+     */
     Renderable(uint64_t id, std::shared_ptr<std::vector<Vertex>> vertices,
                std::shared_ptr<std::vector<MeshGroup>> meshGroups);
 
@@ -29,6 +43,10 @@ public:
     Renderable(const Renderable &) = delete;
     Renderable &operator=(const Renderable &) = delete;
 
+    /**
+     * @brief Move constructor for Renderable.
+     * @param other The Renderable to move from.
+     */
     Renderable(Renderable &&other) noexcept
         : vbo_(other.vbo_), vao_(other.vao_), vertices_(std::move(other.vertices_)),
           meshGroups_(std::move(other.meshGroups_)), shaderProgram_(other.shaderProgram_),
@@ -38,6 +56,11 @@ public:
         other.id_ = -1;
     }
 
+    /**
+     * @brief Move assignment operator for Renderable.
+     * @param other The Renderable to move from.
+     * @return Reference to this Renderable.
+     */
     Renderable &operator=(Renderable &&other) noexcept {
         if (this != &other) {
             vbo_ = other.vbo_;
@@ -54,13 +77,31 @@ public:
         return *this;
     }
 
+    /**
+     * @brief Initializes the renderable on the GPU (creates VAO/VBO).
+     */
     void initializeOnGPU();
+
+    /**
+     * @brief Renders the object using the provided model matrix.
+     * @param model The model transformation matrix.
+     * @param renderTranslucent Whether to render translucent parts if true
+     * or render opaque if false.
+     */
     void render(const Mat4x4 &model, bool renderTranslucent);
 
+    /**
+     * @brief Gets the Vertex Array Object (VAO) handle.
+     * @return VAO handle.
+     */
     uint32_t getVAO() const {
         return vao_;
     }
 
+    /**
+     * @brief Gets the Vertex Buffer Object (VBO) handle.
+     * @return VBO handle.
+     */
     uint32_t getVBO() const {
         return vbo_;
     }
@@ -73,6 +114,10 @@ public:
         return vbo_ != (uint32_t)-1;
     }
 
+    /**
+     * @brief Gets the unique identifier of the renderable.
+     * @return Unique ID (== to NodeID).
+     */
     uint64_t getId() const {
         return id_;
     }
@@ -81,6 +126,10 @@ public:
         return id_ != (uint64_t)-1;
     }
 
+    /**
+     * @brief Sets the shader program to use for rendering.
+     * @param shaderProgram Shader program handle.
+     */
     void setShaderProgram(uint32_t shaderProgram) {
         shaderProgram_ = shaderProgram;
     }

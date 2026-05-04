@@ -5,6 +5,13 @@
 
 #include "types/vec2.h"
 
+/**
+ * @class InputHandler
+ * @brief Handles user input from the keyboard and mouse using GLFW.
+ *
+ * This class tracks the state of specific keys and provides methods to query
+ * input axes for movement and other actions.
+ */
 class InputHandler {
 public:
     InputHandler(GLFWwindow *window);
@@ -15,18 +22,54 @@ public:
     void handleCameraCycle_C();
     void handleBrakes_SpaceBar();
 
+    /**
+     * @brief Gets the current dimensions of the window.
+     * @return A pair containing width and height.
+     */
     std::pair<int, int> getWindowDimensions() const;
 
+    /**
+     * @brief Gets the input vector for the primary Y axis (W/S).
+     * @return Vec2 representing the input.
+     */
     Vec2 getMainYAxisInputVector();
+
+    /**
+     * @brief Gets the input vector for the primary X axis (A/D).
+     * @return Vec2 representing the input.
+     */
     Vec2 getMainXAxisInputVector();
+
+    /**
+     * @brief Gets the input vector for the secondary Y axis (I/K).
+     * @return Vec2 representing the input.
+     */
     Vec2 getSecondaryYAxisInputVector();
+
+    /**
+     * @brief Gets the input vector for the secondary X axis (J/L).
+     * @return Vec2 representing the input.
+     */
     Vec2 getSecondaryXAxisInputVector();
+
+    /**
+     * @brief Checks if wireframe mode is enabled.
+     * @return true if wireframe is enabled, false otherwise.
+     */
     bool getWireframeEnabled();
 
+    /**
+     * @brief Gets the number of times the camera cycle key was clicked.
+     * @return Number of camera cycle requests.
+     */
     uint32_t getNumberOfCameraCycleRequests() const {
         return cycleClicked_;
     }
 
+    /**
+     * @brief Checks if the space bar is currently held down.
+     * @return true if held down, false otherwise.
+     */
     bool isSpaceBarHeldDown() const {
         return spaceHeldDown_;
     }

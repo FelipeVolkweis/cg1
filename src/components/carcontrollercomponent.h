@@ -8,9 +8,22 @@
 #include "core/component.h"
 #include "window/inputhandler.h"
 
+/**
+ * @class CarControllerComponent
+ * @brief Component that handles car input and control logic.
+ */
 class CarControllerComponent : public BaseComponent {
 public:
     CarControllerComponent() = default;
+
+    /**
+     * @brief Constructor for CarControllerComponent.
+     * @param inputHandler Pointer to the input handler.
+     * @param maxEngineForce Maximum engine force.
+     * @param maxSteeringAngle Maximum steering angle.
+     * @param steeringSensitivity Steering sensitivity.
+     * @param breakForce Braking force.
+     */
     CarControllerComponent(InputHandler *inputHandler, float maxEngineForce = 2000.0f,
                            float maxSteeringAngle = 0.5f, float steeringSensitivity = 3.0f,
                            float breakForce = 100.0f);
