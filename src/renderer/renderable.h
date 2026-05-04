@@ -55,7 +55,7 @@ public:
     }
 
     void initializeOnGPU();
-    void render(const Mat4x4 &model);
+    void render(const Mat4x4 &model, bool renderTranslucent);
 
     uint32_t getVAO() const {
         return vao_;

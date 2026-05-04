@@ -108,7 +108,12 @@ void Renderer::render() {
 
         for (auto &renderable : renderables_) {
             auto &model = transforms_[renderable.first].getTransformationMatrix();
-            renderable.second.render(model);
+            renderable.second.render(model, false);
+        }
+
+        for (auto &renderable : renderables_) {
+            auto &model = transforms_[renderable.first].getTransformationMatrix();
+            renderable.second.render(model, true);
         }
     }
 }
