@@ -17,13 +17,20 @@ root:
       components:
         - type: "Mesh"
           shape: "box"
-          width: 100.0
+          width: 120.0
           height: 0.5
           depth: 100.0
           color: [1, 0, 0]
         - type: "RigidBody"
           mass: 0.0
-
+    - name: "RoadVisuals"
+      rotation: [0, 0, 0]
+      scale: [5, 1, 5]
+      origin: [0, -1.75, -1.35]
+      components:
+        - type: "Mesh"
+          shape: "model" 
+          path: "data/models/road/road.obj"
     - name: "Car"
       origin: [0, 2, 0]
       components:
