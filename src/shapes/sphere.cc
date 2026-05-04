@@ -25,7 +25,8 @@ void Sphere::parse(const YAML::Node &node) {
 }
 
 void Sphere::generateVertices(float radius, int sectors, int stacks) {
-    vertices_.clear();
+    initializeCommon();
+    vertices_->clear();
 
     float sectorStep = 2 * M_PI / sectors;
     float stackStep = M_PI / stacks;

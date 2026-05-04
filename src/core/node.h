@@ -10,6 +10,8 @@
 
 class Node : public std::enable_shared_from_this<Node> {
 public:
+    Node() : id_(lastId_++) {}
+
     void addChild(std::shared_ptr<Node> child) {
         if (child) {
             child->parent_ = shared_from_this();
@@ -85,12 +87,19 @@ public:
         return nullptr;
     }
 
+    uint64_t getId() {
+        return id_;
+    }
+
 private:
     std::string name_;
     std::vector<std::shared_ptr<BaseComponent>> components_;
     std::weak_ptr<Node> parent_;
     std::vector<std::shared_ptr<Node>> children_;
     Transformation transform_;
+    const uint64_t id_;
+
+    static uint64_t lastId_;
 };
 
 #endif

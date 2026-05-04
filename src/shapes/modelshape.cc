@@ -9,7 +9,10 @@ void ModelShape::parse(const YAML::Node &node) {
     parseCommon(node);
     if (node["path"]) {
         std::string path = node["path"].as<std::string>();
-        ModelImporter::loadObjInto(path, this);
+        auto package = ModelImporter::loadObjInto(path);
+        vertices_ = package.vertices;
+        meshGroups_ = package.groups;
+
     } else {
         Logger::Error("ModelShape requires a 'path' property.");
     }

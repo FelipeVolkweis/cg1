@@ -24,7 +24,8 @@ void SemiSphere::parse(const YAML::Node &node) {
 }
 
 void SemiSphere::generateVertices(float radius, int sectors, int stacks) {
-    vertices_.clear();
+    initializeCommon();
+    vertices_->clear();
 
     float sectorStep = 2 * M_PI / sectors;
     float stackStep = (M_PI / 2) / stacks;

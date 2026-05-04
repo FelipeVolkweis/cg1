@@ -10,6 +10,7 @@
 #include "components/cameracomponent.h"
 #include "core/node.h"
 #include "physics/physicsengine.h"
+#include "renderer/renderable.h"
 #include "renderer/renderer.h"
 #include "renderer/skybox.h"
 #include "shapes/baseshape.h"

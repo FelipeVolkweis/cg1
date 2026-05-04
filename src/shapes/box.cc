@@ -3,6 +3,7 @@
 #include <yaml-cpp/yaml.h>
 
 Box::Box(float width, float height, float depth) {
+    initializeCommon();
     generateVertices(width, height, depth);
 }
 
@@ -19,7 +20,8 @@ void Box::parse(const YAML::Node &node) {
 }
 
 void Box::generateVertices(float width, float height, float depth) {
-    vertices_.clear();
+    initializeCommon();
+    vertices_->clear();
 
     float w2 = width / 2.0f;
     float h2 = height / 2.0f;

@@ -26,7 +26,8 @@ void Torus::parse(const YAML::Node &node) {
 }
 
 void Torus::generateVertices(float innerRadius, float outerRadius, int sides, int rings) {
-    vertices_.clear();
+    initializeCommon();
+    vertices_->clear();
 
     float ringStep = 2 * M_PI / rings;
     float sideStep = 2 * M_PI / sides;

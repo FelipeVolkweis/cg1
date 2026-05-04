@@ -22,7 +22,8 @@ void Cylinder::parse(const YAML::Node &node) {
 }
 
 void Cylinder::generateVertices(float radius, float height, int sectors) {
-    vertices_.clear();
+    initializeCommon();
+    vertices_->clear();
     float sectorStep = 2 * M_PI / sectors;
     float h2 = height / 2.0f;
 

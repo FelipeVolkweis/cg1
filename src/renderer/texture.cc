@@ -7,6 +7,8 @@
 #include "stb_image.h"
 #include "utils/logger.h"
 
+std::unordered_map<ColorKey, uint32_t> Texture::colors_;
+
 uint32_t Texture::loadTexture(const std::string &path) {
     uint32_t textureID;
     glGenTextures(1, &textureID);
@@ -51,7 +53,7 @@ uint32_t Texture::loadCubemap(const std::vector<std::string> &faces) {
         } else if (nrChannels == 4) {
             format = GL_RGBA;
         }
-        
+
         if (data) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format,
                          GL_UNSIGNED_BYTE, data);
@@ -71,12 +73,43 @@ uint32_t Texture::loadCubemap(const std::vector<std::string> &faces) {
 }
 
 uint32_t Texture::createWhiteTexture() {
-    uint32_t textureID;
+    static uint32_t textureID = 0;
+    if (textureID != 0) {
+        return textureID;
+    }
+
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     unsigned char whitePixel[] = {255, 255, 255, 255};
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, whitePixel);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    return textureID;
+}
+
+uint32_t Texture::createColorTexture(const Vec3 &color, uint8_t transparency) {
+    uint8_t r, g, b;
+    r = 255 * color.x();
+    g = 255 * color.y();
+    b = 255 * color.z();
+
+    ColorKey key{r, g, b};
+
+    if (colors_.find(key) != colors_.end()) {
+        return colors_[key];
+    }
+
+    uint32_t textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    unsigned char colorPixel[] = {r, g, b, transparency};
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, colorPixel);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

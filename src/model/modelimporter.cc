@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "renderer/texture.h"
-#include "shapes/baseshape.h"
 #include "tiny_obj_loader.h"
 #include "utils/logger.h"
 
@@ -77,14 +76,15 @@ groupFacesByMaterial(const std::vector<tinyobj::shape_t> &shapes) {
     return materialGroups;
 }
 
-void buildShapeGeometry(
-    BaseShape *shape, const tinyobj::attrib_t &attrib, const std::vector<tinyobj::shape_t> &shapes,
-    const std::vector<tinyobj::material_t> &materials,
-    const std::map<int, uint32_t> &materialToTexture,
-    const std::vector<std::vector<size_t>> &shapeFaceOffsets,
-    const std::map<int, std::vector<std::pair<size_t, size_t>>> &materialGroups) {
-    shape->clearGroups();
+ModelPackage
+buildShapeGeometry(const tinyobj::attrib_t &attrib, const std::vector<tinyobj::shape_t> &shapes,
+                   const std::vector<tinyobj::material_t> &materials,
+                   const std::map<int, uint32_t> &materialToTexture,
+                   const std::vector<std::vector<size_t>> &shapeFaceOffsets,
+                   const std::map<int, std::vector<std::pair<size_t, size_t>>> &materialGroups) {
     size_t vertexOffset = 0;
+    ModelPackage package;
+    package.valid = true;
 
     for (auto const &[matId, faces] : materialGroups) {
         size_t groupStart = vertexOffset;
@@ -132,29 +132,31 @@ void buildShapeGeometry(
                                materials[matId].diffuse[2], materials[matId].dissolve);
                 }
 
-                shape->addVertex(Vertex(pos, norm, tex, col));
+                package.vertices->push_back(Vertex(pos, norm, tex, col));
                 groupCount++;
                 vertexOffset++;
             }
         }
 
-        uint32_t tid = 0;
+        uint32_t tid = Texture::createWhiteTexture();
         if (materialToTexture.count(matId)) {
             tid = materialToTexture.at(matId);
         }
 
-        shape->addGroup({tid, groupStart, groupCount, isTransparent});
+        package.groups->push_back({tid, groupStart, groupCount, isTransparent});
     }
+
+    return package;
 }
 
 } // namespace
 
-void ModelImporter::loadObjInto(const std::string &filePath, BaseShape *shape) {
+ModelPackage ModelImporter::loadObjInto(const std::string &filePath) {
     std::string directory;
     tinyobj::ObjReader reader;
 
     if (!parseObjFile(filePath, directory, reader)) {
-        return;
+        return ModelPackage();
     }
 
     auto &attrib = reader.GetAttrib();
@@ -165,6 +167,6 @@ void ModelImporter::loadObjInto(const std::string &filePath, BaseShape *shape) {
     auto shapeFaceOffsets = calculateFaceOffsets(shapes);
     auto materialGroups = groupFacesByMaterial(shapes);
 
-    buildShapeGeometry(shape, attrib, shapes, materials, materialToTexture, shapeFaceOffsets,
-                       materialGroups);
+    return buildShapeGeometry(attrib, shapes, materials, materialToTexture, shapeFaceOffsets,
+                              materialGroups);
 }

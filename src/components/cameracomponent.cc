@@ -15,7 +15,7 @@ CameraComponent::CameraComponent(Perspective perspective, Vec3 focalPoint, Vec3 
 void CameraComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
                            InputHandler &inputHandler) {
 
-    Perspective p = {45.0f, 16.0f / 9.0f, 0.1f, 100.0f};
+    Perspective p = {45.0f, 16.0f / 9.0f, 0.01f, 1000.0f};
     if (data["fov"])
         p.fovy = data["fov"].as<float>();
     if (data["aspect"])

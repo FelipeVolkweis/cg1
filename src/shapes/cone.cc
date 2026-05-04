@@ -22,7 +22,8 @@ void Cone::parse(const YAML::Node &node) {
 }
 
 void Cone::generateVertices(float radius, float height, int sectors) {
-    vertices_.clear();
+    initializeCommon();
+    vertices_->clear();
 
     float sectorStep = 2 * M_PI / sectors;
     float halfH = height / 2.0f;

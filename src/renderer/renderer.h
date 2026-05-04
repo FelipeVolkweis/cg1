@@ -6,19 +6,9 @@
 #include <vector>
 
 #include "camera/camera.h"
+#include "renderable.h"
 #include "renderer/skybox.h"
 #include "transformations/transformation.h"
-
-class BaseShape;
-
-/**
- * @struct RenderItem
- * @brief Represents a shape and its transformation to be rendered.
- */
-struct RenderItem {
-    const BaseShape *shape;
-    Transformation transform;
-};
 
 /**
  * @class Renderer
@@ -27,7 +17,6 @@ struct RenderItem {
 class Renderer {
 public:
     Renderer() = default;
-    ~Renderer();
 
     /**
      * @brief Initializes the OpenGL state and compiles shaders.
@@ -44,20 +33,14 @@ public:
         activeCamera_ = camera;
     }
 
-    /**
-     * @brief Adds a shape to the rendering queue.
-     * @param shape Pointer to the shape to render.
-     * @param transform Transformation to apply to the shape.
-     */
-    void addShape(const BaseShape *shape, const Transformation &transform) {
-        items_.push_back({shape, transform});
+    void addRenderable(Renderable renderable);
+
+    bool isRenderableHere(uint64_t id) {
+        return renderables_.find(id) != renderables_.end();
     }
 
-    /**
-     * @brief Clears the rendering queue.
-     */
-    void clear() {
-        items_.clear();
+    void setRenderableTransformation(uint64_t id, const Transformation &tranformation) {
+        transforms_[id] = tranformation;
     }
 
     void setSkybox(std::shared_ptr<Skybox> skybox) {
@@ -65,13 +48,12 @@ public:
     }
 
 private:
-    std::vector<RenderItem> items_;
     std::weak_ptr<Camera> activeCamera_;
     std::shared_ptr<Skybox> skybox_;
     uint32_t shaderProgram_ = 0;
-    uint32_t vao_ = 0;
-    uint32_t vbo_ = 0;
-    uint32_t ebo_ = 0;
+
+    std::unordered_map<uint64_t, Renderable> renderables_;
+    std::unordered_map<uint64_t, Transformation> transforms_;
 
     /**
      * @brief Compiles a shader from source.
@@ -80,10 +62,6 @@ private:
      * @return The compiled shader handle, or 0 on failure.
      */
     uint32_t compileShader(uint32_t type, const char *source);
-
-    void setupRenderingStep(const RenderItem &item);
-
-    uint32_t whiteTextureId_ = 0;
 };
 
 #endif
