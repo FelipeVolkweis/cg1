@@ -45,8 +45,15 @@ uint32_t Texture::loadCubemap(const std::vector<std::string> &faces) {
     stbi_set_flip_vertically_on_load(false);
     for (unsigned int i = 0; i < faces.size(); i++) {
         unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        GLenum format = GL_RGB;
+        if (nrChannels == 3) {
+            format = GL_RGB;
+        } else if (nrChannels == 4) {
+            format = GL_RGBA;
+        }
+        
         if (data) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB,
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format,
                          GL_UNSIGNED_BYTE, data);
             stbi_image_free(data);
         } else {
