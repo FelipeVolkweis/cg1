@@ -52,9 +52,14 @@ private:
         bool isFrontWheel;
     };
 
+    struct WheelNode {
+        std::shared_ptr<Node> node;
+        Transformation offset;
+    };
+
     std::vector<WheelData> wheelsToInitialize_;
     std::vector<ParsedWheelData> parsedWheels_;
-    std::vector<std::shared_ptr<Node>> activeWheelNodes_;
+    std::vector<WheelNode> activeWheelNodes_;
 };
 
 #endif

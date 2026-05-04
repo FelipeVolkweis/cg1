@@ -19,6 +19,14 @@ public:
 
     void onUpdate(float dt) override;
 
+    float getCurrentSteering() const {
+        return currentSteering_;
+    }
+
+    float getMaxSteeringAngle() const {
+        return maxSteeringAngle_;
+    }
+
 private:
     InputHandler *inputHandler_ = nullptr;
     float maxEngineForce_ = 2000.0f;

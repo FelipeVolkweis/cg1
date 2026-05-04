@@ -100,7 +100,7 @@ bool VehicleComponent::onStart() {
 
     for (const auto &w : wheelsToInitialize_) {
         vehicle_->addWheel(w.connectionPoint, w.suspensionRestLength, w.radius, w.isFrontWheel);
-        activeWheelNodes_.push_back(w.node);
+        activeWheelNodes_.push_back({w.node, w.node->getTransformation()});
     }
     wheelsToInitialize_.clear();
 
@@ -114,12 +114,10 @@ void VehicleComponent::onUpdate(float dt) {
 
     node->setTransform(vehicle_->getChassisTransform());
 
-    static Transformation wheelOffset = RotationY(90.0f); // TODO: move this to a param if needed
-
     for (size_t i = 0; i < activeWheelNodes_.size(); ++i) {
-        if (activeWheelNodes_[i]) {
+        if (activeWheelNodes_[i].node) {
             Transformation t = vehicle_->getWheelTransform(i);
-            activeWheelNodes_[i]->setTransform(t * wheelOffset);
+            activeWheelNodes_[i].node->setTransform(t * activeWheelNodes_[i].offset);
         }
     }
 }
