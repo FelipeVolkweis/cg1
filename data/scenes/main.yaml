@@ -190,10 +190,11 @@ root:
               orbitRadius: 7
               lookSensitivity: 75
         - name: "InnerCameraAnchor"
-          origin: [0.5, 0.5, 0.9]
+          origin: [0.5, 0.6, 1]
           rotation: [0, 180, 0]
           components:
             - type: "Camera"
+              fov: 75
             - type: "CameraController"
         - name: "CarVisuals"
           rotation: [0, -90, 0]
@@ -214,6 +215,30 @@ root:
                 - type: "Mesh"
                   shape: "model" 
                   path: "data/models/steering/steering.obj"
+        - name: "RosaryVisuals"
+          scale: [0.05, 0.05, 0.05]
+          rotation: [0, -90, 0]
+          origin: [0, 0.75, 1.2]
+          components:
+            - type: "Mesh"
+              shape: "model" 
+              path: "data/models/rosary/rosary.obj"
+        - name: "OuijaVisuals"
+          scale: [0.15, 0.15, 0.15]
+          rotation: [0, 180, 0]
+          origin: [0, 0.05, 1.6]
+          components:
+            - type: "Mesh"
+              shape: "model" 
+              path: "data/models/ouija/ouija.obj"
+        - name: "PolaroidVisuals"
+          scale: [0.05, 0.05, 0.05]
+          rotation: [0, 135, 0]
+          origin: [-0.5, 0.35, 1.85]
+          components:
+            - type: "Mesh"
+              shape: "model" 
+              path: "data/models/polaroid/polaroid.obj"
     - name: "WheelFrontLeft"
       rotation: [0, -90, 0]
       scale: [0.5, 0.5, 0.5]
