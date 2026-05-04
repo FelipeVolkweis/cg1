@@ -112,6 +112,8 @@ root:
           sensitivity: 2.0
           brake: 120.0
         - type: "CameraCycle"
+        - type: "SteeringAnimation"
+          steeringNodeName: "SteeringVisuals"
       children:
         - name: "OuterCameraAnchor"
           origin: [0, 1.5, -6]
@@ -135,31 +137,42 @@ root:
             - type: "Mesh"
               shape: "model" 
               path: "data/models/van/van.obj"
+        - name: "steeringAnchor"
+          rotation: [0, -90, 0]
+          scale: [0.5, 0.5, 0.5]
+          origin: [0.51, 0.35, 1.5]
+          children:
+            - name: "SteeringVisuals"
+              rotation: [0, 0, 50]
+              components:
+                - type: "Mesh"
+                  shape: "model" 
+                  path: "data/models/steering/steering.obj"
     - name: "WheelFrontLeft"
+      rotation: [0, -90, 0]
+      scale: [0.5, 0.5, 0.5]
       components:
         - type: "Mesh"
-          shape: "cylinder"
-          radius: 0.3
-          height: 0.2
-          color: [0.1, 0.1, 0.1]
+          shape: "model" 
+          path: "data/models/wheel/wheel.obj"
     - name: "WheelFrontRight"
+      rotation: [0, 90, 0]
+      scale: [0.5, 0.5, 0.5]
       components:
         - type: "Mesh"
-          shape: "cylinder"
-          radius: 0.3
-          height: 0.2
-          color: [0.1, 0.1, 0.1]
+          shape: "model" 
+          path: "data/models/wheel/wheel.obj"
     - name: "WheelBackLeft"
+      rotation: [0, -90, 0]
+      scale: [0.5, 0.5, 0.5]
       components:
         - type: "Mesh"
-          shape: "cylinder"
-          radius: 0.3
-          height: 0.2
-          color: [0.1, 0.1, 0.1]
+          shape: "model" 
+          path: "data/models/wheel/wheel.obj"
     - name: "WheelBackRight"
+      rotation: [0, 90, 0]
+      scale: [0.5, 0.5, 0.5]
       components:
         - type: "Mesh"
-          shape: "cylinder"
-          radius: 0.3
-          height: 0.2
-          color: [0.1, 0.1, 0.1]
+          shape: "model" 
+          path: "data/models/wheel/wheel.obj"
