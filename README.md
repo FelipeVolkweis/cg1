@@ -2,6 +2,11 @@
 
 Este projeto é um motor de renderização 3D simples desenvolvido em C++ utilizando OpenGL. Ele permite o carregamento de cenas a partir de arquivos YAML.
 
+## Demonstração em Vídeo
+<iframe width="560" height="315" src="https://youtu.be/ecQ0ASkDJmQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+[Link pro Youtube](https://youtu.be/ecQ0ASkDJmQ)
+
 ## Estrutura do Projeto
 
 - `src/`: Código-fonte (renderer, scene, shapes, transformations).
