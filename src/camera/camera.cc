@@ -3,6 +3,8 @@
 #include "utils/deg2rad.h"
 #include "utils/logger.h"
 
+#include <cmath>
+
 Camera::Camera(Perspective perspective, LookAt lookAt) : 
     fovy_(perspective.fovy), aspect_(perspective.aspect), 
     zNear_(perspective.zNear), zFar_(perspective.zFar),
@@ -61,7 +63,7 @@ Mat4x4 Camera::perspective() {
     float fovRad = fovy_ * DEG2RAD;
     float n = zNear_;
     float f = zFar_;
-    float t = n * tan(fovRad / 2);
+    float t = n * std::tan(fovRad / 2);
     float r = t * aspect_;
 
     mat << n/r, 0,         0,                     0,
