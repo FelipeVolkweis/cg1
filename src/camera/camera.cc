@@ -61,7 +61,7 @@ Mat4x4 Camera::perspective() {
     float fovRad = fovy_ * DEG2RAD;
     float n = zNear_;
     float f = zFar_;
-    float t = n * std::tanf(fovRad / 2);
+    float t = n * tan(fovRad / 2);
     float r = t * aspect_;
 
     mat << n/r, 0,         0,                     0,
