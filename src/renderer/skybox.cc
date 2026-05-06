@@ -3,36 +3,8 @@
 #include <glad/glad.h>
 
 #include "textures/texture.h"
+#include "utils/fileutils.h"
 #include "utils/logger.h"
-
-const char *skyboxVertexShaderSource = R"(
-#version 330 core
-layout (location = 0) in vec3 aPos;
-
-out vec3 TexCoords;
-
-uniform mat4 projection;
-uniform mat4 view;
-
-void main() {
-    TexCoords = aPos;
-    vec4 pos = projection * view * vec4(aPos, 1.0);
-    gl_Position = pos.xyww;
-}
-)";
-
-const char *skyboxFragmentShaderSource = R"(
-#version 330 core
-out vec4 FragColor;
-
-in vec3 TexCoords;
-
-uniform samplerCube skybox;
-
-void main() {    
-    FragColor = texture(skybox, TexCoords);
-}
-)";
 
 Skybox::Skybox(const std::vector<std::string> &faces) {
     textureId_ = Texture::loadCubemap(faces);
@@ -120,8 +92,11 @@ void Skybox::setupGeometry() {
 }
 
 void Skybox::setupShaders() {
-    uint32_t vertexShader = compileShader(GL_VERTEX_SHADER, skyboxVertexShaderSource);
-    uint32_t fragmentShader = compileShader(GL_FRAGMENT_SHADER, skyboxFragmentShaderSource);
+    std::string vertexShaderSource = readFile("shaders/skybox.vert");
+    std::string fragmentShaderSource = readFile("shaders/skybox.frag");
+
+    uint32_t vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource.c_str());
+    uint32_t fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource.c_str());
 
     shaderProgram_ = glCreateProgram();
     glAttachShader(shaderProgram_, vertexShader);

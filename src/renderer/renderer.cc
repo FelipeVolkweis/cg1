@@ -4,44 +4,8 @@
 
 #include "shapes/baseshape.h"
 #include "textures/texture.h"
+#include "utils/fileutils.h"
 #include "utils/logger.h"
-
-const char *vertexShaderSource = R"(
-#version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
-layout (location = 3) in vec4 aColor;
-
-out vec2 TexCoord;
-out vec4 VertColor;
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
-void main() {
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-    TexCoord = aTexCoords;
-    VertColor = aColor;
-}
-)";
-
-const char *fragmentShaderSource = R"(
-#version 330 core
-out vec4 FragColor;
-
-in vec2 TexCoord;
-in vec4 VertColor;
-
-uniform sampler2D texture_diffuse;
-
-void main() {
-    vec4 texColor = texture(texture_diffuse, TexCoord);
-
-    FragColor = texColor * VertColor;
-}
-)";
 
 uint32_t Renderer::compileShader(uint32_t type, const char *source) {
     uint32_t shader = glCreateShader(type);
@@ -59,8 +23,11 @@ uint32_t Renderer::compileShader(uint32_t type, const char *source) {
 }
 
 bool Renderer::initialize() {
-    uint32_t vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
-    uint32_t fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+    std::string vertexShaderSource = readFile("shaders/renderer.vert");
+    std::string fragmentShaderSource = readFile("shaders/renderer.frag");
+
+    uint32_t vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource.c_str());
+    uint32_t fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource.c_str());
 
     shaderProgram_ = glCreateProgram();
     glAttachShader(shaderProgram_, vertexShader);
