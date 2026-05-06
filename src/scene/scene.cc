@@ -3,6 +3,7 @@
 #include <stack>
 
 #include "components/cameracomponent.h"
+#include "components/lightcomponent.h"
 #include "components/meshcomponent.h"
 #include "transformations/rotation.h"
 #include "transformations/scale.h"
@@ -32,6 +33,21 @@ void Scene::populateRenderer(Renderer &renderer) {
                 renderer.addRenderable(std::move(renderable));
             }
             renderer.setRenderableTransformation(nodeId, currentTransform);
+        }
+
+        auto lightComponent = currentNode->getComponent<LightComponent>();
+        if (lightComponent) {
+            auto kind = lightComponent->getKind();
+            auto light = lightComponent->getLight();
+            if (kind == LightComponent::Kind::Directional) {
+                renderer.setDirectionalLight(std::static_pointer_cast<DirectionalLight>(light));
+            } else if (kind == LightComponent::Kind::Point) {
+                renderer.addPointLight(currentNode->getId(),
+                                       std::static_pointer_cast<PointLight>(light));
+            } else if (kind == LightComponent::Kind::Spot) {
+                renderer.addSpotlight(currentNode->getId(),
+                                      std::static_pointer_cast<Spotlight>(light));
+            }
         }
 
         for (auto child : currentNode->getChildren()) {

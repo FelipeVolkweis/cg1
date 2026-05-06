@@ -1,6 +1,6 @@
 #version 330 core
 #define MAX_POINT_LIGHTS 32
-#define MAX_SPOTLIGHTS 4
+#define MAX_SPOTLIGHTS 16
 
 struct Material {
     sampler2D diffuse;
@@ -33,6 +33,11 @@ struct Spotlight {
     vec3 position;
     vec3 direction;
     float cutoff;
+    float outerCutoff;
+
+    float constant;
+    float linear;
+    float quadratic;
 
     vec3 ambient;
     vec3 diffuse;
@@ -61,11 +66,15 @@ void main() {
     vec3 output = vec3(0.0);
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-    int i = 0;
+    
     output += calculateDirectionalLight(directionalLight, norm, viewDir);
 
-    for (; i < numPointLights; i++) {
+    for (int i = 0; i < numPointLights; i++) {
         output += calculatePointLight(pointLights[i], norm, FragPos, viewDir);
+    }
+
+    for (int i = 0; i < numSpotlights; i++) {
+        output += calculateSpotlight(spotlights[i], norm, FragPos, viewDir);
     }
 
     FragColor = vec4(output, material.dissolve);
@@ -104,5 +113,23 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
 } 
 
 vec3 calculateSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
-    return vec3(0.0);
+    vec3 lightDir = normalize(light.position - fragPos);
+    float diffuseAmount = max(dot(normal, lightDir), 0.0);
+    vec3 reflectionDir = reflect(-lightDir, normal);
+    float incomingLight = max(dot(viewDir, reflectionDir), 0.0);
+    float specularAmount = pow(incomingLight, material.shininess);
+
+    float d = length(light.position - fragPos);
+    float den = light.constant + light.linear * d + light.quadratic * d * d;
+    float attenuation = 1.0 / den;
+
+    float theta = dot(lightDir, normalize(-light.direction)); 
+    float epsilon = light.cutoff - light.outerCutoff;
+    float intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);
+
+    vec3 specular = light.specular * specularAmount * vec3(texture(material.specular, TexCoord));
+    vec3 diffuse = light.diffuse * diffuseAmount * vec3(texture(material.diffuse, TexCoord));
+    vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
+
+    return (specular + diffuse + ambient) * attenuation * intensity;
 }

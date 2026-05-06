@@ -71,7 +71,8 @@ MaterialMaps loadMaterialTextures(const std::vector<tinyobj::material_t> &materi
                 m.specular[i] = specularTid;
             }
         } else {
-            Vec3 color(materials[i].specular[0], materials[i].specular[1], materials[i].specular[2]);
+            Vec3 color(materials[i].specular[0], materials[i].specular[1],
+                       materials[i].specular[2]);
             uint32_t tid = Texture::createColorTexture(color);
             m.specular[i] = tid;
         }
