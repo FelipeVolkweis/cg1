@@ -246,6 +246,36 @@ root:
             - type: "Mesh"
               shape: "model" 
               path: "data/models/polaroid/polaroid.obj"
+        - name: "HeadlightLeft"
+          origin: [-0.6, 0.0, 2.1]
+          components:
+            - type: "Light"
+              kind: "spot"
+              direction: [0, -0.2, 1]
+              cutoff: 25
+              outerCutoff: 35
+              diffuse: [1, 1, 0.9]
+              specular: [1, 1, 1]
+              fadeDistance: 65
+        - name: "HeadlightRight"
+          origin: [0.6, 0.0, 2.1]
+          components:
+            - type: "Light"
+              kind: "spot"
+              direction: [0, -0.2, 1]
+              cutoff: 25
+              outerCutoff: 35
+              diffuse: [1, 1, 0.9]
+              specular: [1, 1, 1]
+              fadeDistance: 65
+        - name: "CarInternalLight"
+          origin: [0, 1.2, 0.2]
+          components:
+            - type: "Light"
+              kind: "point"
+              diffuse: [0.05, 0.1, 0.2]
+              specular: [0.05, 0.1, 0.2]
+              fadeDistance: 10
     - name: "WheelFrontLeft"
       rotation: [0, -90, 0]
       scale: [0.5, 0.5, 0.5]

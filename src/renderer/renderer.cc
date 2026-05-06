@@ -71,7 +71,7 @@ bool Renderer::initialize() {
         glGetUniformLocation(shaderProgram_, "directionalLight.specular");
 
     pointLightLocations_.clear();
-    for (int i = 0; i < 32; ++i) {
+    for (int i = 0; i < MAX_POINT_LIGHTS; ++i) {
         std::string prefix = "pointLights[" + std::to_string(i) + "].";
         pointLightLocations_.push_back(
             {glGetUniformLocation(shaderProgram_, (prefix + "position").c_str()),
@@ -84,7 +84,7 @@ bool Renderer::initialize() {
     }
 
     spotlightLocations_.clear();
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < MAX_SPOTLIGHTS; ++i) {
         std::string prefix = "spotlights[" + std::to_string(i) + "].";
         spotlightLocations_.push_back(
             {glGetUniformLocation(shaderProgram_, (prefix + "position").c_str()),
@@ -136,7 +136,7 @@ void Renderer::render() {
 
         int plCount = 0;
         for (const auto &pair : pointLights_) {
-            if (plCount >= 32)
+            if (plCount >= MAX_POINT_LIGHTS)
                 break;
             auto pl = pair.second;
             glUniform3f(pointLightLocations_[plCount].position, pl->getPosition().x(),
@@ -156,7 +156,7 @@ void Renderer::render() {
 
         int slCount = 0;
         for (const auto &pair : spotlights_) {
-            if (slCount >= 4)
+            if (slCount >= MAX_SPOTLIGHTS)
                 break;
             auto sl = pair.second;
             glUniform3f(spotlightLocations_[slCount].position, sl->getPosition().x(),
