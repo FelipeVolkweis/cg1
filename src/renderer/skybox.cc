@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-#include "texture.h"
+#include "textures/texture.h"
 #include "utils/logger.h"
 
 const char *skyboxVertexShaderSource = R"(

@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 
 #include "shapes/baseshape.h"
-#include "texture.h"
+#include "textures/texture.h"
 #include "utils/logger.h"
 
 const char *vertexShaderSource = R"(

@@ -6,7 +6,7 @@
 #include <map>
 #include <vector>
 
-#include "renderer/texture.h"
+#include "renderer/textures/texture.h"
 #include "tiny_obj_loader.h"
 #include "utils/logger.h"
 

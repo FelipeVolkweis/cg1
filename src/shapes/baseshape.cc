@@ -4,7 +4,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "renderer/texture.h"
+#include "renderer/textures/texture.h"
 #include "utils/logger.h"
 
 void BaseShape::initializeCommon() {
