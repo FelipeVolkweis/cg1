@@ -59,8 +59,7 @@ MaterialMaps loadMaterialTextures(const std::vector<tinyobj::material_t> &materi
             }
         } else {
             Vec3 color(materials[i].diffuse[0], materials[i].diffuse[1], materials[i].diffuse[2]);
-            uint8_t transparency = materials[i].dissolve * 255;
-            uint32_t tid = Texture::createColorTexture(color, transparency);
+            uint32_t tid = Texture::createColorTexture(color);
             m.diffuse[i] = tid;
         }
 
@@ -71,6 +70,10 @@ MaterialMaps loadMaterialTextures(const std::vector<tinyobj::material_t> &materi
             if (specularTid != 0) {
                 m.specular[i] = specularTid;
             }
+        } else {
+            Vec3 color(materials[i].specular[0], materials[i].specular[1], materials[i].specular[2]);
+            uint32_t tid = Texture::createColorTexture(color);
+            m.specular[i] = tid;
         }
         m.shininess[i] = materials[i].shininess;
         m.dissolve[i] = materials[i].dissolve;
