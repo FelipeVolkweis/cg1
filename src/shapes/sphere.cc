@@ -51,15 +51,15 @@ void Sphere::generateVertices(float radius, int sectors, int stacks) {
             Vec3 v4(xy2 * cos(sectorAngle2), xy2 * sin(sectorAngle2), z2);
 
             if (i != 0) {
-                addVertex(v1);
-                addVertex(v3);
-                addVertex(v2);
+                addVertex(Vertex(v1, v1.normalized()));
+                addVertex(Vertex(v3, v3.normalized()));
+                addVertex(Vertex(v2, v2.normalized()));
             }
 
             if (i != (stacks - 1)) {
-                addVertex(v2);
-                addVertex(v3);
-                addVertex(v4);
+                addVertex(Vertex(v2, v2.normalized()));
+                addVertex(Vertex(v3, v3.normalized()));
+                addVertex(Vertex(v4, v4.normalized()));
             }
         }
     }

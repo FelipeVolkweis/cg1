@@ -28,13 +28,17 @@ void Box::generateVertices(float width, float height, float depth) {
     float d2 = depth / 2.0f;
 
     auto addFace = [&](Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4) {
-        addVertex(v1);
-        addVertex(v2);
-        addVertex(v3);
+        Vec3 edge1 = v2 - v1;
+        Vec3 edge2 = v3 - v1;
+        Vec3 normal = edge1.cross(edge2).normalized();
 
-        addVertex(v1);
-        addVertex(v3);
-        addVertex(v4);
+        addVertex(Vertex(v1, normal));
+        addVertex(Vertex(v2, normal));
+        addVertex(Vertex(v3, normal));
+
+        addVertex(Vertex(v1, normal));
+        addVertex(Vertex(v3, normal));
+        addVertex(Vertex(v4, normal));
     };
 
     addFace({-w2, -h2, d2}, {w2, -h2, d2}, {w2, h2, d2}, {-w2, h2, d2});

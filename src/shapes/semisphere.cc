@@ -49,18 +49,19 @@ void SemiSphere::generateVertices(float radius, int sectors, int stacks) {
             Vec3 v3(xy2 * cos(sectorAngle1), xy2 * sin(sectorAngle1), z2);
             Vec3 v4(xy2 * cos(sectorAngle2), xy2 * sin(sectorAngle2), z2);
 
-            addVertex(v1);
-            addVertex(v3);
-            addVertex(v2);
-            addVertex(v2);
-            addVertex(v3);
-            addVertex(v4);
+            addVertex(Vertex(v1, v1.normalized()));
+            addVertex(Vertex(v3, v3.normalized()));
+            addVertex(Vertex(v2, v2.normalized()));
+            addVertex(Vertex(v2, v2.normalized()));
+            addVertex(Vertex(v3, v3.normalized()));
+            addVertex(Vertex(v4, v4.normalized()));
 
             if (i == (stacks - 1)) {
                 Vec3 center(0, 0, z2);
-                addVertex(center);
-                addVertex(v4);
-                addVertex(v3);
+                Vec3 baseN(0, 0, -1);
+                addVertex(Vertex(center, baseN));
+                addVertex(Vertex(v4, baseN));
+                addVertex(Vertex(v3, baseN));
             }
         }
     }

@@ -50,17 +50,30 @@ void Torus::generateVertices(float innerRadius, float outerRadius, int sides, in
                 return Vec3(x, y, z);
             };
 
+            auto getNormal = [&](float u, float v) {
+                float cx = mainRadius * std::cos(u);
+                float cy = mainRadius * std::sin(u);
+                float cz = 0;
+                Vec3 p = getPos(u, v);
+                return (p - Vec3(cx, cy, cz)).normalized();
+            };
+
             Vec3 p1 = getPos(u1, v1);
             Vec3 p2 = getPos(u1, v2);
             Vec3 p3 = getPos(u2, v1);
             Vec3 p4 = getPos(u2, v2);
 
-            addVertex(p1);
-            addVertex(p2);
-            addVertex(p3);
-            addVertex(p2);
-            addVertex(p4);
-            addVertex(p3);
+            Vec3 n1 = getNormal(u1, v1);
+            Vec3 n2 = getNormal(u1, v2);
+            Vec3 n3 = getNormal(u2, v1);
+            Vec3 n4 = getNormal(u2, v2);
+
+            addVertex(Vertex(p1, n1));
+            addVertex(Vertex(p2, n2));
+            addVertex(Vertex(p3, n3));
+            addVertex(Vertex(p2, n2));
+            addVertex(Vertex(p4, n4));
+            addVertex(Vertex(p3, n3));
         }
     }
 }

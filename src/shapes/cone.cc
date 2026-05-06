@@ -38,12 +38,15 @@ void Cone::generateVertices(float radius, float height, int sectors) {
         Vec3 b1(radius * std::cos(angle1), radius * std::sin(angle1), -halfH);
         Vec3 b2(radius * std::cos(angle2), radius * std::sin(angle2), -halfH);
 
-        addVertex(tip);
-        addVertex(b1);
-        addVertex(b2);
+        Vec3 nSide = (b1 - tip).cross(b2 - tip).normalized();
 
-        addVertex(baseCenter);
-        addVertex(b2);
-        addVertex(b1);
+        addVertex(Vertex(tip, nSide));
+        addVertex(Vertex(b1, nSide));
+        addVertex(Vertex(b2, nSide));
+
+        Vec3 nBase(0, 0, -1);
+        addVertex(Vertex(baseCenter, nBase));
+        addVertex(Vertex(b2, nBase));
+        addVertex(Vertex(b1, nBase));
     }
 }
