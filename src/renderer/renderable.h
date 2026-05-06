@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "renderer/materials/material.h"
 #include "types/mat4x4.h"
 #include "types/vertex.h"
 
@@ -14,7 +15,7 @@ class Node;
  * @brief Represents a group of meshes with the same texture and translucency.
  */
 struct MeshGroup {
-    uint32_t textureId;
+    Material material;
     size_t start;
     size_t count;
 
@@ -43,6 +44,10 @@ public:
     Renderable(const Renderable &) = delete;
     Renderable &operator=(const Renderable &) = delete;
 
+    /*
+        !!!REMEMBER TO CHANGE UPDATE THIS WHENEVER ADDING NEW STUFF TO RENDERABLE!!!
+    */
+
     /**
      * @brief Move constructor for Renderable.
      * @param other The Renderable to move from.
@@ -50,7 +55,9 @@ public:
     Renderable(Renderable &&other) noexcept
         : vbo_(other.vbo_), vao_(other.vao_), vertices_(std::move(other.vertices_)),
           meshGroups_(std::move(other.meshGroups_)), shaderProgram_(other.shaderProgram_),
-          id_(other.id_) {
+          id_(other.id_), modelLocation_(other.modelLocation_),
+          diffuseLocation_(other.diffuseLocation_), specularLocation_(other.specularLocation_),
+          shininessLocation_(other.shininessLocation_), dissolveLocation_(other.dissolveLocation_) {
         other.vbo_ = -1;
         other.vao_ = -1;
         other.id_ = -1;
@@ -69,6 +76,11 @@ public:
             meshGroups_ = std::move(other.meshGroups_);
             shaderProgram_ = other.shaderProgram_;
             id_ = other.id_;
+            modelLocation_ = other.modelLocation_;
+            diffuseLocation_ = other.diffuseLocation_;
+            specularLocation_ = other.specularLocation_;
+            shininessLocation_ = other.shininessLocation_;
+            dissolveLocation_ = other.dissolveLocation_;
 
             other.vbo_ = -1;
             other.vao_ = -1;
@@ -142,6 +154,16 @@ private:
     std::shared_ptr<std::vector<MeshGroup>> meshGroups_;
     uint32_t shaderProgram_ = 0;
     uint64_t id_ = -1;
+
+    // Locations caching
+    // begin
+    int modelLocation_;
+
+    int diffuseLocation_;
+    int specularLocation_;
+    int shininessLocation_;
+    int dissolveLocation_;
+    // end
 };
 
 #endif

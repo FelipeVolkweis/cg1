@@ -49,6 +49,7 @@ public:
      */
     static uint32_t loadCubemap(const std::vector<std::string> &faces);
     static uint32_t createWhiteTexture();
+    static uint32_t createGrayTexture();
 
     /**
      * @brief Creates a 1x1 texture of a specific color and transparency.

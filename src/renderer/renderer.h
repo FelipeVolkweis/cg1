@@ -65,6 +65,24 @@ private:
     std::unordered_map<uint64_t, Renderable> renderables_;
     std::unordered_map<uint64_t, Transformation> transforms_;
 
+    int viewLocation_;
+    int projectionLocation_;
+
+    int viewPosLocation_;
+
+    // DirectionalLight Locations Cache
+    // begin
+    int dl_directionLocation_;
+    int dl_ambientLocation_;
+    int dl_diffuseLocation_;
+    int dl_specularLocation_;
+    // end
+    int pointLightsLocation_;
+    int spolightsLocation_;
+
+    int numPointLightsLocation_;
+    int numSpotlightsLocation_;
+
     /**
      * @brief Compiles a shader from source.
      * @param type The type of shader (e.g., GL_VERTEX_SHADER).

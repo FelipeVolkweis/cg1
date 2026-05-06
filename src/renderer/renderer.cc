@@ -52,6 +52,22 @@ bool Renderer::initialize() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    viewLocation_ = glGetUniformLocation(shaderProgram_, "view");
+    projectionLocation_ = glGetUniformLocation(shaderProgram_, "projection");
+
+    viewPosLocation_ = glGetUniformLocation(shaderProgram_, "viewPos");
+
+    dl_directionLocation_ = glGetUniformLocation(shaderProgram_, "directionalLight.direction");
+    dl_ambientLocation_ = glGetUniformLocation(shaderProgram_, "directionalLight.ambient");
+    dl_diffuseLocation_ = glGetUniformLocation(shaderProgram_, "directionalLight.diffuse");
+    dl_specularLocation_ = glGetUniformLocation(shaderProgram_, "directionalLight.specular");
+
+    // pointLightsLocation_ = glGetUniformLocation(shaderProgram_, "pointLights");
+    // spolightsLocation_ = glGetUniformLocation(shaderProgram_, "spolights");
+
+    numPointLightsLocation_ = glGetUniformLocation(shaderProgram_, "numPointLights");
+    numSpotlightsLocation_ = glGetUniformLocation(shaderProgram_, " numSpolights");
+
     return true;
 }
 
@@ -65,13 +81,19 @@ void Renderer::render() {
 
         const auto &view = activeCamera->lookAt();
         const auto &projection = activeCamera->perspective();
+        const auto &viewPos = activeCamera->getPosition();
 
         glUseProgram(shaderProgram_);
-        int viewLoc = glGetUniformLocation(shaderProgram_, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.data());
+        glUniformMatrix4fv(viewLocation_, 1, GL_FALSE, view.data());
+        glUniformMatrix4fv(projectionLocation_, 1, GL_FALSE, projection.data());
+        glUniform3f(viewPosLocation_, viewPos.x(), viewPos.y(), viewPos.z());
 
-        int projLoc = glGetUniformLocation(shaderProgram_, "projection");
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, projection.data());
+        glUniform1i(numPointLightsLocation_, 0);
+        glUniform1i(numSpotlightsLocation_, 0);
+        glUniform3f(dl_directionLocation_, -0.2f, -1.0f, -0.3f);
+        glUniform3f(dl_ambientLocation_, 0.05f, 0.05f, 0.05f);
+        glUniform3f(dl_diffuseLocation_, 0.4f, 0.4f, 0.4f);
+        glUniform3f(dl_specularLocation_, 0.5f, 0.5f, 0.5f);
 
         for (auto &renderable : renderables_) {
             auto &model = transforms_[renderable.first].getTransformationMatrix();

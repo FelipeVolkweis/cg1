@@ -23,20 +23,21 @@ void Renderable::initializeOnGPU() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (void *)offsetof(Vertex, texCoords));
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (void *)offsetof(Vertex, color));
-    glEnableVertexAttribArray(3);
+
+    modelLocation_ = glGetUniformLocation(shaderProgram_, "model");
+
+    diffuseLocation_ = glGetUniformLocation(shaderProgram_, "material.diffuse");
+    specularLocation_ = glGetUniformLocation(shaderProgram_, "material.specular");
+    shininessLocation_ = glGetUniformLocation(shaderProgram_, "material.shininess");
+    dissolveLocation_ = glGetUniformLocation(shaderProgram_, "material.dissolve");
 }
 
 void Renderable::render(const Mat4x4 &model, bool renderTranslucent) {
     glBindVertexArray(vao_);
 
-    int modelLoc = glGetUniformLocation(shaderProgram_, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.data());
-
-    glActiveTexture(GL_TEXTURE0);
-    int textureLoc = glGetUniformLocation(shaderProgram_, "texture_diffuse");
-    glUniform1i(textureLoc, 0);
+    glUniformMatrix4fv(modelLocation_, 1, GL_FALSE, model.data());
+    glUniform1i(diffuseLocation_, 0);
+    glUniform1i(specularLocation_, 1);
 
     for (const auto &mesh : *meshGroups_) {
         if (renderTranslucent && mesh.translucent || !renderTranslucent && !mesh.translucent) {
@@ -45,8 +46,13 @@ void Renderable::render(const Mat4x4 &model, bool renderTranslucent) {
             } else {
                 glDepthMask(GL_TRUE);
             }
+            glUniform1f(shininessLocation_, mesh.material.getShininess());
+            glUniform1f(dissolveLocation_, mesh.material.getDissolve());
 
-            glBindTexture(GL_TEXTURE_2D, mesh.textureId);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, mesh.material.getDiffuse());
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, mesh.material.getSpecular());
             glDrawArrays(GL_TRIANGLES, mesh.start, mesh.count);
         }
     }

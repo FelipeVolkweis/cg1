@@ -12,6 +12,16 @@
 
 // https://github.com/tinyobjloader/tinyobjloader
 namespace {
+using TexMap = std::map<int, uint32_t>;
+using FloatMap = std::map<int, float>;
+
+struct MaterialMaps {
+    TexMap diffuse;
+    TexMap specular;
+    FloatMap shininess;
+    FloatMap dissolve;
+};
+
 bool parseObjFile(const std::string &filePath, std::string &outDirectory,
                   tinyobj::ObjReader &reader) {
     tinyobj::ObjReaderConfig reader_config;
@@ -36,19 +46,36 @@ bool parseObjFile(const std::string &filePath, std::string &outDirectory,
     return true;
 }
 
-std::map<int, uint32_t> loadMaterialTextures(const std::vector<tinyobj::material_t> &materials,
-                                             const std::string &directory) {
-    std::map<int, uint32_t> materialToTexture;
+MaterialMaps loadMaterialTextures(const std::vector<tinyobj::material_t> &materials,
+                                  const std::string &directory) {
+    MaterialMaps m;
+
     for (size_t i = 0; i < materials.size(); ++i) {
         if (!materials[i].diffuse_texname.empty()) {
-            std::string texPath = directory + materials[i].diffuse_texname;
-            uint32_t tid = Texture::loadTexture(texPath);
-            if (tid != 0) {
-                materialToTexture[i] = tid;
+            std::string diffuseTexPath = directory + materials[i].diffuse_texname;
+            uint32_t diffuseTid = Texture::loadTexture(diffuseTexPath);
+            if (diffuseTid != 0) {
+                m.diffuse[i] = diffuseTid;
+            }
+        } else {
+            Vec3 color(materials[i].diffuse[0], materials[i].diffuse[1], materials[i].diffuse[2]);
+            uint8_t transparency = materials[i].dissolve * 255;
+            uint32_t tid = Texture::createColorTexture(color, transparency);
+            m.diffuse[i] = tid;
+        }
+
+        if (!materials[i].specular_texname.empty()) {
+            std::string specularTexPath = directory + materials[i].specular_texname;
+
+            uint32_t specularTid = Texture::loadTexture(specularTexPath);
+            if (specularTid != 0) {
+                m.specular[i] = specularTid;
             }
         }
+        m.shininess[i] = materials[i].shininess;
+        m.dissolve[i] = materials[i].dissolve;
     }
-    return materialToTexture;
+    return m;
 }
 
 std::vector<std::vector<size_t>> calculateFaceOffsets(const std::vector<tinyobj::shape_t> &shapes) {
@@ -79,7 +106,7 @@ groupFacesByMaterial(const std::vector<tinyobj::shape_t> &shapes) {
 ModelPackage
 buildShapeGeometry(const tinyobj::attrib_t &attrib, const std::vector<tinyobj::shape_t> &shapes,
                    const std::vector<tinyobj::material_t> &materials,
-                   const std::map<int, uint32_t> &materialToTexture,
+                   const MaterialMaps &textureMaps,
                    const std::vector<std::vector<size_t>> &shapeFaceOffsets,
                    const std::map<int, std::vector<std::pair<size_t, size_t>>> &materialGroups) {
     size_t vertexOffset = 0;
@@ -126,24 +153,25 @@ buildShapeGeometry(const tinyobj::attrib_t &attrib, const std::vector<tinyobj::s
                     tex = Vec2(tx, ty);
                 }
 
-                Vec4 col(1, 1, 1, 1);
-                if (matId >= 0 && matId < (int)materials.size()) {
-                    col = Vec4(materials[matId].diffuse[0], materials[matId].diffuse[1],
-                               materials[matId].diffuse[2], materials[matId].dissolve);
-                }
-
-                package.vertices->push_back(Vertex(pos, norm, tex, col));
+                package.vertices->push_back(Vertex(pos, norm, tex));
                 groupCount++;
                 vertexOffset++;
             }
         }
 
-        uint32_t tid = Texture::createWhiteTexture();
-        if (materialToTexture.count(matId)) {
-            tid = materialToTexture.at(matId);
+        uint32_t diffuseTid = Texture::createWhiteTexture();
+        if (textureMaps.diffuse.count(matId)) {
+            diffuseTid = textureMaps.diffuse.at(matId);
         }
+        uint32_t specularTid = Texture::createWhiteTexture();
+        if (textureMaps.specular.count(matId)) {
+            specularTid = textureMaps.specular.at(matId);
+        }
+        float shininess = textureMaps.shininess.at(matId);
+        float dissolve = textureMaps.dissolve.at(matId);
 
-        package.groups->push_back({tid, groupStart, groupCount, isTransparent});
+        Material material(diffuseTid, specularTid, shininess, dissolve);
+        package.groups->push_back({material, groupStart, groupCount, isTransparent});
     }
 
     return package;

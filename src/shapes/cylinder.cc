@@ -36,10 +36,14 @@ void Cylinder::generateVertices(float radius, float height, int sectors) {
         Vec3 v3(radius * cos(a1), radius * sin(a1), -h2);
         Vec3 v4(radius * cos(a2), radius * sin(a2), -h2);
 
-        Vec3 n1(v1.x(), v1.y(), 0.0f); n1.normalize();
-        Vec3 n2(v2.x(), v2.y(), 0.0f); n2.normalize();
-        Vec3 n3(v3.x(), v3.y(), 0.0f); n3.normalize();
-        Vec3 n4(v4.x(), v4.y(), 0.0f); n4.normalize();
+        Vec3 n1(v1.x(), v1.y(), 0.0f);
+        n1.normalize();
+        Vec3 n2(v2.x(), v2.y(), 0.0f);
+        n2.normalize();
+        Vec3 n3(v3.x(), v3.y(), 0.0f);
+        n3.normalize();
+        Vec3 n4(v4.x(), v4.y(), 0.0f);
+        n4.normalize();
 
         addVertex(Vertex(v1, n1));
         addVertex(Vertex(v3, n3));
@@ -52,7 +56,7 @@ void Cylinder::generateVertices(float radius, float height, int sectors) {
         addVertex(Vertex(Vec3(0, 0, h2), topN));
         addVertex(Vertex(v1, topN));
         addVertex(Vertex(v2, topN));
-        
+
         Vec3 botN(0, 0, -1);
         addVertex(Vertex(Vec3(0, 0, -h2), botN));
         addVertex(Vertex(v4, botN));
