@@ -83,8 +83,9 @@ void main() {
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
     float diffuseAmount = max(dot(normal, lightDir), 0.0);
-    vec3 reflectionDir = reflect(-lightDir, normal);
-    float incomingLight = max(dot(viewDir, reflectionDir), 0.0);
+
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float incomingLight = max(dot(normal, halfwayDir), 0.0);
     float specularAmount = pow(incomingLight, material.shininess);
 
     vec3 specular = light.specular * specularAmount * vec3(texture(material.specular, TexCoord));
@@ -97,8 +98,9 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPos);
     float diffuseAmount = max(dot(normal, lightDir), 0.0);
-    vec3 reflectionDir = reflect(-lightDir, normal);
-    float incomingLight = max(dot(viewDir, reflectionDir), 0.0);
+
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float incomingLight = max(dot(normal, halfwayDir), 0.0);
     float specularAmount = pow(incomingLight, material.shininess);
 
     float d = length(light.position - fragPos);
@@ -115,8 +117,9 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
 vec3 calculateSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPos);
     float diffuseAmount = max(dot(normal, lightDir), 0.0);
-    vec3 reflectionDir = reflect(-lightDir, normal);
-    float incomingLight = max(dot(viewDir, reflectionDir), 0.0);
+
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float incomingLight = max(dot(normal, halfwayDir), 0.0);
     float specularAmount = pow(incomingLight, material.shininess);
 
     float d = length(light.position - fragPos);
