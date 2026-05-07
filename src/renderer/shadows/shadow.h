@@ -1,6 +1,7 @@
 #ifndef SHADOW_H
 #define SHADOW_H
 
+#include <cstdint>
 #include <vector>
 
 class Shadow {

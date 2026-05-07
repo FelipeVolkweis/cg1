@@ -7,83 +7,24 @@
 #include "utils/fileutils.h"
 #include "utils/logger.h"
 
-namespace {
-std::string getShaderTypeName(uint32_t type) {
-    std::string typeName;
+#define MAIN_VERT "shaders/renderer.vert"
+#define MAIN_FRAG "shaders/renderer.frag"
 
-    if (type == GL_VERTEX_SHADER) {
-        typeName = "vertex";
-    } else if (type == GL_FRAGMENT_SHADER) {
-        typeName = "fragment";
-    } else if (type == GL_GEOMETRY_SHADER) {
-        typeName = "geometry";
-    }
+#define SHDW_VERT "shaders/shadowmap.vert"
+#define SHDW_FRAG "shaders/shadowmap.frag"
+#define SHDW_GEOM "shaders/shadowmap.geom"
 
-    return typeName;
-}
-} // namespace
-
-uint32_t Renderer::compileShader(uint32_t type, const char *source) {
-    uint32_t shader = glCreateShader(type);
-    glShaderSource(shader, 1, &source, NULL);
-    glCompileShader(shader);
-
-    auto typeName = getShaderTypeName(type);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(shader, 512, NULL, infoLog);
-        Logger::Error("Error in ", typeName, " shader compilation - ", infoLog);
-    }
-    return shader;
+Renderer::Renderer() {
+    mainShaderProgram_ = std::make_shared<Shader>(MAIN_VERT, MAIN_FRAG);
+    shadowShaderProgram_ = std::make_shared<Shader>(SHDW_VERT, SHDW_FRAG, SHDW_GEOM);
 }
 
 bool Renderer::initialize() {
-    std::string vertexShaderSource = readFile("shaders/renderer.vert");
-    std::string fragmentShaderSource = readFile("shaders/renderer.frag");
-    std::string geometryShaderSoruce = readFile("shaders/renderer.geom");
+    bool mainOk = mainShaderProgram_->initialize();
+    bool shadowOk = shadowShaderProgram_->initialize();
 
-    uint32_t vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource.c_str());
-    uint32_t fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource.c_str());
-    uint32_t geometryShader = compileShader(GL_GEOMETRY_SHADER, geometryShaderSoruce.c_str());
-
-    shaderProgram_ = glCreateProgram();
-    glAttachShader(shaderProgram_, vertexShader);
-    glAttachShader(shaderProgram_, fragmentShader);
-    // glAttachShader(shaderProgram_, geometryShader);
-
-    glLinkProgram(shaderProgram_);
-
-    int success;
-    char infoLog[512];
-    glGetProgramiv(shaderProgram_, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram_, 512, NULL, infoLog);
-        Logger::Error("Error in shader program linkage\n", infoLog);
+    if (!mainOk || !shadowOk)
         return false;
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    glDeleteShader(geometryShader);
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glEnable(GL_MULTISAMPLE);
-
-    viewLocation_ = glGetUniformLocation(shaderProgram_, "view");
-    projectionLocation_ = glGetUniformLocation(shaderProgram_, "projection");
-
-    viewPosLocation_ = glGetUniformLocation(shaderProgram_, "viewPos");
-
-    numPointLightsLocation_ = glGetUniformLocation(shaderProgram_, "numPointLights");
-    numSpotlightsLocation_ = glGetUniformLocation(shaderProgram_, "numSpotlights");
 
     return true;
 }
@@ -100,10 +41,10 @@ void Renderer::render() {
         const auto &projection = activeCamera->perspective();
         const auto &viewPos = activeCamera->getPosition();
 
-        glUseProgram(shaderProgram_);
-        glUniformMatrix4fv(viewLocation_, 1, GL_FALSE, view.data());
-        glUniformMatrix4fv(projectionLocation_, 1, GL_FALSE, projection.data());
-        glUniform3f(viewPosLocation_, viewPos.x(), viewPos.y(), viewPos.z());
+        mainShaderProgram_->use();
+        mainShaderProgram_->setMat4x4("view", view);
+        mainShaderProgram_->setMat4x4("projection", projection);
+        mainShaderProgram_->setVec3("viewPos", viewPos);
 
         renderDirectionalLight();
         renderPointLights();
@@ -131,7 +72,7 @@ void Renderer::renderPointLights() {
         pl->render();
         plCount++;
     }
-    glUniform1i(numPointLightsLocation_, plCount);
+    mainShaderProgram_->setInt("numPointLights", plCount);
 }
 
 void Renderer::renderSpotlights() {
@@ -145,7 +86,7 @@ void Renderer::renderSpotlights() {
         sl->render();
         slCount++;
     }
-    glUniform1i(numSpotlightsLocation_, slCount);
+    mainShaderProgram_->setInt("numSpotlights", slCount);
 }
 
 void Renderer::renderOpaqueMeshes() {
@@ -167,7 +108,7 @@ void Renderer::addRenderable(uint64_t id, std::shared_ptr<RenderableMesh> render
     if (renderables_.find(id) != renderables_.end())
         return;
 
-    renderable->setShaderProgram(shaderProgram_);
+    renderable->setShaderProgram(mainShaderProgram_);
     renderable->initializeOnGPU();
     renderables_[id] = renderable;
 }
@@ -176,7 +117,7 @@ void Renderer::setDirectionalLight(std::shared_ptr<RenderableDirectionalLight> d
     if (!directionalLight)
         return;
     if (!directionalLight_) {
-        directionalLight->setShaderProgram(shaderProgram_);
+        directionalLight->setShaderProgram(mainShaderProgram_);
         directionalLight->initializeOnGPU();
         directionalLight_ = directionalLight;
     }
@@ -192,7 +133,7 @@ void Renderer::addPointLight(uint64_t id, std::shared_ptr<RenderablePointLight> 
             return;
         }
         pointLight->setIndex(pointLights_.size());
-        pointLight->setShaderProgram(shaderProgram_);
+        pointLight->setShaderProgram(mainShaderProgram_);
         pointLight->initializeOnGPU();
     }
     pointLights_[id] = pointLight;
@@ -208,7 +149,7 @@ void Renderer::addSpotlight(uint64_t id, std::shared_ptr<RenderableSpotlight> sp
             return;
         }
         spotlight->setIndex(spotlights_.size());
-        spotlight->setShaderProgram(shaderProgram_);
+        spotlight->setShaderProgram(mainShaderProgram_);
         spotlight->initializeOnGPU();
     }
     spotlights_[id] = spotlight;

@@ -11,6 +11,7 @@
 #include "meshes/renderablemesh.h"
 #include "renderer/lights/directionallight.h"
 #include "renderer/lights/spotlight.h"
+#include "renderer/shader/shader.h"
 #include "renderer/skybox.h"
 
 /**
@@ -19,7 +20,7 @@
  */
 class Renderer {
 public:
-    Renderer() = default;
+    Renderer();
 
     /**
      * @brief Initializes the OpenGL state and compiles shaders.
@@ -56,9 +57,11 @@ public:
     void addSpotlight(uint64_t id, std::shared_ptr<RenderableSpotlight> spotlight);
 
 private:
+    std::shared_ptr<Shader> mainShaderProgram_;
+    std::shared_ptr<Shader> shadowShaderProgram_;
+
     std::weak_ptr<Camera> activeCamera_;
     std::shared_ptr<Skybox> skybox_;
-    uint32_t shaderProgram_ = 0;
 
     std::unordered_map<uint64_t, std::shared_ptr<RenderableMesh>> renderables_;
     std::unordered_map<uint64_t, Transformation> transforms_;
@@ -67,21 +70,6 @@ private:
     std::unordered_map<uint64_t, std::shared_ptr<RenderablePointLight>> pointLights_;
     std::unordered_map<uint64_t, std::shared_ptr<RenderableSpotlight>> spotlights_;
 
-    int viewLocation_;
-    int projectionLocation_;
-
-    int viewPosLocation_;
-
-    int numPointLightsLocation_;
-    int numSpotlightsLocation_;
-
-    /**
-     * @brief Compiles a shader from source.
-     * @param type The type of shader (e.g., GL_VERTEX_SHADER).
-     * @param source The shader source code.
-     * @return The compiled shader handle, or 0 on failure.
-     */
-    uint32_t compileShader(uint32_t type, const char *source);
     void renderDirectionalLight();
     void renderPointLights();
     void renderSpotlights();

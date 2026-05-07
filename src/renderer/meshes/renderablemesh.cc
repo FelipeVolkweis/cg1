@@ -23,21 +23,14 @@ void RenderableMesh::initializeOnGPU() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (void *)offsetof(Vertex, texCoords));
     glEnableVertexAttribArray(2);
-
-    modelLocation_ = glGetUniformLocation(shaderProgram_, "model");
-
-    diffuseLocation_ = glGetUniformLocation(shaderProgram_, "material.diffuse");
-    specularLocation_ = glGetUniformLocation(shaderProgram_, "material.specular");
-    shininessLocation_ = glGetUniformLocation(shaderProgram_, "material.shininess");
-    dissolveLocation_ = glGetUniformLocation(shaderProgram_, "material.dissolve");
 }
 
 void RenderableMesh::render(const Mat4x4 &model, bool renderTranslucent) {
     glBindVertexArray(vao_);
 
-    glUniformMatrix4fv(modelLocation_, 1, GL_FALSE, model.data());
-    glUniform1i(diffuseLocation_, GL_TEXTURE0);
-    glUniform1i(specularLocation_, GL_TEXTURE1);
+    shaderProgram_->setMat4x4("model", model);
+    shaderProgram_->setInt("material.diffuse", 0);
+    shaderProgram_->setInt("material.specular", 1);
 
     for (const auto &mesh : *meshGroups_) {
         if (renderTranslucent && mesh.translucent || !renderTranslucent && !mesh.translucent) {
@@ -46,8 +39,8 @@ void RenderableMesh::render(const Mat4x4 &model, bool renderTranslucent) {
             } else {
                 glDepthMask(GL_TRUE);
             }
-            glUniform1f(shininessLocation_, mesh.material.getShininess());
-            glUniform1f(dissolveLocation_, mesh.material.getDissolve());
+            shaderProgram_->setFloat("material.shininess", mesh.material.getShininess());
+            shaderProgram_->setFloat("material.dissolve", mesh.material.getDissolve());
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, mesh.material.getDiffuse());

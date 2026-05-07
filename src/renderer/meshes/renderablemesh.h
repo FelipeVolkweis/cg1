@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "renderer/materials/material.h"
+#include "renderer/shader/shader.h"
 #include "types/mat4x4.h"
 #include "types/vertex.h"
 
@@ -80,7 +81,7 @@ public:
      * @brief Sets the shader program to use for rendering.
      * @param shaderProgram Shader program handle.
      */
-    void setShaderProgram(uint32_t shaderProgram) {
+    void setShaderProgram(std::shared_ptr<Shader> shaderProgram) {
         shaderProgram_ = shaderProgram;
     }
 
@@ -90,17 +91,7 @@ private:
 
     std::shared_ptr<std::vector<Vertex>> vertices_;
     std::shared_ptr<std::vector<MeshGroup>> meshGroups_;
-    uint32_t shaderProgram_ = 0;
-
-    // Locations caching
-    // begin
-    int modelLocation_;
-
-    int diffuseLocation_;
-    int specularLocation_;
-    int shininessLocation_;
-    int dissolveLocation_;
-    // end
+    std::shared_ptr<Shader> shaderProgram_;
 };
 
 #endif
