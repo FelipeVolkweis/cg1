@@ -112,20 +112,22 @@ void Renderer::render() {
 
         for (auto &renderable : renderables_) {
             auto &model = transforms_[renderable.first].getTransformationMatrix();
-            renderable.second.render(model, false);
+            renderable.second->render(model, false);
         }
 
         for (auto &renderable : renderables_) {
             auto &model = transforms_[renderable.first].getTransformationMatrix();
-            renderable.second.render(model, true);
+            renderable.second->render(model, true);
         }
     }
 }
 
-void Renderer::addRenderable(RenderableMesh renderable) {
-    renderable.setShaderProgram(shaderProgram_);
-    renderable.initializeOnGPU();
-    renderables_[renderable.getId()] = std::move(renderable);
+void Renderer::addRenderable(uint64_t id, std::shared_ptr<RenderableMesh> renderable) {
+    if (renderables_.find(id) != renderables_.end()) return;
+    
+    renderable->setShaderProgram(shaderProgram_);
+    renderable->initializeOnGPU();
+    renderables_[id] = renderable;
 }
 
 void Renderer::setDirectionalLight(std::shared_ptr<RenderableDirectionalLight> directionalLight) {

@@ -28,66 +28,16 @@ struct MeshGroup {
  */
 class RenderableMesh {
 public:
-    RenderableMesh() : id_(-1) {}
-
     /**
      * @brief Constructs a Renderable with vertices and mesh groups.
      * @param id Unique identifier for the renderable.
      * @param vertices Shared pointer to a vector of vertices.
      * @param meshGroups Shared pointer to a vector of mesh groups.
      */
-    RenderableMesh(uint64_t id, std::shared_ptr<std::vector<Vertex>> vertices,
+    RenderableMesh(std::shared_ptr<std::vector<Vertex>> vertices,
                    std::shared_ptr<std::vector<MeshGroup>> meshGroups);
 
     ~RenderableMesh();
-
-    RenderableMesh(const RenderableMesh &) = delete;
-    RenderableMesh &operator=(const RenderableMesh &) = delete;
-
-    /*
-        !!!REMEMBER TO CHANGE UPDATE THIS WHENEVER ADDING NEW STUFF TO RENDERABLE!!!
-    */
-
-    /**
-     * @brief Move constructor for Renderable.
-     * @param other The Renderable to move from.
-     */
-    RenderableMesh(RenderableMesh &&other) noexcept
-        : vbo_(other.vbo_), vao_(other.vao_), vertices_(std::move(other.vertices_)),
-          meshGroups_(std::move(other.meshGroups_)), shaderProgram_(other.shaderProgram_),
-          id_(other.id_), modelLocation_(other.modelLocation_),
-          diffuseLocation_(other.diffuseLocation_), specularLocation_(other.specularLocation_),
-          shininessLocation_(other.shininessLocation_), dissolveLocation_(other.dissolveLocation_) {
-        other.vbo_ = -1;
-        other.vao_ = -1;
-        other.id_ = -1;
-    }
-
-    /**
-     * @brief Move assignment operator for Renderable.
-     * @param other The Renderable to move from.
-     * @return Reference to this Renderable.
-     */
-    RenderableMesh &operator=(RenderableMesh &&other) noexcept {
-        if (this != &other) {
-            vbo_ = other.vbo_;
-            vao_ = other.vao_;
-            vertices_ = std::move(other.vertices_);
-            meshGroups_ = std::move(other.meshGroups_);
-            shaderProgram_ = other.shaderProgram_;
-            id_ = other.id_;
-            modelLocation_ = other.modelLocation_;
-            diffuseLocation_ = other.diffuseLocation_;
-            specularLocation_ = other.specularLocation_;
-            shininessLocation_ = other.shininessLocation_;
-            dissolveLocation_ = other.dissolveLocation_;
-
-            other.vbo_ = -1;
-            other.vao_ = -1;
-            other.id_ = -1;
-        }
-        return *this;
-    }
 
     /**
      * @brief Initializes the renderable on the GPU (creates VAO/VBO).
@@ -127,18 +77,6 @@ public:
     }
 
     /**
-     * @brief Gets the unique identifier of the renderable.
-     * @return Unique ID (== to NodeID).
-     */
-    uint64_t getId() const {
-        return id_;
-    }
-
-    bool isValid() const {
-        return id_ != (uint64_t)-1;
-    }
-
-    /**
      * @brief Sets the shader program to use for rendering.
      * @param shaderProgram Shader program handle.
      */
@@ -153,7 +91,6 @@ private:
     std::shared_ptr<std::vector<Vertex>> vertices_;
     std::shared_ptr<std::vector<MeshGroup>> meshGroups_;
     uint32_t shaderProgram_ = 0;
-    uint64_t id_ = -1;
 
     // Locations caching
     // begin

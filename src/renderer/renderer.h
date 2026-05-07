@@ -36,16 +36,7 @@ public:
         activeCamera_ = camera;
     }
 
-    void addRenderable(RenderableMesh renderable);
-
-    /**
-     * @brief Checks if a renderable with the given ID exists in the renderer.
-     * @param id The unique ID of the renderable.
-     * @return true if it exists, false otherwise.
-     */
-    bool isRenderableHere(uint64_t id) {
-        return renderables_.find(id) != renderables_.end();
-    }
+    void addRenderable(uint64_t id, std::shared_ptr<RenderableMesh> renderable) ;
 
     /**
      * @brief Sets the transformation matrix for a specific renderable.
@@ -69,7 +60,7 @@ private:
     std::shared_ptr<Skybox> skybox_;
     uint32_t shaderProgram_ = 0;
 
-    std::unordered_map<uint64_t, RenderableMesh> renderables_;
+    std::unordered_map<uint64_t, std::shared_ptr<RenderableMesh>> renderables_;
     std::unordered_map<uint64_t, Transformation> transforms_;
 
     std::shared_ptr<RenderableDirectionalLight> directionalLight_;

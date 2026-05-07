@@ -27,11 +27,9 @@ void Scene::populateRenderer(Renderer &renderer) {
         auto meshComponent = currentNode->getComponent<MeshComponent>();
 
         if (meshComponent) {
-            uint32_t nodeId = currentNode->getId();
-            if (!renderer.isRenderableHere(nodeId)) {
-                auto renderable = meshComponent->getShape()->asRenderable(nodeId);
-                renderer.addRenderable(std::move(renderable));
-            }
+            uint64_t nodeId = currentNode->getId();
+            auto renderable = meshComponent->getRenderableMesh();
+            renderer.addRenderable(nodeId, renderable);
             renderer.setRenderableTransformation(nodeId, currentTransform);
         }
 

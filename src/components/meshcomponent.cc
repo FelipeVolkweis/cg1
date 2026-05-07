@@ -33,5 +33,7 @@ void MeshComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
         if (shape_) {
             shape_->parse(data);
         }
+
+        renderableMesh_ = shape_->asRenderable();
     }
 }

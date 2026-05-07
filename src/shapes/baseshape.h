@@ -64,11 +64,10 @@ public:
 
     /**
      * @brief Converts the shape to a Renderable object.
-     * @param id The unique ID (from Node) for the Renderable.
-     * @return The Renderable object.
+     * @return The Renderable object as a shared pointer.
      */
-    RenderableMesh asRenderable(uint64_t id) const {
-        return RenderableMesh(id, vertices_, meshGroups_);
+    std::shared_ptr<RenderableMesh> asRenderable() const {
+        return std::make_shared<RenderableMesh>(vertices_, meshGroups_);
     }
 
 protected:

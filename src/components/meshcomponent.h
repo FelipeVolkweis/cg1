@@ -27,8 +27,13 @@ public:
         return shape_.get();
     }
 
+    std::shared_ptr<RenderableMesh> getRenderableMesh() {
+        return renderableMesh_;
+    }
+
 private:
     std::unique_ptr<BaseShape> shape_;
+    std::shared_ptr<RenderableMesh> renderableMesh_;
 };
 
 #endif

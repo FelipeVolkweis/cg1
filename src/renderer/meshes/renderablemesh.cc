@@ -2,9 +2,9 @@
 
 #include <glad/glad.h>
 
-RenderableMesh::RenderableMesh(uint64_t id, std::shared_ptr<std::vector<Vertex>> vertices,
+RenderableMesh::RenderableMesh(std::shared_ptr<std::vector<Vertex>> vertices,
                                std::shared_ptr<std::vector<MeshGroup>> meshGroups)
-    : vertices_(vertices), meshGroups_(meshGroups), id_(id) {}
+    : vertices_(vertices), meshGroups_(meshGroups) {}
 
 void RenderableMesh::initializeOnGPU() {
     glGenVertexArrays(1, &vao_);
