@@ -1,5 +1,7 @@
 #include "lightcomponent.h"
 
+#include <iostream>
+
 #include <yaml-cpp/yaml.h>
 
 #include "core/node.h"
@@ -10,6 +12,8 @@
 void LightComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
                           InputHandler &inputHandler) {
     std::string kindStr = data["kind"].as<std::string>();
+
+    auto node = getNode();
 
     ambient_ = Light::defaultAmbient;
     if (data["ambient"])
@@ -33,11 +37,14 @@ void LightComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
 
     if (kindStr == "directional") {
         kind_ = Kind::Directional;
+        renderableLight_ = std::make_shared<RenderableDirectionalLight>(node->getId());
         light_ = std::make_shared<DirectionalLight>(ambient_, diffuse_, specular_, direction_);
     } else if (kindStr == "point") {
         kind_ = Kind::Point;
         if (data["fadeDistance"])
             fadeDistance_ = data["fadeDistance"].as<float>();
+
+        renderableLight_ = std::make_shared<RenderablePointLight>(node->getId());
         light_ = std::make_shared<PointLight>(ambient_, diffuse_, specular_, Vec3::Zero(),
                                               fadeDistance_);
     } else if (kindStr == "spot") {
@@ -48,9 +55,15 @@ void LightComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
             outerCutoff_ = data["outerCutoff"].as<float>();
         if (data["fadeDistance"])
             fadeDistance_ = data["fadeDistance"].as<float>();
+
+        renderableLight_ = std::make_shared<RenderableSpotlight>(node->getId());
         light_ =
             std::make_shared<Spotlight>(ambient_, diffuse_, specular_, Vec3::Zero(), direction_,
                                         cutoff_ * DEG2RAD, outerCutoff_ * DEG2RAD, fadeDistance_);
+    }
+
+    if (renderableLight_ && light_) {
+        renderableLight_->setLight(light_);
     }
 }
 
@@ -80,4 +93,7 @@ void LightComponent::onUpdate(float dt) {
             std::make_shared<Spotlight>(ambient_, diffuse_, specular_, position, worldDirection,
                                         cutoff_ * DEG2RAD, outerCutoff_ * DEG2RAD, fadeDistance_);
     }
+
+    if (renderableLight_)
+        renderableLight_->setLight(light_);
 }

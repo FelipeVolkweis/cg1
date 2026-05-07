@@ -37,6 +37,8 @@ public:
     BaseLight(Vec3 ambient, Vec3 diffuse, Vec3 specular)
         : ambient_(ambient), diffuse_(diffuse), specular_(specular) {};
 
+    virtual ~BaseLight() = default;
+
     const Vec3 getAmbient() const {
         return ambient_;
     }

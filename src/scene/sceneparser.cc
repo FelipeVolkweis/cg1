@@ -86,8 +86,8 @@ std::shared_ptr<Node> SceneParser::parseNode(const YAML::Node &nodeData,
                 std::string type = compData["type"].as<std::string>();
                 auto comp = ComponentFactory::getInstance().createComponent(type);
                 if (comp) {
-                    comp->load(compData, physicsEngine, inputHandler);
                     node->addComponent(comp);
+                    comp->load(compData, physicsEngine, inputHandler);
                 } else {
                     Logger::Warn("Unknown component type: ", type);
                 }

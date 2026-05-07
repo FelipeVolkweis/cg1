@@ -4,8 +4,8 @@
 // Probably will define this later
 class Renderable {
 public:
-    virtual ~Renderable() = 0;
     virtual void initializeOnGPU() = 0;
+    virtual void render() = 0;
 };
 
 #endif

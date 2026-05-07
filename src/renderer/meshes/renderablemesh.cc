@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 
 RenderableMesh::RenderableMesh(uint64_t id, std::shared_ptr<std::vector<Vertex>> vertices,
-                       std::shared_ptr<std::vector<MeshGroup>> meshGroups)
+                               std::shared_ptr<std::vector<MeshGroup>> meshGroups)
     : vertices_(vertices), meshGroups_(meshGroups), id_(id) {}
 
 void RenderableMesh::initializeOnGPU() {

@@ -7,10 +7,6 @@
 #include "utils/fileutils.h"
 #include "utils/logger.h"
 
-// !!SYNC THIS WITH THE RENDERER.FRAG SHADER!!
-#define MAX_POINT_LIGHTS 32
-#define MAX_SPOTLIGHTS 16
-
 uint32_t Renderer::compileShader(uint32_t type, const char *source) {
     uint32_t shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, NULL);
@@ -63,44 +59,6 @@ bool Renderer::initialize() {
 
     viewPosLocation_ = glGetUniformLocation(shaderProgram_, "viewPos");
 
-    directionalLightLocations_.direction =
-        glGetUniformLocation(shaderProgram_, "directionalLight.direction");
-    directionalLightLocations_.ambient =
-        glGetUniformLocation(shaderProgram_, "directionalLight.ambient");
-    directionalLightLocations_.diffuse =
-        glGetUniformLocation(shaderProgram_, "directionalLight.diffuse");
-    directionalLightLocations_.specular =
-        glGetUniformLocation(shaderProgram_, "directionalLight.specular");
-
-    pointLightLocations_.clear();
-    for (int i = 0; i < MAX_POINT_LIGHTS; ++i) {
-        std::string prefix = "pointLights[" + std::to_string(i) + "].";
-        pointLightLocations_.push_back(
-            {glGetUniformLocation(shaderProgram_, (prefix + "position").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "constant").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "linear").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "quadratic").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "ambient").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "diffuse").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "specular").c_str())});
-    }
-
-    spotlightLocations_.clear();
-    for (int i = 0; i < MAX_SPOTLIGHTS; ++i) {
-        std::string prefix = "spotlights[" + std::to_string(i) + "].";
-        spotlightLocations_.push_back(
-            {glGetUniformLocation(shaderProgram_, (prefix + "position").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "direction").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "cutoff").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "outerCutoff").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "constant").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "linear").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "quadratic").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "ambient").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "diffuse").c_str()),
-             glGetUniformLocation(shaderProgram_, (prefix + "specular").c_str())});
-    }
-
     numPointLightsLocation_ = glGetUniformLocation(shaderProgram_, "numPointLights");
     numSpotlightsLocation_ = glGetUniformLocation(shaderProgram_, "numSpotlights");
 
@@ -125,15 +83,7 @@ void Renderer::render() {
         glUniform3f(viewPosLocation_, viewPos.x(), viewPos.y(), viewPos.z());
 
         if (directionalLight_) {
-            glUniform3f(directionalLightLocations_.direction, directionalLight_->getDirection().x(),
-                        directionalLight_->getDirection().y(),
-                        directionalLight_->getDirection().z());
-            glUniform3f(directionalLightLocations_.ambient, directionalLight_->getAmbient().x(),
-                        directionalLight_->getAmbient().y(), directionalLight_->getAmbient().z());
-            glUniform3f(directionalLightLocations_.diffuse, directionalLight_->getDiffuse().x(),
-                        directionalLight_->getDiffuse().y(), directionalLight_->getDiffuse().z());
-            glUniform3f(directionalLightLocations_.specular, directionalLight_->getSpecular().x(),
-                        directionalLight_->getSpecular().y(), directionalLight_->getSpecular().z());
+            directionalLight_->render();
         }
 
         int plCount = 0;
@@ -141,17 +91,9 @@ void Renderer::render() {
             if (plCount >= MAX_POINT_LIGHTS)
                 break;
             auto pl = pair.second;
-            glUniform3f(pointLightLocations_[plCount].position, pl->getPosition().x(),
-                        pl->getPosition().y(), pl->getPosition().z());
-            glUniform1f(pointLightLocations_[plCount].constant, pl->getConstant());
-            glUniform1f(pointLightLocations_[plCount].linear, pl->getLinear());
-            glUniform1f(pointLightLocations_[plCount].quadratic, pl->getQuadratic());
-            glUniform3f(pointLightLocations_[plCount].ambient, pl->getAmbient().x(),
-                        pl->getAmbient().y(), pl->getAmbient().z());
-            glUniform3f(pointLightLocations_[plCount].diffuse, pl->getDiffuse().x(),
-                        pl->getDiffuse().y(), pl->getDiffuse().z());
-            glUniform3f(pointLightLocations_[plCount].specular, pl->getSpecular().x(),
-                        pl->getSpecular().y(), pl->getSpecular().z());
+            if (!pl)
+                continue;
+            pl->render();
             plCount++;
         }
         glUniform1i(numPointLightsLocation_, plCount);
@@ -161,21 +103,9 @@ void Renderer::render() {
             if (slCount >= MAX_SPOTLIGHTS)
                 break;
             auto sl = pair.second;
-            glUniform3f(spotlightLocations_[slCount].position, sl->getPosition().x(),
-                        sl->getPosition().y(), sl->getPosition().z());
-            glUniform3f(spotlightLocations_[slCount].direction, sl->getDirection().x(),
-                        sl->getDirection().y(), sl->getDirection().z());
-            glUniform1f(spotlightLocations_[slCount].cutoff, std::cos(sl->getCutoff()));
-            glUniform1f(spotlightLocations_[slCount].outerCutoff, std::cos(sl->getOuterCutoff()));
-            glUniform1f(spotlightLocations_[slCount].constant, sl->getConstant());
-            glUniform1f(spotlightLocations_[slCount].linear, sl->getLinear());
-            glUniform1f(spotlightLocations_[slCount].quadratic, sl->getQuadratic());
-            glUniform3f(spotlightLocations_[slCount].ambient, sl->getAmbient().x(),
-                        sl->getAmbient().y(), sl->getAmbient().z());
-            glUniform3f(spotlightLocations_[slCount].diffuse, sl->getDiffuse().x(),
-                        sl->getDiffuse().y(), sl->getDiffuse().z());
-            glUniform3f(spotlightLocations_[slCount].specular, sl->getSpecular().x(),
-                        sl->getSpecular().y(), sl->getSpecular().z());
+            if (!sl)
+                continue;
+            sl->render();
             slCount++;
         }
         glUniform1i(numSpotlightsLocation_, slCount);
@@ -198,18 +128,44 @@ void Renderer::addRenderable(RenderableMesh renderable) {
     renderables_[renderable.getId()] = std::move(renderable);
 }
 
-void Renderer::addPointLight(uint64_t id, std::shared_ptr<PointLight> pointLight) {
-    if (pointLights_.size() > MAX_POINT_LIGHTS) {
-        Logger::Warn("Maximum Point Lights Reached");
+void Renderer::setDirectionalLight(std::shared_ptr<RenderableDirectionalLight> directionalLight) {
+    if (!directionalLight)
         return;
+    if (!directionalLight_) {
+        directionalLight->setShaderProgram(shaderProgram_);
+        directionalLight->initializeOnGPU();
+        directionalLight_ = directionalLight;
+    }
+}
+
+void Renderer::addPointLight(uint64_t id, std::shared_ptr<RenderablePointLight> pointLight) {
+    if (!pointLight)
+        return;
+
+    if (pointLights_.find(id) == pointLights_.end()) {
+        if (pointLights_.size() >= MAX_POINT_LIGHTS) {
+            Logger::Warn("Maximum Point Lights Reached");
+            return;
+        }
+        pointLight->setIndex(pointLights_.size());
+        pointLight->setShaderProgram(shaderProgram_);
+        pointLight->initializeOnGPU();
     }
     pointLights_[id] = pointLight;
 }
 
-void Renderer::addSpotlight(uint64_t id, std::shared_ptr<Spotlight> spotlight) {
-    if (spotlights_.size() > MAX_SPOTLIGHTS) {
-        Logger::Warn("Maximum Spotlights Reached");
+void Renderer::addSpotlight(uint64_t id, std::shared_ptr<RenderableSpotlight> spotlight) {
+    if (!spotlight)
         return;
+
+    if (spotlights_.find(id) == spotlights_.end()) {
+        if (spotlights_.size() >= MAX_SPOTLIGHTS) {
+            Logger::Warn("Maximum Spotlights Reached");
+            return;
+        }
+        spotlight->setIndex(spotlights_.size());
+        spotlight->setShaderProgram(shaderProgram_);
+        spotlight->initializeOnGPU();
     }
     spotlights_[id] = spotlight;
 }

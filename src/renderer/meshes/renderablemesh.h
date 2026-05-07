@@ -37,7 +37,7 @@ public:
      * @param meshGroups Shared pointer to a vector of mesh groups.
      */
     RenderableMesh(uint64_t id, std::shared_ptr<std::vector<Vertex>> vertices,
-               std::shared_ptr<std::vector<MeshGroup>> meshGroups);
+                   std::shared_ptr<std::vector<MeshGroup>> meshGroups);
 
     ~RenderableMesh();
 

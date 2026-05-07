@@ -38,15 +38,16 @@ void Scene::populateRenderer(Renderer &renderer) {
         auto lightComponent = currentNode->getComponent<LightComponent>();
         if (lightComponent) {
             auto kind = lightComponent->getKind();
-            auto light = lightComponent->getLight();
+            auto light = lightComponent->getRenderableLight();
             if (kind == LightComponent::Kind::Directional) {
-                renderer.setDirectionalLight(std::static_pointer_cast<DirectionalLight>(light));
+                renderer.setDirectionalLight(
+                    std::static_pointer_cast<RenderableDirectionalLight>(light));
             } else if (kind == LightComponent::Kind::Point) {
                 renderer.addPointLight(currentNode->getId(),
-                                       std::static_pointer_cast<PointLight>(light));
+                                       std::static_pointer_cast<RenderablePointLight>(light));
             } else if (kind == LightComponent::Kind::Spot) {
                 renderer.addSpotlight(currentNode->getId(),
-                                      std::static_pointer_cast<Spotlight>(light));
+                                      std::static_pointer_cast<RenderableSpotlight>(light));
             }
         }
 

@@ -6,10 +6,10 @@
 #include <vector>
 
 #include "camera/camera.h"
+#include "lights/renderablelight.h"
 #include "math/transformations/transformation.h"
 #include "meshes/renderablemesh.h"
 #include "renderer/lights/directionallight.h"
-#include "renderer/lights/pointlight.h"
 #include "renderer/lights/spotlight.h"
 #include "renderer/skybox.h"
 
@@ -60,13 +60,9 @@ public:
         skybox_ = skybox;
     }
 
-    void setDirectionalLight(std::shared_ptr<DirectionalLight> directionalLight) {
-        directionalLight_ = directionalLight;
-    }
-
-    void addPointLight(uint64_t id, std::shared_ptr<PointLight> pointLight);
-
-    void addSpotlight(uint64_t id, std::shared_ptr<Spotlight> spotlight);
+    void setDirectionalLight(std::shared_ptr<RenderableDirectionalLight> directionalLight);
+    void addPointLight(uint64_t id, std::shared_ptr<RenderablePointLight> pointLight);
+    void addSpotlight(uint64_t id, std::shared_ptr<RenderableSpotlight> spotlight);
 
 private:
     std::weak_ptr<Camera> activeCamera_;
@@ -76,50 +72,14 @@ private:
     std::unordered_map<uint64_t, RenderableMesh> renderables_;
     std::unordered_map<uint64_t, Transformation> transforms_;
 
-    std::shared_ptr<DirectionalLight> directionalLight_;
-    std::unordered_map<uint64_t, std::shared_ptr<PointLight>> pointLights_;
-    std::unordered_map<uint64_t, std::shared_ptr<Spotlight>> spotlights_;
+    std::shared_ptr<RenderableDirectionalLight> directionalLight_;
+    std::unordered_map<uint64_t, std::shared_ptr<RenderablePointLight>> pointLights_;
+    std::unordered_map<uint64_t, std::shared_ptr<RenderableSpotlight>> spotlights_;
 
     int viewLocation_;
     int projectionLocation_;
 
     int viewPosLocation_;
-
-    struct DirectionalLightLocations {
-        int direction;
-        int ambient;
-        int diffuse;
-        int specular;
-    };
-
-    DirectionalLightLocations directionalLightLocations_;
-
-    struct PointLightLocations {
-        int position;
-        int constant;
-        int linear;
-        int quadratic;
-        int ambient;
-        int diffuse;
-        int specular;
-    };
-
-    std::vector<PointLightLocations> pointLightLocations_;
-
-    struct SpotlightLocations {
-        int position;
-        int direction;
-        int cutoff;
-        int outerCutoff;
-        int constant;
-        int linear;
-        int quadratic;
-        int ambient;
-        int diffuse;
-        int specular;
-    };
-
-    std::vector<SpotlightLocations> spotlightLocations_;
 
     int numPointLightsLocation_;
     int numSpotlightsLocation_;

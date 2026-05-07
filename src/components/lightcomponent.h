@@ -5,7 +5,7 @@
 #include <string>
 
 #include "core/component.h"
-#include "renderer/lights/baselight.h"
+#include "renderer/lights/renderablelight.h"
 #include "types/vec3.h"
 
 /**
@@ -21,8 +21,8 @@ public:
     void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
               InputHandler &inputHandler) override;
 
-    std::shared_ptr<BaseLight> getLight() const {
-        return light_;
+    std::shared_ptr<RenderableLight> getRenderableLight() const {
+        return renderableLight_;
     }
 
     Kind getKind() const {
@@ -33,6 +33,7 @@ public:
 
 private:
     std::shared_ptr<BaseLight> light_;
+    std::shared_ptr<RenderableLight> renderableLight_;
     Kind kind_;
 
     Vec3 ambient_;
