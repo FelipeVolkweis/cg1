@@ -43,6 +43,8 @@ private:
         int ambient;
         int diffuse;
         int specular;
+
+        int lightSpaceMatrix;
     };
 
     DirectionalLightLocations locations_;

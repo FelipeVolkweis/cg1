@@ -36,7 +36,7 @@ public:
         activeCamera_ = camera;
     }
 
-    void addRenderable(uint64_t id, std::shared_ptr<RenderableMesh> renderable) ;
+    void addRenderable(uint64_t id, std::shared_ptr<RenderableMesh> renderable);
 
     /**
      * @brief Sets the transformation matrix for a specific renderable.
@@ -82,6 +82,11 @@ private:
      * @return The compiled shader handle, or 0 on failure.
      */
     uint32_t compileShader(uint32_t type, const char *source);
+    void renderDirectionalLight();
+    void renderPointLights();
+    void renderSpotlights();
+    void renderOpaqueMeshes();
+    void renderTransluscenteMeshes();
 };
 
 #endif

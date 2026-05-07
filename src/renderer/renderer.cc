@@ -7,17 +7,35 @@
 #include "utils/fileutils.h"
 #include "utils/logger.h"
 
+namespace {
+std::string getShaderTypeName(uint32_t type) {
+    std::string typeName;
+
+    if (type == GL_VERTEX_SHADER) {
+        typeName = "vertex";
+    } else if (type == GL_FRAGMENT_SHADER) {
+        typeName = "fragment";
+    } else if (type == GL_GEOMETRY_SHADER) {
+        typeName = "geometry";
+    }
+
+    return typeName;
+}
+} // namespace
+
 uint32_t Renderer::compileShader(uint32_t type, const char *source) {
     uint32_t shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, NULL);
     glCompileShader(shader);
+
+    auto typeName = getShaderTypeName(type);
 
     int success;
     char infoLog[512];
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(shader, 512, NULL, infoLog);
-        Logger::Error("Error in shader compilation", infoLog);
+        Logger::Error("Error in ", typeName, " shader compilation - ", infoLog);
     }
     return shader;
 }
@@ -25,13 +43,17 @@ uint32_t Renderer::compileShader(uint32_t type, const char *source) {
 bool Renderer::initialize() {
     std::string vertexShaderSource = readFile("shaders/renderer.vert");
     std::string fragmentShaderSource = readFile("shaders/renderer.frag");
+    std::string geometryShaderSoruce = readFile("shaders/renderer.geom");
 
     uint32_t vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource.c_str());
     uint32_t fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource.c_str());
+    uint32_t geometryShader = compileShader(GL_GEOMETRY_SHADER, geometryShaderSoruce.c_str());
 
     shaderProgram_ = glCreateProgram();
     glAttachShader(shaderProgram_, vertexShader);
     glAttachShader(shaderProgram_, fragmentShader);
+    // glAttachShader(shaderProgram_, geometryShader);
+
     glLinkProgram(shaderProgram_);
 
     int success;
@@ -45,6 +67,7 @@ bool Renderer::initialize() {
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    glDeleteShader(geometryShader);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -82,49 +105,68 @@ void Renderer::render() {
         glUniformMatrix4fv(projectionLocation_, 1, GL_FALSE, projection.data());
         glUniform3f(viewPosLocation_, viewPos.x(), viewPos.y(), viewPos.z());
 
-        if (directionalLight_) {
-            directionalLight_->render();
-        }
+        renderDirectionalLight();
+        renderPointLights();
+        renderSpotlights();
 
-        int plCount = 0;
-        for (const auto &pair : pointLights_) {
-            if (plCount >= MAX_POINT_LIGHTS)
-                break;
-            auto pl = pair.second;
-            if (!pl)
-                continue;
-            pl->render();
-            plCount++;
-        }
-        glUniform1i(numPointLightsLocation_, plCount);
+        renderOpaqueMeshes();
+        renderTransluscenteMeshes();
+    }
+}
 
-        int slCount = 0;
-        for (const auto &pair : spotlights_) {
-            if (slCount >= MAX_SPOTLIGHTS)
-                break;
-            auto sl = pair.second;
-            if (!sl)
-                continue;
-            sl->render();
-            slCount++;
-        }
-        glUniform1i(numSpotlightsLocation_, slCount);
+void Renderer::renderDirectionalLight() {
+    if (directionalLight_) {
+        directionalLight_->render();
+    }
+}
 
-        for (auto &renderable : renderables_) {
-            auto &model = transforms_[renderable.first].getTransformationMatrix();
-            renderable.second->render(model, false);
-        }
+void Renderer::renderPointLights() {
+    int plCount = 0;
+    for (const auto &pair : pointLights_) {
+        if (plCount >= MAX_POINT_LIGHTS)
+            break;
+        auto pl = pair.second;
+        if (!pl)
+            continue;
+        pl->render();
+        plCount++;
+    }
+    glUniform1i(numPointLightsLocation_, plCount);
+}
 
-        for (auto &renderable : renderables_) {
-            auto &model = transforms_[renderable.first].getTransformationMatrix();
-            renderable.second->render(model, true);
-        }
+void Renderer::renderSpotlights() {
+    int slCount = 0;
+    for (const auto &pair : spotlights_) {
+        if (slCount >= MAX_SPOTLIGHTS)
+            break;
+        auto sl = pair.second;
+        if (!sl)
+            continue;
+        sl->render();
+        slCount++;
+    }
+    glUniform1i(numSpotlightsLocation_, slCount);
+}
+
+void Renderer::renderOpaqueMeshes() {
+    for (auto &renderable : renderables_) {
+        auto &model = transforms_[renderable.first].getTransformationMatrix();
+        renderable.second->render(model, false);
+    }
+}
+
+void Renderer::renderTransluscenteMeshes() {
+
+    for (auto &renderable : renderables_) {
+        auto &model = transforms_[renderable.first].getTransformationMatrix();
+        renderable.second->render(model, true);
     }
 }
 
 void Renderer::addRenderable(uint64_t id, std::shared_ptr<RenderableMesh> renderable) {
-    if (renderables_.find(id) != renderables_.end()) return;
-    
+    if (renderables_.find(id) != renderables_.end())
+        return;
+
     renderable->setShaderProgram(shaderProgram_);
     renderable->initializeOnGPU();
     renderables_[id] = renderable;

@@ -10,6 +10,9 @@ public:
     static Mat4x4 getOrthographic(float left, float right, float bottom, float top, float zNear,
                                   float zFar);
     static Mat4x4 getLookAt(Vec3 position, Vec3 focalPoint, Vec3 up);
+
+    static Mat4x4 getLightSpaceMatrix(const Mat4x4 &cameraProjection, const Mat4x4 &cameraView,
+                                      const Vec3 &lightDirection);
 };
 
 #endif

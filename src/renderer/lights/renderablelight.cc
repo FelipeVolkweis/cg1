@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include "math/projections/projection.h"
+
 RenderablePointLight::RenderablePointLight(uint64_t id) : id_(id) {}
 
 void RenderablePointLight::initializeOnGPU() {
@@ -39,6 +41,8 @@ void RenderableDirectionalLight::initializeOnGPU() {
     locations_.ambient = glGetUniformLocation(shaderProgram_, "directionalLight.ambient");
     locations_.diffuse = glGetUniformLocation(shaderProgram_, "directionalLight.diffuse");
     locations_.specular = glGetUniformLocation(shaderProgram_, "directionalLight.specular");
+    locations_.lightSpaceMatrix =
+        glGetUniformLocation(shaderProgram_, "directionalLightSpaceMatrix");
 }
 
 void RenderableDirectionalLight::render() {
@@ -53,6 +57,7 @@ void RenderableDirectionalLight::render() {
                 light_->getDiffuse().z());
     glUniform3f(locations_.specular, light_->getSpecular().x(), light_->getSpecular().y(),
                 light_->getSpecular().z());
+    // glUniformMatrix4fv(locations_.lightSpaceMatrix, 1, GL_FALSE, view.data());
 }
 
 RenderableSpotlight::RenderableSpotlight(uint64_t id) : id_(id) {}
