@@ -9,7 +9,7 @@
 #include "core/component.h"
 #include "physics/physicsengine.h"
 #include "physics/vehicle/vehicle.h"
-#include "transformations/transformation.h"
+#include "math/transformations/transformation.h"
 
 /**
  * @class VehicleComponent

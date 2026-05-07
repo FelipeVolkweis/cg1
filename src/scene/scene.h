@@ -14,7 +14,7 @@
 #include "renderer/renderer.h"
 #include "renderer/skybox.h"
 #include "shapes/baseshape.h"
-#include "transformations/transformation.h"
+#include "math/transformations/transformation.h"
 
 /**
  * @class Scene

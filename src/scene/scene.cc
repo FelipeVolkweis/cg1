@@ -5,9 +5,9 @@
 #include "components/cameracomponent.h"
 #include "components/lightcomponent.h"
 #include "components/meshcomponent.h"
-#include "transformations/rotation.h"
-#include "transformations/scale.h"
-#include "transformations/translation.h"
+#include "math/transformations/rotation.h"
+#include "math/transformations/scale.h"
+#include "math/transformations/translation.h"
 #include "utils/logger.h"
 
 void Scene::populateRenderer(Renderer &renderer) {

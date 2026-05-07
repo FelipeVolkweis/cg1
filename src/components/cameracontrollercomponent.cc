@@ -6,8 +6,8 @@
 
 #include "components/cameracomponent.h"
 #include "core/node.h"
-#include "transformations/rotation.h"
-#include "transformations/translation.h"
+#include "math/transformations/rotation.h"
+#include "math/transformations/translation.h"
 
 CameraControllerComponent::CameraControllerComponent(InputHandler *inputHandler, float maxPitch,
                                                      float maxYaw, float lookSensitivity)

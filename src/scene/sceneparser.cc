@@ -5,9 +5,9 @@
 #include <yaml-cpp/yaml.h>
 
 #include "core/componentfactory.h"
-#include "transformations/rotation.h"
-#include "transformations/scale.h"
-#include "transformations/translation.h"
+#include "math/transformations/rotation.h"
+#include "math/transformations/scale.h"
+#include "math/transformations/translation.h"
 #include "utils/logger.h"
 
 bool SceneParser::load(const std::string &filepath, std::shared_ptr<Scene> scene,

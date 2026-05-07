@@ -7,7 +7,7 @@
 
 #include "carcontrollercomponent.h"
 #include "core/node.h"
-#include "transformations/rotation.h"
+#include "math/transformations/rotation.h"
 #include "utils/deg2rad.h"
 
 void SteeringAnimationComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,

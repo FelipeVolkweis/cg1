@@ -4,7 +4,7 @@
 #include <string>
 
 #include "core/component.h"
-#include "transformations/transformation.h"
+#include "math/transformations/transformation.h"
 
 /**
  * @class SteeringAnimationComponent

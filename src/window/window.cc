@@ -7,9 +7,9 @@
 #include "camera/camera.h"
 #include "inputhandler.h"
 #include "scene/scene.h"
-#include "transformations/rotation.h"
-#include "transformations/scale.h"
-#include "transformations/translation.h"
+#include "math/transformations/rotation.h"
+#include "math/transformations/scale.h"
+#include "math/transformations/translation.h"
 
 #define WINDOW_WIDTH 960.0f
 #define WINDOW_HEIGHT 540.0f
