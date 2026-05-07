@@ -6,10 +6,10 @@
 
 #include "camera/camera.h"
 #include "inputhandler.h"
-#include "scene/scene.h"
 #include "math/transformations/rotation.h"
 #include "math/transformations/scale.h"
 #include "math/transformations/translation.h"
+#include "scene/scene.h"
 
 #define WINDOW_WIDTH 960.0f
 #define WINDOW_HEIGHT 540.0f
@@ -23,7 +23,7 @@ bool Window::initialize() {
     if (!glfwInit()) {
         return false;
     }
-    
+
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

@@ -1,10 +1,10 @@
 #ifndef ROTATION_H
 #define ROTATION_H
 
+#include <cmath>
+
 #include "transformation.h"
 #include "utils/deg2rad.h"
-
-#include <cmath>
 
 /**
  * @class RotationX
@@ -17,11 +17,7 @@ public:
         float cos = std::cos(angInRad);
         float sin = std::sin(angInRad);
 
-        matrix_ << 
-            1, 0, 0, 0,
-            0, cos, -sin, 0,
-            0, sin,  cos, 0,
-            0, 0, 0, 1;
+        matrix_ << 1, 0, 0, 0, 0, cos, -sin, 0, 0, sin, cos, 0, 0, 0, 0, 1;
     }
 };
 
@@ -36,11 +32,7 @@ public:
         float cos = std::cos(angInRad);
         float sin = std::sin(angInRad);
 
-        matrix_ << 
-            cos,  0, sin, 0,
-            0, 1, 0, 0,
-            -sin, 0, cos, 0,
-            0, 0, 0, 1;
+        matrix_ << cos, 0, sin, 0, 0, 1, 0, 0, -sin, 0, cos, 0, 0, 0, 0, 1;
     }
 };
 
@@ -49,17 +41,13 @@ public:
  * @brief Represents a rotation transformation around the Z-axis.
  */
 class RotationZ : public Transformation {
-public: 
+public:
     RotationZ(float angleInDegrees) {
         float angInRad = DEG2RAD * angleInDegrees;
         float cos = std::cos(angInRad);
         float sin = std::sin(angInRad);
 
-        matrix_ << 
-            cos, -sin, 0, 0,
-            sin, cos, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1;
+        matrix_ << cos, -sin, 0, 0, sin, cos, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     }
 };
 

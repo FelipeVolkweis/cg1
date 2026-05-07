@@ -5,9 +5,9 @@
 
 #include <btBulletDynamicsCommon.h>
 
+#include "math/transformations/transformation.h"
 #include "physics/physicsengine.h"
 #include "physics/rigidbody.h"
-#include "math/transformations/transformation.h"
 
 class BaseShape;
 

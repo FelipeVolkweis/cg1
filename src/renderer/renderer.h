@@ -6,12 +6,12 @@
 #include <vector>
 
 #include "camera/camera.h"
+#include "math/transformations/transformation.h"
 #include "renderable.h"
 #include "renderer/lights/directionallight.h"
 #include "renderer/lights/pointlight.h"
 #include "renderer/lights/spotlight.h"
 #include "renderer/skybox.h"
-#include "math/transformations/transformation.h"
 
 /**
  * @class Renderer
