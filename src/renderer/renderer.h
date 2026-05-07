@@ -7,7 +7,7 @@
 
 #include "camera/camera.h"
 #include "math/transformations/transformation.h"
-#include "renderable.h"
+#include "meshes/renderablemesh.h"
 #include "renderer/lights/directionallight.h"
 #include "renderer/lights/pointlight.h"
 #include "renderer/lights/spotlight.h"
@@ -36,7 +36,7 @@ public:
         activeCamera_ = camera;
     }
 
-    void addRenderable(Renderable renderable);
+    void addRenderable(RenderableMesh renderable);
 
     /**
      * @brief Checks if a renderable with the given ID exists in the renderer.
@@ -73,7 +73,7 @@ private:
     std::shared_ptr<Skybox> skybox_;
     uint32_t shaderProgram_ = 0;
 
-    std::unordered_map<uint64_t, Renderable> renderables_;
+    std::unordered_map<uint64_t, RenderableMesh> renderables_;
     std::unordered_map<uint64_t, Transformation> transforms_;
 
     std::shared_ptr<DirectionalLight> directionalLight_;

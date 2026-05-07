@@ -192,7 +192,7 @@ void Renderer::render() {
     }
 }
 
-void Renderer::addRenderable(Renderable renderable) {
+void Renderer::addRenderable(RenderableMesh renderable) {
     renderable.setShaderProgram(shaderProgram_);
     renderable.initializeOnGPU();
     renderables_[renderable.getId()] = std::move(renderable);

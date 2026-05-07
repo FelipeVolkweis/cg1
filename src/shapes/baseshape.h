@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "renderer/renderable.h"
+#include "renderer/meshes/renderablemesh.h"
 #include "types/vec3.h"
 #include "types/vertex.h"
 
@@ -67,8 +67,8 @@ public:
      * @param id The unique ID (from Node) for the Renderable.
      * @return The Renderable object.
      */
-    Renderable asRenderable(uint64_t id) const {
-        return Renderable(id, vertices_, meshGroups_);
+    RenderableMesh asRenderable(uint64_t id) const {
+        return RenderableMesh(id, vertices_, meshGroups_);
     }
 
 protected:

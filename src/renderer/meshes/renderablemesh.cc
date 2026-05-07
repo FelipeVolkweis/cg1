@@ -1,12 +1,12 @@
-#include "renderable.h"
+#include "renderablemesh.h"
 
 #include <glad/glad.h>
 
-Renderable::Renderable(uint64_t id, std::shared_ptr<std::vector<Vertex>> vertices,
+RenderableMesh::RenderableMesh(uint64_t id, std::shared_ptr<std::vector<Vertex>> vertices,
                        std::shared_ptr<std::vector<MeshGroup>> meshGroups)
     : vertices_(vertices), meshGroups_(meshGroups), id_(id) {}
 
-void Renderable::initializeOnGPU() {
+void RenderableMesh::initializeOnGPU() {
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
 
@@ -32,12 +32,12 @@ void Renderable::initializeOnGPU() {
     dissolveLocation_ = glGetUniformLocation(shaderProgram_, "material.dissolve");
 }
 
-void Renderable::render(const Mat4x4 &model, bool renderTranslucent) {
+void RenderableMesh::render(const Mat4x4 &model, bool renderTranslucent) {
     glBindVertexArray(vao_);
 
     glUniformMatrix4fv(modelLocation_, 1, GL_FALSE, model.data());
-    glUniform1i(diffuseLocation_, 0);
-    glUniform1i(specularLocation_, 1);
+    glUniform1i(diffuseLocation_, GL_TEXTURE0);
+    glUniform1i(specularLocation_, GL_TEXTURE1);
 
     for (const auto &mesh : *meshGroups_) {
         if (renderTranslucent && mesh.translucent || !renderTranslucent && !mesh.translucent) {
@@ -60,7 +60,7 @@ void Renderable::render(const Mat4x4 &model, bool renderTranslucent) {
     glDepthMask(GL_TRUE);
 }
 
-Renderable::~Renderable() {
+RenderableMesh::~RenderableMesh() {
     if (vao_ != (uint32_t)-1)
         glDeleteVertexArrays(1, &vao_);
     if (vbo_ != (uint32_t)-1)

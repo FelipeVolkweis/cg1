@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "renderer/renderable.h"
+#include "renderer/meshes/renderablemesh.h"
 
 /**
  * @brief Structure containing the loaded model data.
