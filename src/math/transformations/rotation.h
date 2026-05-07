@@ -17,7 +17,11 @@ public:
         float cos = std::cos(angInRad);
         float sin = std::sin(angInRad);
 
-        matrix_ << 1, 0, 0, 0, 0, cos, -sin, 0, 0, sin, cos, 0, 0, 0, 0, 1;
+        matrix_ << 
+            1, 0, 0, 0,
+            0, cos, -sin, 0,
+            0, sin,  cos, 0,
+            0, 0, 0, 1;
     }
 };
 
@@ -32,7 +36,11 @@ public:
         float cos = std::cos(angInRad);
         float sin = std::sin(angInRad);
 
-        matrix_ << cos, 0, sin, 0, 0, 1, 0, 0, -sin, 0, cos, 0, 0, 0, 0, 1;
+        matrix_ << 
+            cos,  0, sin, 0,
+            0, 1, 0, 0,
+            -sin, 0, cos, 0,
+            0, 0, 0, 1;
     }
 };
 
@@ -47,7 +55,11 @@ public:
         float cos = std::cos(angInRad);
         float sin = std::sin(angInRad);
 
-        matrix_ << cos, -sin, 0, 0, sin, cos, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+        matrix_ << 
+            cos, -sin, 0, 0,
+            sin, cos, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1;
     }
 };
 
