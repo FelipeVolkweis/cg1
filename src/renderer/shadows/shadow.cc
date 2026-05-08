@@ -13,14 +13,15 @@
 
 std::vector<float> Shadow::getShadowCascadeLevels(int levels, float startingDenominator,
                                                   float zFar) {
+    if (!shadowCascadeLevels_.empty() && levels == levels_ && abs(startingDenominator_ - startingDenominator) <= 1e-3 &&
+        abs(zFar_ - zFar) <= 1e-3) {
+        return shadowCascadeLevels_;
+    }
+
     levels_ = levels;
     startingDenominator_ = startingDenominator;
     zFar_ = zFar;
 
-    if (levels == levels_ && abs(startingDenominator_ - startingDenominator) <= 1e-3 &&
-        abs(zFar_ - zFar) <= 1e-3) {
-        return shadowCascadeLevels_;
-    }
     shadowCascadeLevels_.clear();
     float den = startingDenominator;
     for (int i = 0; i < levels; i++) {
@@ -35,14 +36,14 @@ std::vector<float> Shadow::getShadowCascadeLevels(int levels, float startingDeno
     return shadowCascadeLevels_;
 }
 
-bool Shadow::allocateShadowMap(int powerOfTwo) {
-    int resolution = 1 << powerOfTwo;
+bool Shadow::allocateShadowMap(int powerOfTwo, int levels) {
+    resolution_ = 1 << powerOfTwo;
 
     glGenFramebuffers(1, &depthMapFbo_);
     glGenTextures(1, &depthMap_);
     glBindTexture(GL_TEXTURE_2D_ARRAY, depthMap_);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, resolution, resolution,
-                 int(shadowCascadeLevels_.size()) + 1, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, resolution_, resolution_,
+                 levels + 1, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

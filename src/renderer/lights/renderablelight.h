@@ -34,10 +34,9 @@ public:
     void setCamera(std::shared_ptr<Camera> camera) {
         camera_ = camera;
     }
-
+    
     std::shared_ptr<Camera> camera_;
     float frameBufferAspect_;
-
 protected:
     std::shared_ptr<Shader> shaderProgram_ = nullptr;
 };
@@ -48,10 +47,13 @@ public:
 
     void initializeOnGPU() override;
     void render() override;
+    void updateShadows();
 
     void setLight(std::shared_ptr<BaseLight> light) override {
         light_ = std::static_pointer_cast<DirectionalLight>(light);
     }
+    
+    Shadow& getShadow() { return shadow_; }
 
 private:
     std::shared_ptr<DirectionalLight> light_;

@@ -28,17 +28,65 @@ bool Renderer::initialize() {
     if (!mainOk || !shadowOk)
         return false;
 
+    uint32_t mainBlockIndex = glGetUniformBlockIndex(mainShaderProgram_->getId(), "LightSpaceMatrices");
+    if (mainBlockIndex != GL_INVALID_INDEX) {
+        glUniformBlockBinding(mainShaderProgram_->getId(), mainBlockIndex, 0);
+    }
+
+    uint32_t shadowBlockIndex = glGetUniformBlockIndex(shadowShaderProgram_->getId(), "LightSpaceMatrices");
+    if (shadowBlockIndex != GL_INVALID_INDEX) {
+        glUniformBlockBinding(shadowShaderProgram_->getId(), shadowBlockIndex, 0);
+    }
+
     return true;
 }
 
 void Renderer::render() {
     if (auto activeCamera = activeCamera_.lock()) {
+        // --- Shadow Pass ---
+        if (directionalLight_) {
+            shadowShaderProgram_->use();
+            int w, h;
+            glfwGetFramebufferSize(window_, &w, &h);
+            float aspect = static_cast<float>(w) / static_cast<float>(h);
+            directionalLight_->setCamera(activeCamera);
+            directionalLight_->setFrameBufferAspect(aspect);
+            directionalLight_->updateShadows();
+
+            auto& shadow = directionalLight_->getShadow();
+            int res = shadow.getResolution();
+            
+            if (res > 0) {
+                glBindFramebuffer(GL_FRAMEBUFFER, shadow.getDepthMapFbo());
+                glViewport(0, 0, res, res);
+                glClear(GL_DEPTH_BUFFER_BIT);
+                glCullFace(GL_FRONT);
+                
+                shadowShaderProgram_->use();
+                for (auto &renderable : renderables_) {
+                    auto &model = transforms_[renderable.first].getTransformationMatrix();
+                    shadowShaderProgram_->setMat4x4("model", model);
+                    renderable.second->renderShadow();
+                }
+                
+                glCullFace(GL_BACK);
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                
+                glViewport(0, 0, w, h);
+                
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D_ARRAY, shadow.getDepthMap());
+            }
+        }
+        // -------------------
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (skybox_) {
             skybox_->render(activeCamera->lookAt(), activeCamera->perspective());
         }
 
+        mainShaderProgram_->use();
         const auto &view = activeCamera->lookAt();
         const auto &projection = activeCamera->perspective();
         const auto &viewPos = activeCamera->getPosition();
@@ -60,13 +108,6 @@ void Renderer::render() {
 
 void Renderer::renderDirectionalLight() {
     if (directionalLight_) {
-        auto activeCamera = activeCamera_.lock();
-        if (activeCamera) {
-            directionalLight_->setCamera(activeCamera);
-            int w, h;
-            glfwGetFramebufferSize(window_, &w, &h);
-            float aspect = static_cast<float>(w) / static_cast<float>(h);
-        }
         directionalLight_->render();
     }
 }

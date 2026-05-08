@@ -54,6 +54,12 @@ public:
     void render(const Mat4x4 &model, bool renderTranslucent);
 
     /**
+     * @brief Renders the object for the shadow pass.
+     * Assumes the correct shadow shader is already active.
+     */
+    void renderShadow();
+
+    /**
      * @brief Gets the Vertex Array Object (VAO) handle.
      * @return VAO handle.
      */

@@ -53,6 +53,15 @@ void RenderableMesh::render(const Mat4x4 &model, bool renderTranslucent) {
     glDepthMask(GL_TRUE);
 }
 
+void RenderableMesh::renderShadow() {
+    glBindVertexArray(vao_);
+
+    for (const auto &mesh : *meshGroups_) {
+        // Just draw all meshes for the depth pass
+        glDrawArrays(GL_TRIANGLES, mesh.start, mesh.count);
+    }
+}
+
 RenderableMesh::~RenderableMesh() {
     if (vao_ != (uint32_t)-1)
         glDeleteVertexArrays(1, &vao_);
