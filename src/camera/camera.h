@@ -69,6 +69,18 @@ public:
         return up_;
     }
 
+    float getFov() const {
+        return fovy_;
+    }
+
+    float getZNear() const {
+        return zNear_;
+    }
+
+    float getZFar() const {
+        return zFar_;
+    }
+
 private:
     float fovy_;
     float aspect_;

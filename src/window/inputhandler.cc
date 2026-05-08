@@ -80,3 +80,10 @@ std::pair<int, int> InputHandler::getWindowDimensions() const {
     glfwGetWindowSize(window_, &dims.first, &dims.second);
     return dims;
 }
+
+std::pair<int, int> InputHandler::getFrameBufferDimensions() const {
+    int w, h;
+    glfwGetFramebufferSize(window_, &w, &h);
+
+    return {w, h};
+}

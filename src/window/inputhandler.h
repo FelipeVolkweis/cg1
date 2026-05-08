@@ -28,6 +28,8 @@ public:
      */
     std::pair<int, int> getWindowDimensions() const;
 
+    std::pair<int, int> getFrameBufferDimensions() const;
+
     /**
      * @brief Gets the input vector for the primary Y axis (W/S).
      * @return Vec2 representing the input.

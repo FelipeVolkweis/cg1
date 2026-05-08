@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include <iostream>
+
 #include "math/projections/projection.h"
 
 RenderablePointLight::RenderablePointLight(uint64_t id) : id_(id) {}
@@ -24,7 +26,14 @@ void RenderablePointLight::render() {
 
 RenderableDirectionalLight::RenderableDirectionalLight(uint64_t id) : id_(id) {}
 
-void RenderableDirectionalLight::initializeOnGPU() {}
+void RenderableDirectionalLight::initializeOnGPU() {
+    shadow_.allocateShadowMap(10);
+    glGenBuffers(1, &ubo_);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo_);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(Mat4x4) * 16, nullptr, GL_STATIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
 
 void RenderableDirectionalLight::render() {
     if (!light_)
@@ -34,6 +43,24 @@ void RenderableDirectionalLight::render() {
     shaderProgram_->setVec3("directionalLight.ambient", light_->getAmbient());
     shaderProgram_->setVec3("directionalLight.diffuse", light_->getDiffuse());
     shaderProgram_->setVec3("directionalLight.specular", light_->getSpecular());
+
+    if (!camera_)
+        return;
+
+    shaderProgram_->setInt("shadowMap", 2);
+    const auto &shadowCascadeLevels = shadow_.getShadowCascadeLevels(3, 50, camera_->getZFar());
+    const auto lightMatrices = shadow_.getLightSpaceMatrices(
+        camera_, frameBufferAspect_, camera_->lookAt(), light_->getDirection());
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo_);
+    for (size_t i = 0; i < lightMatrices.size(); ++i) {
+        glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof(Mat4x4), sizeof(Mat4x4), &lightMatrices[i]);
+    }
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    shaderProgram_->setInt("cascadeCount", shadowCascadeLevels.size());
+    for (size_t i = 0; i < shadowCascadeLevels.size(); ++i) {
+        shaderProgram_->setFloat("cascadePlaneDistances[" + std::to_string(i) + "]",
+                                 shadowCascadeLevels[i]);
+    }
 }
 
 RenderableSpotlight::RenderableSpotlight(uint64_t id) : id_(id) {}

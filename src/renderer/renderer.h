@@ -14,6 +14,8 @@
 #include "renderer/shader/shader.h"
 #include "renderer/skybox.h"
 
+struct GLFWwindow;
+
 /**
  * @class Renderer
  * @brief Handles the rendering of shapes using OpenGL.
@@ -56,7 +58,13 @@ public:
     void addPointLight(uint64_t id, std::shared_ptr<RenderablePointLight> pointLight);
     void addSpotlight(uint64_t id, std::shared_ptr<RenderableSpotlight> spotlight);
 
+    void setWindow(GLFWwindow *window) {
+        window_ = window;
+    }
+
 private:
+    GLFWwindow *window_;
+
     std::shared_ptr<Shader> mainShaderProgram_;
     std::shared_ptr<Shader> shadowShaderProgram_;
 

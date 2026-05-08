@@ -45,10 +45,10 @@ struct Spotlight {
     vec3 specular;
 };
 
-vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);  
+vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec3 fragPos);  
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);  
 vec3 calculateSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-float shadowCalculation(vec3 normal, vec3 lightDir);
+float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir);
 
 out vec4 FragColor;
 
@@ -64,14 +64,22 @@ uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int numPointLights;
 uniform Spotlight spotlights[MAX_SPOTLIGHTS];
 uniform int numSpotlights;
-uniform sampler2D shadowMap;
+
+uniform sampler2DArray shadowMap;
+layout (std140) uniform LightSpaceMatrices {
+    mat4 lightSpaceMatrices[16];
+};
+uniform float cascadePlaneDistances[16];
+uniform int cascadeCount; 
+uniform mat4 view;
+uniform float zFar;
 
 void main() {
     vec3 output = vec3(0.0);
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
     
-    output += calculateDirectionalLight(directionalLight, norm, viewDir);
+    output += calculateDirectionalLight(directionalLight, norm, viewDir, FragPos);
 
     for (int i = 0; i < numPointLights; i++) {
         output += calculatePointLight(pointLights[i], norm, FragPos, viewDir);
@@ -84,7 +92,7 @@ void main() {
     FragColor = vec4(output, material.dissolve);
 }
 
-vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
+vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec3 fragPos) {
     vec3 lightDir = normalize(-light.direction);
     float diffuseAmount = max(dot(normal, lightDir), 0.0);
 
@@ -95,7 +103,7 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     vec3 specular = light.specular * specularAmount * vec3(texture(material.specular, TexCoord));
     vec3 diffuse = light.diffuse * diffuseAmount * vec3(texture(material.diffuse, TexCoord));
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
-    float shadow = shadowCalculation(normal, lightDir);
+    float shadow = shadowCalculation(fragPos, normal, lightDir);
 
     return ((specular + diffuse) * (1.0 - shadow) + ambient);
 }
@@ -142,25 +150,64 @@ vec3 calculateSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir
     return (specular + diffuse + ambient) * attenuation * intensity;
 }
 
-float shadowCalculation(vec3 normal, vec3 lightDir) {
-    vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
+float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir)
+{
+    // select cascade layer
+    vec4 fragPosViewSpace = view * vec4(fragPosWorldSpace, 1.0);
+    float depthValue = abs(fragPosViewSpace.z);
+
+    int layer = -1;
+    for (int i = 0; i < cascadeCount; ++i)
+    {
+        if (depthValue < cascadePlaneDistances[i])
+        {
+            layer = i;
+            break;
+        }
+    }
+    if (layer == -1)
+    {
+        layer = cascadeCount;
+    }
+
+    vec4 fragPosLightSpace = lightSpaceMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
-    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+
+    // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), MIN_SHADOW_BIAS);
+
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if (currentDepth > 1.0)
+    {
+        return 0.0;
+    }
+    // calculate bias (based on depth map resolution and slope)
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    const float biasModifier = 0.5f;
+    if (layer == cascadeCount)
+    {
+        bias *= 1 / (zFar * biasModifier);
+    }
+    else
+    {
+        bias *= 1 / (cascadePlaneDistances[layer] * biasModifier);
+    }
+
+    // PCF
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
     for(int x = -1; x <= 1; ++x)
     {
         for(int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
+            float pcfDepth = texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
+            shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;        
         }    
     }
     shadow /= 9.0;
-    
-    if(projCoords.z > 1.0)
-        shadow = 0.0;
+        
     return shadow;
 }

@@ -2,9 +2,39 @@
 
 #include <glad/glad.h>
 
+#include <memory>
+
+#include "camera/camera.h"
+#include "math/projections/projection.h"
+#include "types/mat4x4.h"
 #include "utils/logger.h"
 
 // https://learnopengl.com/Guest-Articles/2021/CSM
+
+std::vector<float> Shadow::getShadowCascadeLevels(int levels, float startingDenominator,
+                                                  float zFar) {
+    levels_ = levels;
+    startingDenominator_ = startingDenominator;
+    zFar_ = zFar;
+
+    if (levels == levels_ && abs(startingDenominator_ - startingDenominator) <= 1e-3 &&
+        abs(zFar_ - zFar) <= 1e-3) {
+        return shadowCascadeLevels_;
+    }
+    shadowCascadeLevels_.clear();
+    float den = startingDenominator;
+    for (int i = 0; i < levels; i++) {
+        if (den >= 1) {
+            shadowCascadeLevels_.push_back(zFar / den);
+        } else {
+            break;
+        }
+        den /= 2;
+    }
+
+    return shadowCascadeLevels_;
+}
+
 bool Shadow::allocateShadowMap(int powerOfTwo) {
     int resolution = 1 << powerOfTwo;
 
@@ -38,4 +68,32 @@ bool Shadow::allocateShadowMap(int powerOfTwo) {
     glBindTexture(GL_TEXTURE_2D_ARRAY, depthMap_);
 
     return true;
+}
+
+std::vector<Mat4x4> Shadow::getLightSpaceMatrices(std::shared_ptr<Camera> camera,
+                                                  float frameBufferAspect, const Mat4x4 &cameraView,
+                                                  const Vec3 &lightDirection) {
+    std::vector<Mat4x4> ret;
+    if (shadowCascadeLevels_.size() < 1)
+        return ret;
+
+    for (size_t i = 0; i < shadowCascadeLevels_.size() + 1; ++i) {
+        float zNear, zFar;
+        if (i == 0) {
+            zNear = camera->getZNear();
+            zFar = shadowCascadeLevels_[i];
+        } else if (i < shadowCascadeLevels_.size()) {
+            zNear = shadowCascadeLevels_[i - 1];
+            zFar = shadowCascadeLevels_[i];
+        } else {
+            zNear = shadowCascadeLevels_[i - 1];
+            zFar = camera->getZFar();
+        }
+
+        Mat4x4 cameraProjection =
+            Projection::getPerspective(camera->getFov(), frameBufferAspect, zNear, zFar);
+        ret.push_back(
+            Projection::getLightSpaceMatrix(cameraProjection, cameraView, lightDirection));
+    }
+    return ret;
 }

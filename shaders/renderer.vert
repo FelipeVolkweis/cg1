@@ -6,12 +6,10 @@ layout (location = 2) in vec2 aTexCoords;
 out vec2 TexCoord;
 out vec3 FragPos;  
 out vec3 Normal;
-out vec4 FragPosLightSpace;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 directionalLightSpaceMatrix;
 
 void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
@@ -20,6 +18,4 @@ void main() {
     // LearnopenGL says there are better ways to do this;
     // Research later
     Normal = mat3(transpose(inverse(model))) * aNormal;
-
-    FragPosLightSpace = directionalLightSpaceMatrix * vec4(FragPos, 1.0);
 }

@@ -3,10 +3,12 @@
 
 #include <memory>
 
+#include "camera/camera.h"
 #include "directionallight.h"
 #include "pointlight.h"
 #include "renderer/renderable.h"
 #include "renderer/shader/shader.h"
+#include "renderer/shadows/shadow.h"
 #include "spotlight.h"
 
 // !!SYNC THIS WITH THE RENDERER.FRAG SHADER!!
@@ -24,6 +26,17 @@ public:
     bool hasShaderProgram() {
         return shaderProgram_ != nullptr;
     }
+
+    void setFrameBufferAspect(float frameBufferAspect) {
+        frameBufferAspect_ = frameBufferAspect;
+    }
+
+    void setCamera(std::shared_ptr<Camera> camera) {
+        camera_ = camera;
+    }
+
+    std::shared_ptr<Camera> camera_;
+    float frameBufferAspect_;
 
 protected:
     std::shared_ptr<Shader> shaderProgram_ = nullptr;
@@ -43,6 +56,9 @@ public:
 private:
     std::shared_ptr<DirectionalLight> light_;
     uint64_t id_ = -1;
+
+    Shadow shadow_;
+    uint32_t ubo_;
 };
 
 class RenderablePointLight : public RenderableLight {
@@ -86,4 +102,5 @@ private:
     uint64_t id_ = -1;
     int index_;
 };
+
 #endif

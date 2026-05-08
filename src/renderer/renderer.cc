@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include <GLFW/glfw3.h>
+
 #include "shapes/baseshape.h"
 #include "textures/texture.h"
 #include "utils/fileutils.h"
@@ -45,6 +47,7 @@ void Renderer::render() {
         mainShaderProgram_->setMat4x4("view", view);
         mainShaderProgram_->setMat4x4("projection", projection);
         mainShaderProgram_->setVec3("viewPos", viewPos);
+        mainShaderProgram_->setFloat("zFar", activeCamera->getZFar());
 
         renderDirectionalLight();
         renderPointLights();
@@ -57,6 +60,13 @@ void Renderer::render() {
 
 void Renderer::renderDirectionalLight() {
     if (directionalLight_) {
+        auto activeCamera = activeCamera_.lock();
+        if (activeCamera) {
+            directionalLight_->setCamera(activeCamera);
+            int w, h;
+            glfwGetFramebufferSize(window_, &w, &h);
+            float aspect = static_cast<float>(w) / static_cast<float>(h);
+        }
         directionalLight_->render();
     }
 }

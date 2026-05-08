@@ -34,6 +34,7 @@ bool Window::initialize() {
         glfwTerminate();
         return false;
     }
+    renderer_.setWindow(window_);
     inputHandler_ = new InputHandler(window_);
     glfwMakeContextCurrent(window_);
     glfwSetFramebufferSizeCallback(window_, resizeCallback);
