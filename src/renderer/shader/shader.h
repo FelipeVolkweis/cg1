@@ -21,7 +21,9 @@ public:
     void setVec3(const std::string &name, const Vec3 &value);
     void setMat4x4(const std::string &name, const Mat4x4 &value);
 
-    uint32_t getId() const { return id_; }
+    uint32_t getId() const {
+        return id_;
+    }
 
 private:
     uint32_t id_;

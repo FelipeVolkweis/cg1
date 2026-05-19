@@ -8,7 +8,7 @@
 #include "pointlight.h"
 #include "renderer/renderable.h"
 #include "renderer/shader/shader.h"
-#include "renderer/shadows/shadow.h"
+#include "renderer/shadows/cascadedshadow.h"
 #include "spotlight.h"
 
 // !!SYNC THIS WITH THE RENDERER.FRAG SHADER!!
@@ -34,9 +34,10 @@ public:
     void setCamera(std::shared_ptr<Camera> camera) {
         camera_ = camera;
     }
-    
+
     std::shared_ptr<Camera> camera_;
     float frameBufferAspect_;
+
 protected:
     std::shared_ptr<Shader> shaderProgram_ = nullptr;
 };
@@ -52,14 +53,16 @@ public:
     void setLight(std::shared_ptr<BaseLight> light) override {
         light_ = std::static_pointer_cast<DirectionalLight>(light);
     }
-    
-    Shadow& getShadow() { return shadow_; }
+
+    CascadedShadow &getShadow() {
+        return shadow_;
+    }
 
 private:
     std::shared_ptr<DirectionalLight> light_;
     uint64_t id_ = -1;
 
-    Shadow shadow_;
+    CascadedShadow shadow_;
     uint32_t ubo_;
 };
 

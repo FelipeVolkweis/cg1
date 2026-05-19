@@ -28,12 +28,14 @@ bool Renderer::initialize() {
     if (!mainOk || !shadowOk)
         return false;
 
-    uint32_t mainBlockIndex = glGetUniformBlockIndex(mainShaderProgram_->getId(), "LightSpaceMatrices");
+    uint32_t mainBlockIndex =
+        glGetUniformBlockIndex(mainShaderProgram_->getId(), "LightSpaceMatrices");
     if (mainBlockIndex != GL_INVALID_INDEX) {
         glUniformBlockBinding(mainShaderProgram_->getId(), mainBlockIndex, 0);
     }
 
-    uint32_t shadowBlockIndex = glGetUniformBlockIndex(shadowShaderProgram_->getId(), "LightSpaceMatrices");
+    uint32_t shadowBlockIndex =
+        glGetUniformBlockIndex(shadowShaderProgram_->getId(), "LightSpaceMatrices");
     if (shadowBlockIndex != GL_INVALID_INDEX) {
         glUniformBlockBinding(shadowShaderProgram_->getId(), shadowBlockIndex, 0);
     }
@@ -53,27 +55,27 @@ void Renderer::render() {
             directionalLight_->setFrameBufferAspect(aspect);
             directionalLight_->updateShadows();
 
-            auto& shadow = directionalLight_->getShadow();
+            auto &shadow = directionalLight_->getShadow();
             int res = shadow.getResolution();
-            
+
             if (res > 0) {
                 glBindFramebuffer(GL_FRAMEBUFFER, shadow.getDepthMapFbo());
                 glViewport(0, 0, res, res);
                 glClear(GL_DEPTH_BUFFER_BIT);
                 glCullFace(GL_FRONT);
-                
+
                 shadowShaderProgram_->use();
                 for (auto &renderable : renderables_) {
                     auto &model = transforms_[renderable.first].getTransformationMatrix();
                     shadowShaderProgram_->setMat4x4("model", model);
                     renderable.second->renderShadow();
                 }
-                
+
                 glCullFace(GL_BACK);
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
-                
+
                 glViewport(0, 0, w, h);
-                
+
                 glActiveTexture(GL_TEXTURE2);
                 glBindTexture(GL_TEXTURE_2D_ARRAY, shadow.getDepthMap());
             }

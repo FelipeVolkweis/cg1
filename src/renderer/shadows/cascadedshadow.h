@@ -1,5 +1,5 @@
-#ifndef SHADOW_H
-#define SHADOW_H
+#ifndef CASCADEDSHADOW_H
+#define CASCADEDSHADOW_H
 
 #include <cstdint>
 #include <memory>
@@ -9,7 +9,7 @@
 #include "types/mat4x4.h"
 #include "types/vec3.h"
 
-class Shadow {
+class CascadedShadow {
 public:
     std::vector<float> getShadowCascadeLevels(int levels, float startingDenominator, float zFar);
     bool allocateShadowMap(int powerOfTwo, int levels);
@@ -17,9 +17,17 @@ public:
                                               float frameBufferAspect, const Mat4x4 &cameraView,
                                               const Vec3 &lightDirection);
 
-    uint32_t getDepthMapFbo() const { return depthMapFbo_; }
-    uint32_t getDepthMap() const { return depthMap_; }
-    int getResolution() const { return resolution_; }
+    uint32_t getDepthMapFbo() const {
+        return depthMapFbo_;
+    }
+
+    uint32_t getDepthMap() const {
+        return depthMap_;
+    }
+
+    int getResolution() const {
+        return resolution_;
+    }
 
 private:
     uint32_t depthMapFbo_;

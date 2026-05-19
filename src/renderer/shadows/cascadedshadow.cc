@@ -1,4 +1,4 @@
-#include "shadow.h"
+#include "cascadedshadow.h"
 
 #include <glad/glad.h>
 
@@ -11,10 +11,10 @@
 
 // https://learnopengl.com/Guest-Articles/2021/CSM
 
-std::vector<float> Shadow::getShadowCascadeLevels(int levels, float startingDenominator,
-                                                  float zFar) {
-    if (!shadowCascadeLevels_.empty() && levels == levels_ && abs(startingDenominator_ - startingDenominator) <= 1e-3 &&
-        abs(zFar_ - zFar) <= 1e-3) {
+std::vector<float> CascadedShadow::getShadowCascadeLevels(int levels, float startingDenominator,
+                                                          float zFar) {
+    if (!shadowCascadeLevels_.empty() && levels == levels_ &&
+        abs(startingDenominator_ - startingDenominator) <= 1e-3 && abs(zFar_ - zFar) <= 1e-3) {
         return shadowCascadeLevels_;
     }
 
@@ -36,7 +36,7 @@ std::vector<float> Shadow::getShadowCascadeLevels(int levels, float startingDeno
     return shadowCascadeLevels_;
 }
 
-bool Shadow::allocateShadowMap(int powerOfTwo, int levels) {
+bool CascadedShadow::allocateShadowMap(int powerOfTwo, int levels) {
     resolution_ = 1 << powerOfTwo;
 
     glGenFramebuffers(1, &depthMapFbo_);
@@ -49,6 +49,8 @@ bool Shadow::allocateShadowMap(int powerOfTwo, int levels) {
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 
     constexpr float bordercolor[] = {1.0f, 1.0f, 1.0f, 1.0f};
     glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, bordercolor);
@@ -71,9 +73,10 @@ bool Shadow::allocateShadowMap(int powerOfTwo, int levels) {
     return true;
 }
 
-std::vector<Mat4x4> Shadow::getLightSpaceMatrices(std::shared_ptr<Camera> camera,
-                                                  float frameBufferAspect, const Mat4x4 &cameraView,
-                                                  const Vec3 &lightDirection) {
+std::vector<Mat4x4> CascadedShadow::getLightSpaceMatrices(std::shared_ptr<Camera> camera,
+                                                          float frameBufferAspect,
+                                                          const Mat4x4 &cameraView,
+                                                          const Vec3 &lightDirection) {
     std::vector<Mat4x4> ret;
     if (shadowCascadeLevels_.size() < 1)
         return ret;

@@ -1,7 +1,6 @@
 #version 330 core
 #define MAX_POINT_LIGHTS 32
 #define MAX_SPOTLIGHTS 16
-#define MIN_SHADOW_BIAS 0.005f
 
 struct Material {
     sampler2D diffuse;
@@ -49,6 +48,7 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);  
 vec3 calculateSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir);
+float sampleShadowCascade(vec3 offsetPosWorld, int layer, vec3 normal, vec3 lightDir);
 
 out vec4 FragColor;
 
@@ -65,7 +65,7 @@ uniform int numPointLights;
 uniform Spotlight spotlights[MAX_SPOTLIGHTS];
 uniform int numSpotlights;
 
-uniform sampler2DArray shadowMap;
+uniform sampler2DArrayShadow shadowMap;
 layout (std140) uniform LightSpaceMatrices {
     mat4 lightSpaceMatrices[16];
 };
@@ -103,6 +103,7 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     vec3 specular = light.specular * specularAmount * vec3(texture(material.specular, TexCoord));
     vec3 diffuse = light.diffuse * diffuseAmount * vec3(texture(material.diffuse, TexCoord));
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
+    
     float shadow = shadowCalculation(fragPos, normal, lightDir);
 
     return ((specular + diffuse) * (1.0 - shadow) + ambient);
@@ -150,64 +151,68 @@ vec3 calculateSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir
     return (specular + diffuse + ambient) * attenuation * intensity;
 }
 
-float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir)
-{
-    // select cascade layer
+float sampleShadowCascade(vec3 offsetPosWorld, int layer, vec3 normal, vec3 lightDir) {
+    vec4 fragPosLightSpace = lightSpaceMatrices[layer] * vec4(offsetPosWorld, 1.0);
+    
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0) {
+        return 0.0;
+    }
+
+    float bias = 0.0005;
+    vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
+    
+    float litFactor = 0.0;
+    int samples = 0;
+    for(int x = -1; x <= 1; ++x) {
+        for(int y = -1; y <= 1; ++y) {
+            vec2 offset = vec2(x, y) * texelSize;
+            
+            litFactor += texture(shadowMap, vec4(projCoords.xy + offset, layer, projCoords.z - bias));
+            samples++;
+        }    
+    }
+    
+    litFactor /= float(samples);
+        
+    return 1.0 - litFactor; 
+}
+
+float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir) {
     vec4 fragPosViewSpace = view * vec4(fragPosWorldSpace, 1.0);
     float depthValue = abs(fragPosViewSpace.z);
 
     int layer = -1;
-    for (int i = 0; i < cascadeCount; ++i)
-    {
-        if (depthValue < cascadePlaneDistances[i])
-        {
+    for (int i = 0; i < cascadeCount; ++i) {
+        if (depthValue < cascadePlaneDistances[i]) {
             layer = i;
             break;
         }
     }
-    if (layer == -1)
-    {
+    if (layer == -1) {
         layer = cascadeCount;
     }
 
-    vec4 fragPosLightSpace = lightSpaceMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
-    // perform perspective divide
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
+    float cascadeDistance = (layer == cascadeCount) ? zFar : cascadePlaneDistances[layer];
+    float normalOffsetScale = (1.0 - max(dot(normal, lightDir), 0.0)) * (0.001 * cascadeDistance);
+    vec3 offsetPosWorld = fragPosWorldSpace + normal * normalOffsetScale;
+    float shadow = sampleShadowCascade(offsetPosWorld, layer, normal, lightDir);
 
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-
-    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-    if (currentDepth > 1.0)
-    {
-        return 0.0;
-    }
-    // calculate bias (based on depth map resolution and slope)
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
-    const float biasModifier = 0.5f;
-    if (layer == cascadeCount)
-    {
-        bias *= 1 / (zFar * biasModifier);
-    }
-    else
-    {
-        bias *= 1 / (cascadePlaneDistances[layer] * biasModifier);
-    }
-
-    // PCF
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
-    for(int x = -1; x <= 1; ++x)
-    {
-        for(int y = -1; y <= 1; ++y)
-        {
-            float pcfDepth = texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
-            shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;        
-        }    
-    }
-    shadow /= 9.0;
+    if (layer < cascadeCount) {
+        float cascadeFar = cascadePlaneDistances[layer];
         
+        float blendBand = cascadeFar * 0.1; 
+        float distanceToCascadeEdge = cascadeFar - depthValue;
+
+        if (distanceToCascadeEdge < blendBand) {
+            float nextShadow = sampleShadowCascade(offsetPosWorld, layer + 1, normal, lightDir);
+            
+            float blendFactor = smoothstep(blendBand, 0.0, distanceToCascadeEdge);
+            shadow = mix(shadow, nextShadow, blendFactor);
+        }
+    }
+
     return shadow;
 }
