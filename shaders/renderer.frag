@@ -75,21 +75,21 @@ uniform mat4 view;
 uniform float zFar;
 
 void main() {
-    vec3 output = vec3(0.0);
+    vec3 result = vec3(0.0);
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
     
-    output += calculateDirectionalLight(directionalLight, norm, viewDir, FragPos);
+    result += calculateDirectionalLight(directionalLight, norm, viewDir, FragPos);
 
     for (int i = 0; i < numPointLights; i++) {
-        output += calculatePointLight(pointLights[i], norm, FragPos, viewDir);
+        result += calculatePointLight(pointLights[i], norm, FragPos, viewDir);
     }
 
     for (int i = 0; i < numSpotlights; i++) {
-        output += calculateSpotlight(spotlights[i], norm, FragPos, viewDir);
+        result += calculateSpotlight(spotlights[i], norm, FragPos, viewDir);
     }
 
-    FragColor = vec4(output, material.dissolve);
+    FragColor = vec4(result, material.dissolve);
 }
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec3 fragPos) {
