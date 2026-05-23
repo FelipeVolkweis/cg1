@@ -6,7 +6,6 @@
 
 #include "components/vehiclecomponent.h"
 #include "core/component.h"
-#include "window/inputhandler.h"
 
 /**
  * @class CarControllerComponent
@@ -14,22 +13,17 @@
  */
 class CarControllerComponent : public BaseComponent {
 public:
-    CarControllerComponent() = default;
-
     /**
      * @brief Constructor for CarControllerComponent.
-     * @param inputHandler Pointer to the input handler.
      * @param maxEngineForce Maximum engine force.
      * @param maxSteeringAngle Maximum steering angle.
      * @param steeringSensitivity Steering sensitivity.
      * @param breakForce Braking force.
      */
-    CarControllerComponent(InputHandler *inputHandler, float maxEngineForce = 2000.0f,
-                           float maxSteeringAngle = 0.5f, float steeringSensitivity = 3.0f,
-                           float breakForce = 100.0f);
+    CarControllerComponent(float maxEngineForce = 2000.0f, float maxSteeringAngle = 0.5f,
+                           float steeringSensitivity = 3.0f, float breakForce = 100.0f);
 
-    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-              InputHandler &inputHandler) override;
+    void load(const YAML::Node &data) override;
 
     void onUpdate(float dt) override;
 
@@ -42,7 +36,6 @@ public:
     }
 
 private:
-    InputHandler *inputHandler_ = nullptr;
     float maxEngineForce_ = 2000.0f;
     float maxSteeringAngle_ = 0.5f;
     float steeringSensitivity_ = 3.0f;

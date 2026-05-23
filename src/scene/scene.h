@@ -23,7 +23,7 @@
 class Scene {
 public:
     Scene(std::shared_ptr<Node> root) : root_(root) {
-        physicsEngine_.initialize();
+        PhysicsEngine::instance().initialize();
     };
 
     /**
@@ -41,10 +41,6 @@ public:
      * @brief Finalizes the scene and its components.
      */
     void end();
-
-    PhysicsEngine &getPhysicsEngine() {
-        return physicsEngine_;
-    }
 
     void setSkybox(std::shared_ptr<Skybox> skybox) {
         skybox_ = skybox;
@@ -76,7 +72,6 @@ public:
 
 private:
     std::shared_ptr<Node> root_;
-    PhysicsEngine physicsEngine_;
     std::vector<std::shared_ptr<CameraComponent>> cameras_;
     std::shared_ptr<Skybox> skybox_;
 };

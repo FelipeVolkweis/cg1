@@ -6,6 +6,7 @@
 
 #include "core/node.h"
 #include "window/inputhandler.h"
+#include "window/window.h"
 
 CameraComponent::CameraComponent(Perspective perspective, Vec3 focalPoint, Vec3 up)
     : focalPoint_(focalPoint), up_(up) {
@@ -13,8 +14,7 @@ CameraComponent::CameraComponent(Perspective perspective, Vec3 focalPoint, Vec3 
     camera_ = std::make_shared<Camera>(perspective, lookAt);
 }
 
-void CameraComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                           InputHandler &inputHandler) {
+void CameraComponent::load(const YAML::Node &data) {
 
     Perspective p = {45.0f, 16.0f / 9.0f, 0.01f, 1000.0f};
     if (data["fov"])
@@ -39,7 +39,6 @@ void CameraComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
 
     LookAt lookAt = {Vec3(0, 0, 0), focalPoint_, up_};
     camera_ = std::make_shared<Camera>(p, lookAt);
-    inputHandler_ = &inputHandler;
 }
 
 void CameraComponent::onUpdate(float dt) {
@@ -60,9 +59,8 @@ void CameraComponent::onUpdate(float dt) {
         camera_->setPosition(position);
         camera_->setFocalPoint(position + forward);
         camera_->setUp(up);
-        if (!inputHandler_)
-            return;
-        auto dims = inputHandler_->getWindowDimensions();
+
+        auto dims = Window::instance().getInputHandler().getWindowDimensions();
         float aspect = static_cast<float>(dims.first) / static_cast<float>(dims.second);
         camera_->setAspect(aspect);
     }

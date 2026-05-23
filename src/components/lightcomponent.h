@@ -18,8 +18,7 @@ public:
 
     LightComponent() = default;
 
-    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-              InputHandler &inputHandler) override;
+    void load(const YAML::Node &data) override;
 
     std::shared_ptr<RenderableLight> getRenderableLight() const {
         return renderableLight_;

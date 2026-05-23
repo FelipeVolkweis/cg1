@@ -8,15 +8,14 @@
 #include "core/node.h"
 #include "math/transformations/rotation.h"
 #include "math/transformations/translation.h"
+#include "window/window.h"
 
-CameraControllerComponent::CameraControllerComponent(InputHandler *inputHandler, float maxPitch,
-                                                     float maxYaw, float lookSensitivity)
-    : inputHandler_(inputHandler), maxPitch_(maxPitch), maxYaw_(maxYaw),
-      lookSensitivity_(lookSensitivity), pitch_(0.0f), yaw_(0.0f) {}
+CameraControllerComponent::CameraControllerComponent(float maxPitch, float maxYaw,
+                                                     float lookSensitivity)
+    : maxPitch_(maxPitch), maxYaw_(maxYaw), lookSensitivity_(lookSensitivity), pitch_(0.0f),
+      yaw_(0.0f) {}
 
-void CameraControllerComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                                     InputHandler &inputHandler) {
-    inputHandler_ = &inputHandler;
+void CameraControllerComponent::load(const YAML::Node &data) {
     if (data["maxPitch"])
         maxPitch_ = data["maxPitch"].as<float>();
     if (data["maxYaw"])
@@ -34,11 +33,11 @@ void CameraControllerComponent::onUpdate(float dt) {
         return;
 
     auto node = getNode();
-    if (!node || !inputHandler_)
+    if (!node)
         return;
 
-    auto yawVec = inputHandler_->getSecondaryXAxisInputVector();
-    auto pitchVec = inputHandler_->getSecondaryYAxisInputVector();
+    auto yawVec = Window::instance().getInputHandler().getSecondaryXAxisInputVector();
+    auto pitchVec = Window::instance().getInputHandler().getSecondaryYAxisInputVector();
 
     float yawInput = yawVec.x() - yawVec.y();
     float pitchInput = pitchVec.x() - pitchVec.y();

@@ -24,10 +24,9 @@ public:
      * @param physicsEngine Pointer to the physics engine.
      * @param mass Mass of the vehicle.
      */
-    VehicleComponent(PhysicsEngine *physicsEngine, float mass);
+    VehicleComponent(float mass);
 
-    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-              InputHandler &inputHandler) override;
+    void load(const YAML::Node &data) override;
 
     bool onStart() override;
     void onUpdate(float dt) override;
@@ -49,7 +48,6 @@ public:
                   float suspensionRestLength, float wheelRadius, bool isFrontWheel);
 
 private:
-    PhysicsEngine *physicsEngine_ = nullptr;
     std::unique_ptr<Vehicle> vehicle_;
 
     float initialMass_ = 0.0f;

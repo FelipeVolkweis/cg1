@@ -10,8 +10,7 @@
 #include "math/transformations/translation.h"
 #include "utils/logger.h"
 
-bool SceneParser::load(const std::string &filepath, std::shared_ptr<Scene> scene,
-                       InputHandler &inputHandler) {
+bool SceneParser::load(const std::string &filepath, std::shared_ptr<Scene> scene) {
     YAML::Node config = YAML::LoadFile(filepath);
 
     if (config["skybox"]) {
@@ -30,7 +29,7 @@ bool SceneParser::load(const std::string &filepath, std::shared_ptr<Scene> scene
     }
 
     if (config["root"]) {
-        auto rootNode = parseNode(config["root"], scene->getPhysicsEngine(), inputHandler);
+        auto rootNode = parseNode(config["root"]);
         if (rootNode) {
             auto root = scene->getRoot();
             for (auto &child : rootNode->getChildren()) {
@@ -48,9 +47,7 @@ bool SceneParser::load(const std::string &filepath, std::shared_ptr<Scene> scene
     return false;
 }
 
-std::shared_ptr<Node> SceneParser::parseNode(const YAML::Node &nodeData,
-                                             PhysicsEngine &physicsEngine,
-                                             InputHandler &inputHandler) {
+std::shared_ptr<Node> SceneParser::parseNode(const YAML::Node &nodeData) {
     std::shared_ptr<Node> node;
 
     if (nodeData["name"]) {
@@ -88,7 +85,7 @@ std::shared_ptr<Node> SceneParser::parseNode(const YAML::Node &nodeData,
                 auto comp = ComponentFactory::getInstance().createComponent(type);
                 if (comp) {
                     node->addComponent(comp);
-                    comp->load(compData, physicsEngine, inputHandler);
+                    comp->load(compData);
                 } else {
                     Logger::Warn("Unknown component type: ", type);
                 }
@@ -98,7 +95,7 @@ std::shared_ptr<Node> SceneParser::parseNode(const YAML::Node &nodeData,
 
     if (nodeData["children"] && nodeData["children"].IsSequence()) {
         for (auto childData : nodeData["children"]) {
-            auto childNode = parseNode(childData, physicsEngine, inputHandler);
+            auto childNode = parseNode(childData);
             if (childNode) {
                 node->addChild(childNode);
             }

@@ -9,8 +9,7 @@
 #include "renderer/lights/pointlight.h"
 #include "renderer/lights/spotlight.h"
 
-void LightComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                          InputHandler &inputHandler) {
+void LightComponent::load(const YAML::Node &data) {
     std::string kindStr = data["kind"].as<std::string>();
 
     auto node = getNode();

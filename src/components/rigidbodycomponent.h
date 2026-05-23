@@ -21,11 +21,10 @@ public:
      * @param physicsEngine Pointer to the physics engine.
      * @param mass Mass of the rigid body.
      */
-    RigidBodyComponent(PhysicsEngine *physicsEngine, float mass);
+    RigidBodyComponent(float mass);
     ~RigidBodyComponent() override;
 
-    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-              InputHandler &inputHandler) override;
+    void load(const YAML::Node &data) override;
 
     bool onStart() override;
     void onUpdate(float dt) override;
@@ -36,7 +35,6 @@ public:
     }
 
 private:
-    PhysicsEngine *physicsEngine_ = nullptr;
     std::unique_ptr<RigidBody> rigidBody_;
 
     float initialMass_ = 0.0f;

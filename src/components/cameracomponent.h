@@ -25,8 +25,7 @@ public:
     CameraComponent(Perspective perspective, Vec3 focalPoint = Vec3(0, 0, 0),
                     Vec3 up = Vec3(0, 1, 0));
 
-    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-              InputHandler &inputHandler) override;
+    void load(const YAML::Node &data) override;
 
     std::shared_ptr<Camera> getCamera() {
         return camera_;
@@ -35,7 +34,6 @@ public:
     void onUpdate(float dt) override;
 
 private:
-    InputHandler *inputHandler_;
     std::shared_ptr<Camera> camera_;
     Vec3 focalPoint_;
     Vec3 up_;

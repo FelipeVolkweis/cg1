@@ -11,12 +11,9 @@
 #include "math/transformations/translation.h"
 #include "utils/logger.h"
 
-VehicleComponent::VehicleComponent(PhysicsEngine *physicsEngine, float mass)
-    : physicsEngine_(physicsEngine), initialMass_(mass) {}
+VehicleComponent::VehicleComponent(float mass) : initialMass_(mass) {}
 
-void VehicleComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                            InputHandler &inputHandler) {
-    physicsEngine_ = &physicsEngine;
+void VehicleComponent::load(const YAML::Node &data) {
     if (data["mass"])
         initialMass_ = data["mass"].as<float>();
 
@@ -74,10 +71,10 @@ bool VehicleComponent::onStart() {
         return false;
     }
 
-    vehicle_ =
-        std::make_unique<Vehicle>(physicsEngine_, initialMass_, node->getWorldTransform(), shape);
+    vehicle_ = std::make_unique<Vehicle>(&PhysicsEngine::instance(), initialMass_,
+                                         node->getWorldTransform(), shape);
 
-    vehicle_->addToWorld(physicsEngine_->getWorld());
+    vehicle_->addToWorld(PhysicsEngine::instance().getWorld());
 
     // Resolve parsed wheels
     if (!parsedWheels_.empty()) {
@@ -123,8 +120,8 @@ void VehicleComponent::onUpdate(float dt) {
 }
 
 bool VehicleComponent::onEnd() {
-    if (vehicle_ && physicsEngine_) {
-        vehicle_->removeFromWorld(physicsEngine_->getWorld());
+    if (vehicle_) {
+        vehicle_->removeFromWorld(PhysicsEngine::instance().getWorld());
     }
     return true;
 }

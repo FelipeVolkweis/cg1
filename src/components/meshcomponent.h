@@ -20,8 +20,7 @@ public:
      */
     MeshComponent(std::unique_ptr<BaseShape> shape) : shape_(std::move(shape)) {}
 
-    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-              InputHandler &inputHandler) override;
+    void load(const YAML::Node &data) override;
 
     const BaseShape *getShape() {
         return shape_.get();

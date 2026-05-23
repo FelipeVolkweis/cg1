@@ -63,11 +63,8 @@ public:
     /**
      * @brief Loads component data from a YAML node.
      * @param data The YAML node containing component data.
-     * @param physicsEngine Reference to the physics engine.
-     * @param inputHandler Reference to the input handler.
      */
-    virtual void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                      InputHandler &inputHandler) {}
+    virtual void load(const YAML::Node &data) {}
 
 protected:
     std::weak_ptr<Node> node_;

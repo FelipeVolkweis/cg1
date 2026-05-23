@@ -4,13 +4,11 @@
 #include "components/cameracontrollercomponent.h"
 #include "components/orbitalcameracontrollercomponent.h"
 #include "core/node.h"
-
-CameraCycleComponent::CameraCycleComponent(InputHandler *inputHandler)
-    : inputHandler_(inputHandler) {}
+#include "window/window.h"
 
 bool CameraCycleComponent::onStart() {
     auto node = getNode();
-    if (!inputHandler_ || !node)
+    if (!node)
         return false;
 
     auto outer = Node::findNodeByName("OuterCameraAnchor");
@@ -38,7 +36,7 @@ bool CameraCycleComponent::onStart() {
 
 void CameraCycleComponent::onPreUpdate() {
     auto node = getNode();
-    if (!inputHandler_ || !node)
+    if (!node)
         return;
 
     auto outer = Node::findNodeByName("OuterCameraAnchor");
@@ -56,7 +54,7 @@ void CameraCycleComponent::onPreUpdate() {
     if (!orbitalControl || !cameraControl || !outerCamera || !innerCamera)
         return;
 
-    auto cycles = inputHandler_->getNumberOfCameraCycleRequests();
+    auto cycles = Window::instance().getInputHandler().getNumberOfCameraCycleRequests();
     if (cycles % 2 == 0) {
         orbitalControl->enable();
         outerCamera->enable();
@@ -70,7 +68,4 @@ void CameraCycleComponent::onPreUpdate() {
     }
 }
 
-void CameraCycleComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                                InputHandler &inputHandler) {
-    inputHandler_ = &inputHandler;
-}
+void CameraCycleComponent::load(const YAML::Node &data) {}

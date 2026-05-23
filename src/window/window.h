@@ -4,10 +4,10 @@
 #include <memory>
 
 #include "camera/camera.h"
+#include "inputhandler.h"
 #include "renderer/renderer.h"
 
 struct GLFWwindow;
-struct InputHandler;
 class Scene;
 
 /**
@@ -17,6 +17,11 @@ class Scene;
 class Window {
 public:
     Window() = default;
+
+    static Window &instance() {
+        static Window window;
+        return window;
+    }
 
     /**
      * @brief Initializes GLFW and creates the window.
@@ -53,6 +58,10 @@ public:
         return *inputHandler_;
     }
 
+    float getDeltaTime() {
+        return deltaTime_;
+    }
+
 private:
     /**
      * @brief Processes keyboard and mouse input.
@@ -62,6 +71,8 @@ private:
     GLFWwindow *window_;
     InputHandler *inputHandler_;
     Renderer renderer_;
+
+    float deltaTime_;
 };
 
 #endif

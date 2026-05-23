@@ -82,7 +82,7 @@ void Scene::start() {
 }
 
 void Scene::update(float dt) {
-    physicsEngine_.stepSimulation(dt);
+    PhysicsEngine::instance().stepSimulation(dt);
 
     std::stack<std::shared_ptr<Node>> stack;
     if (root_) {

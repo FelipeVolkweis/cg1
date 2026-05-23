@@ -14,8 +14,7 @@ class SteeringAnimationComponent : public BaseComponent {
 public:
     SteeringAnimationComponent() = default;
 
-    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-              InputHandler &inputHandler) override;
+    void load(const YAML::Node &data) override;
 
     bool onStart() override;
     void onUpdate(float dt) override;

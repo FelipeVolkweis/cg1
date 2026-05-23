@@ -1,5 +1,7 @@
 #include "inputhandler.h"
 
+#include <GLFW/glfw3.h>
+
 InputHandler::InputHandler(GLFWwindow *window)
     : window_(window), wireframe_(false), wireframeKeyPressed_(false), cycleClicked_(0),
       cycleKeyPressed_(false) {}

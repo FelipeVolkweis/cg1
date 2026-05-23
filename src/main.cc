@@ -7,7 +7,7 @@
 #include "window/window.h"
 
 int main() {
-    Window window;
+    Window &window = Window::instance();
     auto root = Node::create("root");
     auto scene = std::make_shared<Scene>(root);
 
@@ -18,7 +18,7 @@ int main() {
         return -1;
     }
 
-    if (!SceneParser::load(sceneFile, scene, window.getInputHandler())) {
+    if (!SceneParser::load(sceneFile, scene)) {
         Logger::Warn("Could not load scene from ", sceneFile);
     }
 

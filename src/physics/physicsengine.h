@@ -13,6 +13,11 @@ public:
     PhysicsEngine();
     ~PhysicsEngine();
 
+    static PhysicsEngine &instance() {
+        static PhysicsEngine physicsEngine;
+        return physicsEngine;
+    }
+
     /**
      * @brief Initializes the physics engine components.
      *

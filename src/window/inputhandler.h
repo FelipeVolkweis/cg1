@@ -1,9 +1,9 @@
 #ifndef INPUTHANDLER_H
 #define INPUTHANDLER_H
 
-#include <GLFW/glfw3.h>
-
 #include "types/vec2.h"
+
+struct GLFWwindow;
 
 /**
  * @class InputHandler

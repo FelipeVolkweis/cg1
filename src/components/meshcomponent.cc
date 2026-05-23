@@ -10,8 +10,7 @@
 #include "shapes/sphere.h"
 #include "shapes/torus.h"
 
-void MeshComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                         InputHandler &inputHandler) {
+void MeshComponent::load(const YAML::Node &data) {
     if (data["shape"]) {
         std::string shapeType = data["shape"].as<std::string>();
         if (shapeType == "box") {

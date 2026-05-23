@@ -10,8 +10,7 @@
 #include "math/transformations/rotation.h"
 #include "utils/deg2rad.h"
 
-void SteeringAnimationComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                                      InputHandler &inputHandler) {
+void SteeringAnimationComponent::load(const YAML::Node &data) {
     if (data["maxRotation"]) {
         maxRotation_ = data["maxRotation"].as<float>();
     }

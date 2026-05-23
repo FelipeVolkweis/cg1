@@ -8,14 +8,11 @@
 #include "core/node.h"
 #include "utils/logger.h"
 
-RigidBodyComponent::RigidBodyComponent(PhysicsEngine *physicsEngine, float mass)
-    : physicsEngine_(physicsEngine), initialMass_(mass) {}
+RigidBodyComponent::RigidBodyComponent(float mass) : initialMass_(mass) {}
 
 RigidBodyComponent::~RigidBodyComponent() = default;
 
-void RigidBodyComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                              InputHandler &inputHandler) {
-    physicsEngine_ = &physicsEngine;
+void RigidBodyComponent::load(const YAML::Node &data) {
     if (data["mass"])
         initialMass_ = data["mass"].as<float>();
 }
@@ -40,7 +37,7 @@ bool RigidBodyComponent::onStart() {
 
     rigidBody_ = std::make_unique<RigidBody>(initialMass_, node->getWorldTransform(), shape);
 
-    physicsEngine_->getWorld()->addRigidBody(rigidBody_->getBulletRigidBody());
+    PhysicsEngine::instance().getWorld()->addRigidBody(rigidBody_->getBulletRigidBody());
 
     return true;
 }
@@ -57,8 +54,8 @@ void RigidBodyComponent::onUpdate(float dt) {
 }
 
 bool RigidBodyComponent::onEnd() {
-    if (rigidBody_ && physicsEngine_) {
-        physicsEngine_->getWorld()->removeRigidBody(rigidBody_->getBulletRigidBody());
+    if (rigidBody_) {
+        PhysicsEngine::instance().getWorld()->removeRigidBody(rigidBody_->getBulletRigidBody());
     }
     return true;
 }

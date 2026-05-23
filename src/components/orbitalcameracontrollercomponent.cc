@@ -8,19 +8,16 @@
 #include "core/node.h"
 #include "math/transformations/rotation.h"
 #include "math/transformations/translation.h"
+#include "window/window.h"
 
-OrbitalCameraControllerComponent::OrbitalCameraControllerComponent(InputHandler *inputHandler,
-                                                                   float maxPitch, float minPitch,
+OrbitalCameraControllerComponent::OrbitalCameraControllerComponent(float maxPitch, float minPitch,
                                                                    float lookSensitivity,
                                                                    Vec3 orbitTarget,
                                                                    float orbitRadius)
-    : inputHandler_(inputHandler), maxPitch_(maxPitch), minPitch_(minPitch),
-      lookSensitivity_(lookSensitivity), pitch_(0.0f), yaw_(0.0f), orbitTarget_(orbitTarget),
-      orbitRadius_(orbitRadius) {}
+    : maxPitch_(maxPitch), minPitch_(minPitch), lookSensitivity_(lookSensitivity), pitch_(0.0f),
+      yaw_(0.0f), orbitTarget_(orbitTarget), orbitRadius_(orbitRadius) {}
 
-void OrbitalCameraControllerComponent::load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-                                            InputHandler &inputHandler) {
-    inputHandler_ = &inputHandler;
+void OrbitalCameraControllerComponent::load(const YAML::Node &data) {
     if (data["maxPitch"])
         maxPitch_ = data["maxPitch"].as<float>();
     if (data["minPitch"])
@@ -43,11 +40,11 @@ void OrbitalCameraControllerComponent::onUpdate(float dt) {
         return;
 
     auto node = getNode();
-    if (!node || !inputHandler_)
+    if (!node)
         return;
 
-    auto yawVec = inputHandler_->getSecondaryXAxisInputVector();
-    auto pitchVec = inputHandler_->getSecondaryYAxisInputVector();
+    auto yawVec = Window::instance().getInputHandler().getSecondaryXAxisInputVector();
+    auto pitchVec = Window::instance().getInputHandler().getSecondaryYAxisInputVector();
 
     float yawInput = yawVec.x() - yawVec.y();
     float pitchInput = pitchVec.x() - pitchVec.y();

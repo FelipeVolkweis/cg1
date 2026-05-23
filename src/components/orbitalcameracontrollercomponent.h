@@ -26,16 +26,14 @@ public:
      * @param orbitTarget The target point to orbit around.
      * @param orbitRadius The radius of the orbit.
      */
-    OrbitalCameraControllerComponent(InputHandler *inputHandler, float maxPitch, float minPitch,
-                                     float lookSensitivity, Vec3 orbitTarget, float orbitRadius);
+    OrbitalCameraControllerComponent(float maxPitch, float minPitch, float lookSensitivity,
+                                     Vec3 orbitTarget, float orbitRadius);
 
-    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-              InputHandler &inputHandler) override;
+    void load(const YAML::Node &data) override;
 
     void onUpdate(float dt) override;
 
 private:
-    InputHandler *inputHandler_ = nullptr;
     float maxPitch_ = 89.0f;
     float minPitch_ = 0;
     float lookSensitivity_ = 50.0f;

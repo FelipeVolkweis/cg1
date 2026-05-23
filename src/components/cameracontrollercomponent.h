@@ -7,7 +7,6 @@
 #include "core/component.h"
 #include "core/enableable.h"
 #include "types/vec3.h"
-#include "window/inputhandler.h"
 
 /**
  * @class CameraControllerComponent
@@ -19,21 +18,17 @@ public:
 
     /**
      * @brief Constructor for CameraControllerComponent.
-     * @param inputHandler Pointer to the input handler.
      * @param maxPitch Maximum pitch angle.
      * @param maxYaw Maximum yaw angle.
      * @param lookSensitivity Look sensitivity.
      */
-    CameraControllerComponent(InputHandler *inputHandler, float maxPitch, float maxYaw,
-                              float lookSensitivity);
+    CameraControllerComponent(float maxPitch, float maxYaw, float lookSensitivity);
 
-    void load(const YAML::Node &data, PhysicsEngine &physicsEngine,
-              InputHandler &inputHandler) override;
+    void load(const YAML::Node &data) override;
 
     void onUpdate(float dt) override;
 
 private:
-    InputHandler *inputHandler_ = nullptr;
     float maxPitch_ = 89.0f;
     float maxYaw_ = 360.0f;
     float lookSensitivity_ = 50.0f;

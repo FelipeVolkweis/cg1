@@ -80,6 +80,7 @@ bool Window::loop(std::shared_ptr<Scene> scene) {
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        deltaTime_ = deltaTime;
 
         processInput();
 
