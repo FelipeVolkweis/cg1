@@ -39,7 +39,6 @@ bool SceneParser::load(const std::string &filepath, std::shared_ptr<Scene> scene
             for (auto &comp : rootNode->getComponents()) {
                 root->addComponent(comp);
             }
-            root->setName(rootNode->getName());
             root->setTransform(rootNode->getTransformation());
         }
         return true;
@@ -52,10 +51,12 @@ bool SceneParser::load(const std::string &filepath, std::shared_ptr<Scene> scene
 std::shared_ptr<Node> SceneParser::parseNode(const YAML::Node &nodeData,
                                              PhysicsEngine &physicsEngine,
                                              InputHandler &inputHandler) {
-    auto node = std::make_shared<Node>();
+    std::shared_ptr<Node> node;
 
     if (nodeData["name"]) {
-        node->setName(nodeData["name"].as<std::string>());
+        node = Node::create(nodeData["name"].as<std::string>());
+    } else {
+        node = Node::create();
     }
 
     Vec3 origin(0, 0, 0);

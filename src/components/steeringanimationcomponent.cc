@@ -25,7 +25,7 @@ bool SteeringAnimationComponent::onStart() {
     if (!node)
         return false;
 
-    auto steer = Node::findNodeByName(node, steeringNodeName_);
+    auto steer = Node::findNodeByName(steeringNodeName_);
     if (steer) {
         startingTransformation_ = steer->getTransformation();
     } else {
@@ -39,7 +39,7 @@ void SteeringAnimationComponent::onUpdate(float dt) {
     if (!node)
         return;
 
-    auto steer = Node::findNodeByName(node, steeringNodeName_);
+    auto steer = Node::findNodeByName(steeringNodeName_);
     if (!steer)
         return;
 

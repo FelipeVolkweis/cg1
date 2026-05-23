@@ -87,7 +87,7 @@ bool VehicleComponent::onStart() {
         }
 
         for (const auto &pwd : parsedWheels_) {
-            auto wNode = Node::findNodeByName(root, pwd.nodeName);
+            auto wNode = Node::findNodeByName(pwd.nodeName);
             if (wNode) {
                 addWheel(wNode, pwd.connectionPoint, pwd.suspensionRestLength, pwd.radius,
                          pwd.isFrontWheel);

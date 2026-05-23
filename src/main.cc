@@ -8,7 +8,7 @@
 
 int main() {
     Window window;
-    auto root = std::make_shared<Node>();
+    auto root = Node::create("root");
     auto scene = std::make_shared<Scene>(root);
 
     std::string sceneFile = "data/scenes/main.yaml";

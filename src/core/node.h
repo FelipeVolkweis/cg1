@@ -8,6 +8,8 @@
 #include "component.h"
 #include "math/transformations/transformation.h"
 
+#define UNNAMED_NODE "104ab42f11" // arbitrary hash
+
 /**
  * @class Node
  * @brief Represents a node in the scene graph.
@@ -17,11 +19,28 @@
  */
 class Node : public std::enable_shared_from_this<Node> {
 public:
-    /**
-     * @brief Constructor for Node.
-     * Initializes the node with a unique ID.
-     */
-    Node() : id_(lastId_++) {}
+    ~Node() {
+        idToNode_.erase(id_);
+
+        if (name_ != UNNAMED_NODE) {
+            auto it = nameToId_.find(name_);
+            if (it != nameToId_.end() && it->second == id_) {
+                nameToId_.erase(it);
+            }
+        }
+    }
+
+    static std::shared_ptr<Node> create(const std::string &name = UNNAMED_NODE) {
+        std::shared_ptr<Node> node(name == UNNAMED_NODE ? new Node() : new Node(name));
+
+        idToNode_[node->getId()] = node;
+
+        if (name != UNNAMED_NODE) {
+            nameToId_[name] = node->getId();
+        }
+
+        return node;
+    }
 
     void addChild(std::shared_ptr<Node> child) {
         if (child) {
@@ -70,10 +89,6 @@ public:
         return components_;
     }
 
-    void setName(const std::string &name) {
-        name_ = name;
-    }
-
     const std::string &getName() const {
         return name_;
     }
@@ -93,22 +108,26 @@ public:
         return nullptr;
     }
 
-    /**
-     * @brief Finds a node by its name starting from a root node.
-     * @param root The root node to start searching from.
-     * @param name The name of the node to find.
-     * @return A shared pointer to the found node, or nullptr if not found.
-     */
-    static std::shared_ptr<Node> findNodeByName(std::shared_ptr<Node> root,
-                                                const std::string &name) {
-        if (!root)
+    static std::shared_ptr<Node> findNodeByName(const std::string &name) {
+        uint64_t id = -1;
+        if (name == UNNAMED_NODE)
             return nullptr;
-        if (root->getName() == name)
-            return root;
-        for (auto &child : root->getChildren()) {
-            if (auto found = findNodeByName(child, name)) {
-                return found;
-            }
+
+        if (nameToId_.count(name) > 0) {
+            id = nameToId_[name];
+        } else {
+            return nullptr;
+        }
+
+        return findNodeById(id);
+    }
+
+    static std::shared_ptr<Node> findNodeById(uint64_t id) {
+        if (id == -1)
+            return nullptr;
+
+        if (idToNode_.count(id) > 0) {
+            return idToNode_[id].lock();
         }
         return nullptr;
     }
@@ -122,6 +141,14 @@ public:
     }
 
 private:
+    /**
+     * @brief Constructor for Node.
+     * Initializes the node with a unique ID.
+     */
+    Node() : id_(lastId_++), name_(UNNAMED_NODE) {}
+
+    Node(const std::string &name) : id_(lastId_++), name_(name) {}
+
     std::string name_;
     std::vector<std::shared_ptr<BaseComponent>> components_;
     std::weak_ptr<Node> parent_;
@@ -130,6 +157,8 @@ private:
     const uint64_t id_;
 
     static uint64_t lastId_;
+    static std::unordered_map<std::string, uint64_t> nameToId_;
+    static std::unordered_map<uint64_t, std::weak_ptr<Node>> idToNode_;
 };
 
 #endif

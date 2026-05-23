@@ -13,8 +13,8 @@ bool CameraCycleComponent::onStart() {
     if (!inputHandler_ || !node)
         return false;
 
-    auto outer = Node::findNodeByName(node, "OuterCameraAnchor");
-    auto inner = Node::findNodeByName(node, "InnerCameraAnchor");
+    auto outer = Node::findNodeByName("OuterCameraAnchor");
+    auto inner = Node::findNodeByName("InnerCameraAnchor");
 
     if (!outer || !inner)
         return false;
@@ -41,8 +41,8 @@ void CameraCycleComponent::onPreUpdate() {
     if (!inputHandler_ || !node)
         return;
 
-    auto outer = Node::findNodeByName(node, "OuterCameraAnchor");
-    auto inner = Node::findNodeByName(node, "InnerCameraAnchor");
+    auto outer = Node::findNodeByName("OuterCameraAnchor");
+    auto inner = Node::findNodeByName("InnerCameraAnchor");
 
     if (!outer || !inner)
         return;
