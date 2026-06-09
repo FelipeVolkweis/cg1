@@ -7,6 +7,7 @@
 #include "camera/camera.h"
 #include "core/component.h"
 #include "core/enableable.h"
+#include "types/quaternion.h"
 
 /**
  * @class CameraComponent
@@ -37,6 +38,17 @@ private:
     std::shared_ptr<Camera> camera_;
     Vec3 focalPoint_;
     Vec3 up_;
+
+    float smoothTime_;
+    float maxSpeed_;
+    float rotationLambda_;
+
+    Quaternion currentRotation_;
+    Vec3 currentPosition_;
+    Vec3 currentVelocity_;
+
+    Vec3 smoothDamp(Vec3 currentPosition, Vec3 targetPosition, Vec3 &currentVelocity,
+                    float smoothTime, float maxSpeed, float deltaTime);
 };
 
 #endif

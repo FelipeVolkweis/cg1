@@ -48,10 +48,9 @@ void CameraControllerComponent::onUpdate(float dt) {
     pitch_ = std::clamp(pitch_, -maxPitch_, maxPitch_);
     yaw_ = std::clamp(yaw_, -maxYaw_, maxYaw_);
 
-    RotationX rotX(pitch_);
-    RotationY rotY(yaw_);
+    QuaternionRotation rot(pitch_, yaw_, 0);
 
-    Transformation finalCameraRotation = rotY * rotX;
+    Transformation finalCameraRotation = rot;
     Vec3 pos = node->getTransformation().getPosition();
     Translation translation(pos);
 

@@ -5,6 +5,9 @@
 
 #include "transformation.h"
 #include "utils/deg2rad.h"
+#include "types/quaternion.h"
+#include "types/mat3x3.h"
+
 
 /**
  * @class RotationX
@@ -61,6 +64,30 @@ public:
             0, 0, 1, 0,
             0, 0, 0, 1;
     }
+};
+
+class QuaternionRotation : public Transformation {
+public:
+    QuaternionRotation() = default;
+    QuaternionRotation(float xInDegrees, float yInDegrees, float zInDegrees) {
+        float x = DEG2RAD * xInDegrees;
+        float y = DEG2RAD * yInDegrees;
+        float z = DEG2RAD * zInDegrees;
+        quat_ = Eigen::AngleAxisf(z, Eigen::Vector3f::UnitZ()) *
+            Eigen::AngleAxisf(y, Eigen::Vector3f::UnitY()) *
+            Eigen::AngleAxisf(x, Eigen::Vector3f::UnitX());
+
+        Mat3x3 rot3x3 = quat_.toRotationMatrix();
+
+        matrix_ = Mat4x4::Identity();
+        matrix_.block<3, 3>(0, 0) = rot3x3;
+    }
+
+    Quaternion &getQuaternion() {
+        return quat_;
+    }
+private:
+    Quaternion quat_;
 };
 
 #endif

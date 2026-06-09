@@ -195,7 +195,7 @@ root:
             - type: "Camera"
             - type: "OrbitalCameraController"
               orbitRadius: 7
-              lookSensitivity: 75
+              sensitivity: 50
         - name: "InnerCameraAnchor"
           origin: [0.5, 0.6, 1]
           rotation: [0, 180, 0]

@@ -62,10 +62,11 @@ std::shared_ptr<Node> SceneParser::parseNode(const YAML::Node &nodeData) {
                       nodeData["origin"][2].as<float>());
     }
 
-    Vec3 rotation(0, 0, 0);
+    QuaternionRotation rotation;
     if (nodeData["rotation"] && nodeData["rotation"].IsSequence()) {
-        rotation = Vec3(nodeData["rotation"][0].as<float>(), nodeData["rotation"][1].as<float>(),
-                        nodeData["rotation"][2].as<float>());
+        rotation = QuaternionRotation(nodeData["rotation"][0].as<float>(),
+                                      nodeData["rotation"][1].as<float>(),
+                                      nodeData["rotation"][2].as<float>());
     }
 
     Vec3 scale(1, 1, 1);
@@ -74,8 +75,7 @@ std::shared_ptr<Node> SceneParser::parseNode(const YAML::Node &nodeData) {
                      nodeData["scale"][2].as<float>());
     }
 
-    Transformation transform = Translation(origin) * RotationZ(rotation.z()) *
-                               RotationY(rotation.y()) * RotationX(rotation.x()) * Scale(scale);
+    Transformation transform = Translation(origin) * rotation * Scale(scale);
     node->setTransform(transform);
 
     if (nodeData["components"] && nodeData["components"].IsSequence()) {

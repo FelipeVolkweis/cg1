@@ -54,10 +54,9 @@ void OrbitalCameraControllerComponent::onUpdate(float dt) {
 
     pitch_ = std::clamp(pitch_, -maxPitch_, minPitch_);
 
-    RotationX rotX(pitch_);
-    RotationY rotY(yaw_);
+    QuaternionRotation rot(pitch_, yaw_, 0);
 
-    Transformation finalCameraRotation = rotY * rotX;
+    Transformation finalCameraRotation = rot;
     Transformation finalTransformation;
     Translation radiusTranslation(Vec3(0.0f, 0.0f, orbitRadius_));
     Translation targetTranslation(orbitTarget_);
