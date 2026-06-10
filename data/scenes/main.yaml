@@ -40,6 +40,11 @@ root:
         - type: "Mesh"
           shape: "model" 
           path: "data/models/house/house.obj"
+          materials:
+            base: "matte"
+            windows: "glass"
+            yellow_house_dark: "matte"
+            yellow_house_light: "matte"
       children:
         - name: "HouseCollider"
           components:
@@ -58,6 +63,12 @@ root:
         - type: "Mesh"
           shape: "model" 
           path: "data/models/hotel/hotel.obj"
+          materials:
+            base: "matte"
+            hotel_dark: "matte"
+            hotel_light: "matte"
+            posters: "matte"
+            windows: "glass"
       children:
         - name: "HotelCollider"
           components:
@@ -76,6 +87,17 @@ root:
         - type: "Mesh"
           shape: "model" 
           path: "data/models/gas/gas.obj"
+          materials:
+            base: "matte"
+            black: "rubber"
+            g_light_on: "metal"
+            gas_dark: "matte"
+            gas_light: "matte"
+            gas_neon: "metal"
+            gray_street: "concrete"
+            orange.001: "matte"
+            r_light_off: "metal"
+            windows: "glass"
       children:
         - name: "GasCollider1"
           origin: [4.5, 0, 0.75]
@@ -106,7 +128,7 @@ root:
           width: 120.0
           height: 2
           depth: 1
-          color: [0.4, 0.4, 0.8]
+          materials: ["concrete"]
         - type: "RigidBody"
           mass: 0.0
     - name: "Wall2"
@@ -117,7 +139,7 @@ root:
           width: 120.0
           height: 2
           depth: 1
-          color: [0.4, 0.4, 0.8]
+          materials: ["concrete"]
         - type: "RigidBody"
           mass: 0.0
     - name: "Wall3"
@@ -128,7 +150,7 @@ root:
           width: 1
           height: 2
           depth: 100.0
-          color: [0.4, 0.4, 0.8]
+          materials: ["concrete"]
         - type: "RigidBody"
           mass: 0.0
     - name: "Wall4"
@@ -139,7 +161,7 @@ root:
           width: 1
           height: 2
           depth: 100.0
-          color: [0.4, 0.4, 0.8]
+          materials: ["concrete"]
         - type: "RigidBody"
           mass: 0.0
     - name: "RoadVisuals"
@@ -150,6 +172,8 @@ root:
         - type: "Mesh"
           shape: "model" 
           path: "data/models/road/road.obj"
+          materials:
+            Material.001: "asphalt"
     - name: "Car"
       origin: [0, 2, 0]
       components:
@@ -206,6 +230,7 @@ root:
               fov: 75
               smoothTime: 0.0
             - type: "CameraController"
+              sensitivity: 75
         - name: "CarVisuals"
           rotation: [0, -90, 0]
           scale: [0.5, 0.5, 0.5]
@@ -215,8 +240,13 @@ root:
               shape: "model" 
               path: "data/models/van/van.obj"
               materials:
-                Paint_main: "red_paint"
-                glass: "dark_glass"
+                Paint_main: "metal"
+                glass: "glass"
+                lambert1: "matte"
+                lamp: "metal"
+                metal: "brushed_metal"
+                number_plate: "matte"
+                rubber: "rubber"
         - name: "steeringAnchor"
           rotation: [0, -90, 0]
           scale: [0.5, 0.5, 0.5]
@@ -228,6 +258,8 @@ root:
                 - type: "Mesh"
                   shape: "model" 
                   path: "data/models/steering/steering.obj"
+                  materials:
+                    lambert1: "rubber"
         - name: "RosaryVisuals"
           scale: [0.05, 0.05, 0.05]
           rotation: [0, -90, 0]
@@ -236,6 +268,10 @@ root:
             - type: "Mesh"
               shape: "model" 
               path: "data/models/rosary/rosary.obj"
+              materials:
+                Material_20: "metal"
+                Material_21: "wood"
+                Material_22: "brass"
         - name: "OuijaVisuals"
           scale: [0.15, 0.15, 0.15]
           rotation: [0, 180, 0]
@@ -244,6 +280,12 @@ root:
             - type: "Mesh"
               shape: "model" 
               path: "data/models/ouija/ouija.obj"
+              materials:
+                Board: "wood"
+                Material.001: "wood"
+                Material.002: "wood"
+                Material.003: "brass"
+                Material.004: "rubber"
         - name: "PolaroidVisuals"
           scale: [0.05, 0.05, 0.05]
           rotation: [0, 135, 0]
@@ -252,6 +294,31 @@ root:
             - type: "Mesh"
               shape: "model" 
               path: "data/models/polaroid/polaroid.obj"
+              materials:
+                Material.005: "matte"
+                Material.006: "matte"
+                Material.007: "matte"
+                Material.008: "brushed_metal"
+                Material.009: "matte"
+        - name: "PortalVisuals"
+          scale: [8, 8, 8]
+          rotation: [0, 0, 0]
+          origin: [0, -0.35, -0.35]
+          components:
+            - type: "Mesh"
+              shape: "model" 
+              path: "data/models/portal/portal.obj"
+          children:
+            - name: "PortalLight" 
+              origin: [0, 0.1, 0]
+              components:
+                - type: "Light"
+                  kind: "point"
+                  diffuse: [0.1, 0.8, 0.1]
+                  specular: [0.1, 0.8, 0.1]
+                  fadeDistance: 5
+                - type: "LightController"
+                  index: 4
         - name: "HeadlightLeft"
           origin: [-0.6, 0.125, 2.1]
           components:
@@ -279,12 +346,12 @@ root:
             - type: "LightController"
               index: 2
         - name: "CarInternalLight"
-          origin: [0, 1.0, 0.2]
+          origin: [0, 0.8, 1.2]
           components:
             - type: "Light"
               kind: "point"
-              diffuse: [0.8, 0.7, 0.2]
-              specular: [0.8, 0.7, 0.2]
+              diffuse: [0.95, 0.85, 0.25]
+              specular: [0.95, 0.85, 0.25]
               fadeDistance: 5
             - type: "LightController"
               index: 3
@@ -295,6 +362,9 @@ root:
         - type: "Mesh"
           shape: "model" 
           path: "data/models/wheel/wheel.obj"
+          materials:
+            metal: "brushed_metal"
+            rubber: "rubber"
     - name: "WheelFrontRight"
       rotation: [0, 90, 0]
       scale: [0.5, 0.5, 0.5]
@@ -302,6 +372,9 @@ root:
         - type: "Mesh"
           shape: "model" 
           path: "data/models/wheel/wheel.obj"
+          materials:
+            metal: "brushed_metal"
+            rubber: "rubber"
     - name: "WheelBackLeft"
       rotation: [0, -90, 0]
       scale: [0.5, 0.5, 0.5]
@@ -309,6 +382,9 @@ root:
         - type: "Mesh"
           shape: "model" 
           path: "data/models/wheel/wheel.obj"
+          materials:
+            metal: "brushed_metal"
+            rubber: "rubber"
     - name: "WheelBackRight"
       rotation: [0, 90, 0]
       scale: [0.5, 0.5, 0.5]
@@ -316,3 +392,6 @@ root:
         - type: "Mesh"
           shape: "model" 
           path: "data/models/wheel/wheel.obj"
+          materials:
+            metal: "brushed_metal"
+            rubber: "rubber"

@@ -1,3 +1,2 @@
-diffuse: [0.3, 0.3, 0.35]
-specular: [0.8, 0.8, 0.8]
-shininess: 64.0
+specular: [1.0, 1.0, 1.0]
+shininess: 256.0
