@@ -308,6 +308,9 @@ root:
             - type: "Mesh"
               shape: "model" 
               path: "data/models/portal/portal.obj"
+              materials:
+                material_0: "metal"
+                material_1: "brushed_metal"
           children:
             - name: "PortalLight" 
               origin: [0, 0.1, 0]
