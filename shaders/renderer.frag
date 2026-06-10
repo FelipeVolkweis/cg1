@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 #define MAX_POINT_LIGHTS 32
 #define MAX_SPOTLIGHTS 16
 
@@ -52,7 +52,6 @@ vec3 calculateSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir
 float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir);
 float sampleShadowCascade(vec3 offsetPosWorld, int layer, vec3 normal, vec3 lightDir);
 float spotlightShadowCalculation(vec4 fragPosLightSpace, int index, vec3 normal, vec3 lightDir);
-float sampleSpotlightShadowMap(int index, vec3 coords);
 
 out vec4 FragColor;
 
@@ -227,27 +226,22 @@ float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir) {
 }
 
 float spotlightShadowCalculation(vec4 fragPosLightSpace, int index, vec3 normal, vec3 lightDir) {
-    if (fragPosLightSpace.w <= 0.0) {
-        return 0.0;
-    }
-
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
 
-    if (projCoords.z < 0.0 || projCoords.z > 1.0) {
+    if(projCoords.z > 1.0) {
         return 0.0;
     }
 
     float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
-    vec2 texelSize = vec2(1.0 / 1024.0);
+    vec2 texelSize = 1.0 / textureSize(spotlightShadowMaps[index], 0);
     
     float litFactor = 0.0;
     int samples = 0;
     for(int x = -1; x <= 1; ++x) {
         for(int y = -1; y <= 1; ++y) {
             vec2 offset = vec2(x, y) * texelSize;
-            litFactor += sampleSpotlightShadowMap(
-                index, vec3(projCoords.xy + offset, projCoords.z - bias));
+            litFactor += texture(spotlightShadowMaps[index], vec3(projCoords.xy + offset, projCoords.z - bias));
             samples++;
         }    
     }
@@ -255,27 +249,4 @@ float spotlightShadowCalculation(vec4 fragPosLightSpace, int index, vec3 normal,
     litFactor /= float(samples);
 
     return 1.0 - litFactor; 
-}
-
-float sampleSpotlightShadowMap(int index, vec3 coords) {
-    switch (index) {
-        case 0:  return texture(spotlightShadowMaps[0], coords);
-        case 1:  return texture(spotlightShadowMaps[1], coords);
-        case 2:  return texture(spotlightShadowMaps[2], coords);
-        case 3:  return texture(spotlightShadowMaps[3], coords);
-        case 4:  return texture(spotlightShadowMaps[4], coords);
-        case 5:  return texture(spotlightShadowMaps[5], coords);
-        case 6:  return texture(spotlightShadowMaps[6], coords);
-        case 7:  return texture(spotlightShadowMaps[7], coords);
-        case 8:  return texture(spotlightShadowMaps[8], coords);
-        case 9:  return texture(spotlightShadowMaps[9], coords);
-        case 10: return texture(spotlightShadowMaps[10], coords);
-        case 11: return texture(spotlightShadowMaps[11], coords);
-        case 12: return texture(spotlightShadowMaps[12], coords);
-        case 13: return texture(spotlightShadowMaps[13], coords);
-        case 14: return texture(spotlightShadowMaps[14], coords);
-        case 15: return texture(spotlightShadowMaps[15], coords);
-    }
-
-    return 1.0;
 }
