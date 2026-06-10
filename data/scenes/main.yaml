@@ -202,6 +202,7 @@ root:
           components:
             - type: "Camera"
               fov: 75
+              smoothTime: 0.0
             - type: "CameraController"
         - name: "CarVisuals"
           rotation: [0, -90, 0]
