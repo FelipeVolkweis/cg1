@@ -9,6 +9,7 @@
 #include "renderer/renderable.h"
 #include "renderer/shader/shader.h"
 #include "renderer/shadows/cascadedshadow.h"
+#include "renderer/shadows/shadowmap.h"
 #include "spotlight.h"
 
 // !!SYNC THIS WITH THE RENDERER.FRAG SHADER!!
@@ -94,6 +95,16 @@ public:
     void initializeOnGPU() override;
     void render() override;
 
+    void updateShadows();
+
+    ShadowMap &getShadow() {
+        return shadow_;
+    }
+
+    Mat4x4 getLightSpaceMatrix() const {
+        return lightSpaceMatrix_;
+    }
+
     void setIndex(int index) {
         index_ = index;
     }
@@ -106,6 +117,9 @@ private:
     std::shared_ptr<Spotlight> light_;
     uint64_t id_ = -1;
     int index_;
+
+    ShadowMap shadow_;
+    Mat4x4 lightSpaceMatrix_;
 };
 
 #endif

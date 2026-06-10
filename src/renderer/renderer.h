@@ -66,7 +66,8 @@ private:
     GLFWwindow *window_;
 
     std::shared_ptr<Shader> mainShaderProgram_;
-    std::shared_ptr<Shader> shadowShaderProgram_;
+    std::shared_ptr<Shader> cascadedShadowShaderProgram_;
+    std::shared_ptr<Shader> spotlightShadowShaderProgram_;
 
     std::weak_ptr<Camera> activeCamera_;
     std::shared_ptr<Skybox> skybox_;
@@ -83,6 +84,10 @@ private:
     void renderSpotlights();
     void renderOpaqueMeshes();
     void renderTransluscenteMeshes();
+
+    void mainPass();
+    void cascadedShadowPass();
+    void spotlightShadowPass();
 };
 
 #endif

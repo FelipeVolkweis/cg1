@@ -75,7 +75,18 @@ void RenderableDirectionalLight::render() {
 
 RenderableSpotlight::RenderableSpotlight(uint64_t id) : id_(id) {}
 
-void RenderableSpotlight::initializeOnGPU() {}
+void RenderableSpotlight::initializeOnGPU() {
+    shadow_.allocateShadowMap(10);
+}
+
+void RenderableSpotlight::updateShadows() {
+    if (!light_)
+        return;
+    float near = 0.01f;
+    float far = 1000.0f;
+    lightSpaceMatrix_ = shadow_.getLightSpaceMatrix(light_->getPosition(), light_->getDirection(),
+                                                    light_->getOuterCutoff(), near, far);
+}
 
 void RenderableSpotlight::render() {
     if (!light_)
@@ -92,4 +103,11 @@ void RenderableSpotlight::render() {
     shaderProgram_->setVec3(prefix + "ambient", light_->getAmbient());
     shaderProgram_->setVec3(prefix + "diffuse", light_->getDiffuse());
     shaderProgram_->setVec3(prefix + "specular", light_->getSpecular());
+    shaderProgram_->setMat4x4(prefix + "lightSpaceMatrix", lightSpaceMatrix_);
+
+    int textureUnitOffset = 3 + index_;
+    shaderProgram_->setInt("spotlightShadowMaps[" + std::to_string(index_) + "]",
+                           textureUnitOffset);
+    glActiveTexture(GL_TEXTURE0 + textureUnitOffset);
+    glBindTexture(GL_TEXTURE_2D, shadow_.getDepthMap());
 }

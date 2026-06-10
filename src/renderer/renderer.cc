@@ -18,14 +18,16 @@
 
 Renderer::Renderer() {
     mainShaderProgram_ = std::make_shared<Shader>(MAIN_VERT, MAIN_FRAG);
-    shadowShaderProgram_ = std::make_shared<Shader>(SHDW_VERT, SHDW_FRAG, SHDW_GEOM);
+    cascadedShadowShaderProgram_ = std::make_shared<Shader>(SHDW_VERT, SHDW_FRAG, SHDW_GEOM);
+    spotlightShadowShaderProgram_ = std::make_shared<Shader>(SHDW_VERT, SHDW_FRAG);
 }
 
 bool Renderer::initialize() {
     bool mainOk = mainShaderProgram_->initialize();
-    bool shadowOk = shadowShaderProgram_->initialize();
+    bool shadowOk = cascadedShadowShaderProgram_->initialize();
+    bool spotlightShadowOk = spotlightShadowShaderProgram_->initialize();
 
-    if (!mainOk || !shadowOk)
+    if (!mainOk || !shadowOk || !spotlightShadowOk)
         return false;
 
     uint32_t mainBlockIndex =
@@ -35,53 +37,28 @@ bool Renderer::initialize() {
     }
 
     uint32_t shadowBlockIndex =
-        glGetUniformBlockIndex(shadowShaderProgram_->getId(), "LightSpaceMatrices");
+        glGetUniformBlockIndex(cascadedShadowShaderProgram_->getId(), "LightSpaceMatrices");
     if (shadowBlockIndex != GL_INVALID_INDEX) {
-        glUniformBlockBinding(shadowShaderProgram_->getId(), shadowBlockIndex, 0);
+        glUniformBlockBinding(cascadedShadowShaderProgram_->getId(), shadowBlockIndex, 0);
     }
 
     return true;
 }
 
 void Renderer::render() {
+    int w, h;
+    glfwGetFramebufferSize(window_, &w, &h);
+
+    cascadedShadowPass();
+    spotlightShadowPass();
+
+    glViewport(0, 0, w, h);
+
+    mainPass();
+}
+
+void Renderer::mainPass() {
     if (auto activeCamera = activeCamera_.lock()) {
-        // --- Shadow Pass ---
-        if (directionalLight_) {
-            shadowShaderProgram_->use();
-            int w, h;
-            glfwGetFramebufferSize(window_, &w, &h);
-            float aspect = static_cast<float>(w) / static_cast<float>(h);
-            directionalLight_->setCamera(activeCamera);
-            directionalLight_->setFrameBufferAspect(aspect);
-            directionalLight_->updateShadows();
-
-            auto &shadow = directionalLight_->getShadow();
-            int res = shadow.getResolution();
-
-            if (res > 0) {
-                glBindFramebuffer(GL_FRAMEBUFFER, shadow.getDepthMapFbo());
-                glViewport(0, 0, res, res);
-                glClear(GL_DEPTH_BUFFER_BIT);
-                glCullFace(GL_FRONT);
-
-                shadowShaderProgram_->use();
-                for (auto &renderable : renderables_) {
-                    auto &model = transforms_[renderable.first].getTransformationMatrix();
-                    shadowShaderProgram_->setMat4x4("model", model);
-                    renderable.second->renderShadow();
-                }
-
-                glCullFace(GL_BACK);
-                glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-                glViewport(0, 0, w, h);
-
-                glActiveTexture(GL_TEXTURE2);
-                glBindTexture(GL_TEXTURE_2D_ARRAY, shadow.getDepthMap());
-            }
-        }
-        // -------------------
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (skybox_) {
@@ -105,6 +82,74 @@ void Renderer::render() {
 
         renderOpaqueMeshes();
         renderTransluscenteMeshes();
+    }
+}
+
+void Renderer::cascadedShadowPass() {
+    if (directionalLight_) {
+        int w, h;
+        glfwGetFramebufferSize(window_, &w, &h);
+        float aspect = static_cast<float>(w) / static_cast<float>(h);
+
+        if (auto activeCamera = activeCamera_.lock()) {
+            cascadedShadowShaderProgram_->use();
+            directionalLight_->setCamera(activeCamera);
+            directionalLight_->setFrameBufferAspect(aspect);
+            directionalLight_->updateShadows();
+
+            auto &shadow = directionalLight_->getShadow();
+            int res = shadow.getResolution();
+
+            if (res > 0) {
+                glBindFramebuffer(GL_FRAMEBUFFER, shadow.getDepthMapFbo());
+                glViewport(0, 0, res, res);
+                glClear(GL_DEPTH_BUFFER_BIT);
+                glCullFace(GL_FRONT);
+
+                cascadedShadowShaderProgram_->use();
+                for (auto &renderable : renderables_) {
+                    auto &model = transforms_[renderable.first].getTransformationMatrix();
+                    cascadedShadowShaderProgram_->setMat4x4("model", model);
+                    renderable.second->renderShadow();
+                }
+
+                glCullFace(GL_BACK);
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D_ARRAY, shadow.getDepthMap());
+            }
+        }
+    }
+}
+
+void Renderer::spotlightShadowPass() {
+    for (auto &pair : spotlights_) {
+        auto &sl = pair.second;
+        if (!sl)
+            continue;
+
+        sl->updateShadows();
+        auto &shadow = sl->getShadow();
+        int res = shadow.getResolution();
+
+        if (res > 0) {
+            glBindFramebuffer(GL_FRAMEBUFFER, shadow.getDepthMapFbo());
+            glViewport(0, 0, res, res);
+            glClear(GL_DEPTH_BUFFER_BIT);
+            glCullFace(GL_FRONT);
+
+            spotlightShadowShaderProgram_->use();
+            for (auto &renderable : renderables_) {
+                auto &modelMatrix = transforms_[renderable.first].getTransformationMatrix();
+                Mat4x4 mvp = sl->getLightSpaceMatrix() * modelMatrix;
+                spotlightShadowShaderProgram_->setMat4x4("model", mvp);
+                renderable.second->renderShadow();
+            }
+
+            glCullFace(GL_BACK);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
     }
 }
 
