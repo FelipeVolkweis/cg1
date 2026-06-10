@@ -9,6 +9,7 @@ Spotlight::Spotlight(Vec3 ambient, Vec3 diffuse, Vec3 specular, Vec3 position, V
             constant_ = entry.constant;
             linear_ = entry.linear;
             quadratic_ = entry.quadratic;
+            break;
         }
     }
 }

@@ -82,6 +82,9 @@ private:
     SpotlightShadowArray spotlightShadowArray_;
     bool spotlightShadowArrayInitialized_ = false;
 
+    PointLightShadowArray pointLightShadowArray_;
+    bool pointLightShadowArrayInitialized_ = false;
+
     void renderDirectionalLight();
     void renderPointLights();
     void renderSpotlights();
@@ -91,6 +94,7 @@ private:
     void mainPass();
     void cascadedShadowPass();
     void spotlightShadowPass();
+    void pointLightShadowPass();
 };
 
 #endif

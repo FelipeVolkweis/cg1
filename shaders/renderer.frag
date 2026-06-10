@@ -27,6 +27,8 @@ struct PointLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    float farPlane;
 };
 
 struct Spotlight {    
@@ -47,11 +49,12 @@ struct Spotlight {
 };
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec3 fragPos);  
-vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);  
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, int index);  
 vec3 calculateSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir, int index);
 float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir);
 float sampleShadowCascade(vec3 offsetPosWorld, int layer, vec3 normal, vec3 lightDir);
 float spotlightShadowCalculation(vec4 fragPosLightSpace, int index, vec3 normal, vec3 lightDir);
+float pointLightShadowCalculation(vec3 fragPos, vec3 lightPos, int index, float farPlane, float nearPlane);
 
 out vec4 FragColor;
 
@@ -70,6 +73,7 @@ uniform Spotlight spotlights[MAX_SPOTLIGHTS];
 uniform int numSpotlights;
 
 uniform sampler2DArrayShadow spotlightShadowMap;
+uniform samplerCubeArray pointLightShadowMap;
 
 uniform sampler2DArrayShadow shadowMap;
 layout (std140) uniform LightSpaceMatrices {
@@ -90,7 +94,7 @@ void main() {
     }
 
     for (int i = 0; i < numPointLights; i++) {
-        result += calculatePointLight(pointLights[i], norm, FragPos, viewDir);
+        result += calculatePointLight(pointLights[i], norm, FragPos, viewDir, i);
     }
 
     for (int i = 0; i < numSpotlights; i++) {
@@ -117,7 +121,7 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     return ((specular + diffuse) * (1.0 - shadow) + ambient);
 }
 
-vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, int index) {
     vec3 lightDir = normalize(light.position - fragPos);
     float diffuseAmount = max(dot(normal, lightDir), 0.0);
 
@@ -129,11 +133,13 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
     float den = light.constant + light.linear * d + light.quadratic * d * d;
     float attenuation = 1.0 / den;
 
+    float shadow = pointLightShadowCalculation(fragPos, light.position, index, light.farPlane, 0.5);
+
     vec3 specular = light.specular * specularAmount * vec3(texture(material.specular, TexCoord));
     vec3 diffuse = light.diffuse * diffuseAmount * vec3(texture(material.diffuse, TexCoord));
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
 
-    return (specular + diffuse + ambient) * attenuation;
+    return ((specular + diffuse) * (1.0 - shadow) + ambient) * attenuation;
 } 
 
 vec3 calculateSpotlight(Spotlight light, vec3 normal, vec3 fragPos, vec3 viewDir, int index) {
@@ -252,4 +258,44 @@ float spotlightShadowCalculation(vec4 fragPosLightSpace, int index, vec3 normal,
     litFactor /= float(samples);
 
     return 1.0 - litFactor; 
+}
+
+float pointLightShadowCalculation(vec3 fragPos, vec3 lightPos, int index, float farPlane, float nearPlane) {
+    vec3 fragToLight = fragPos - lightPos;
+    float dist = length(fragToLight);
+
+    if (dist > farPlane)
+        return 0.0;
+
+    float fadeStart = farPlane * 0.9;
+    float fadeFactor = 1.0 - smoothstep(fadeStart, farPlane, dist);
+
+    vec3 sampleOffsetDirections[20] = vec3[](
+        vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1),
+        vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+        vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+        vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+        vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+    );
+
+    float diskRadius = 0.02;
+    float shadow = 0.0;
+
+    for (int i = 0; i < 20; ++i) {
+        vec3 sampleDir = fragToLight + sampleOffsetDirections[i] * diskRadius;
+
+        float storedDepth = texture(pointLightShadowMap, vec4(sampleDir, index)).r;
+
+        float storedZEye = nearPlane * farPlane / (farPlane - storedDepth * (farPlane - nearPlane));
+
+        float dominantAxis = max(abs(sampleDir.x), max(abs(sampleDir.y), abs(sampleDir.z)));
+        float storedDist = storedZEye * length(sampleDir) / dominantAxis;
+
+        float bias = 0.15;
+        if (dist > storedDist + bias)
+            shadow += 1.0;
+    }
+
+    shadow /= 20.0;
+    return shadow * fadeFactor;
 }

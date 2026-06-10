@@ -7,6 +7,7 @@ PointLight::PointLight(Vec3 ambient, Vec3 diffuse, Vec3 specular, Vec3 position,
             constant_ = entry.constant;
             linear_ = entry.linear;
             quadratic_ = entry.quadratic;
+            break;
         }
     }
 }

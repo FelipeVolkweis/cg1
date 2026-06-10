@@ -10,6 +10,15 @@ RenderablePointLight::RenderablePointLight(uint64_t id) : id_(id) {}
 
 void RenderablePointLight::initializeOnGPU() {}
 
+void RenderablePointLight::updateShadows(PointLightShadowArray &shadowArray) {
+    if (!light_)
+        return;
+    farPlane_ = light_->getFadeDistance();
+    float near = 0.5f;
+    lightSpaceMatrices_ =
+        shadowArray.getViewProjectionMatrices(light_->getPosition(), near, farPlane_);
+}
+
 void RenderablePointLight::render() {
     if (!light_)
         return;
@@ -22,6 +31,7 @@ void RenderablePointLight::render() {
     shaderProgram_->setVec3(prefix + "ambient", light_->getAmbient());
     shaderProgram_->setVec3(prefix + "diffuse", light_->getDiffuse());
     shaderProgram_->setVec3(prefix + "specular", light_->getSpecular());
+    shaderProgram_->setFloat(prefix + "farPlane", farPlane_);
 }
 
 RenderableDirectionalLight::RenderableDirectionalLight(uint64_t id) : id_(id) {}

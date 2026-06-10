@@ -51,6 +51,7 @@ void Renderer::render() {
 
     cascadedShadowPass();
     spotlightShadowPass();
+    pointLightShadowPass();
 
     glViewport(0, 0, w, h);
 
@@ -163,6 +164,51 @@ void Renderer::spotlightShadowPass() {
     glBindTexture(GL_TEXTURE_2D_ARRAY, spotlightShadowArray_.getDepthMap());
 }
 
+void Renderer::pointLightShadowPass() {
+    if (!pointLightShadowArrayInitialized_ || pointLights_.empty())
+        return;
+
+    int res = pointLightShadowArray_.getResolution();
+    if (res <= 0)
+        return;
+
+    for (auto &pair : pointLights_) {
+        auto &pl = pair.second;
+        if (!pl)
+            continue;
+
+        pl->updateShadows(pointLightShadowArray_);
+        int lightIndex = pl->getIndex();
+
+        if (lightIndex >= pointLightShadowArray_.getMaxLights())
+            continue;
+
+        const auto &matrices = pl->getLightSpaceMatrices();
+
+        for (int face = 0; face < 6; ++face) {
+            glBindFramebuffer(GL_FRAMEBUFFER,
+                              pointLightShadowArray_.getFboForFace(lightIndex, face));
+            glViewport(0, 0, res, res);
+            glClear(GL_DEPTH_BUFFER_BIT);
+            glCullFace(GL_FRONT);
+
+            spotlightShadowShaderProgram_->use();
+            for (auto &renderable : renderables_) {
+                auto &modelMatrix = transforms_[renderable.first].getTransformationMatrix();
+                Mat4x4 mvp = matrices[face] * modelMatrix;
+                spotlightShadowShaderProgram_->setMat4x4("model", mvp);
+                renderable.second->renderShadow();
+            }
+
+            glCullFace(GL_BACK);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+    }
+
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, pointLightShadowArray_.getDepthMap());
+}
+
 void Renderer::renderDirectionalLight() {
     if (directionalLight_) {
         mainShaderProgram_->setInt("hasDirectionalLight", 1);
@@ -184,6 +230,7 @@ void Renderer::renderPointLights() {
         plCount++;
     }
     mainShaderProgram_->setInt("numPointLights", plCount);
+    mainShaderProgram_->setInt("pointLightShadowMap", 4);
 }
 
 void Renderer::renderSpotlights() {
@@ -247,6 +294,11 @@ void Renderer::addPointLight(uint64_t id, std::shared_ptr<RenderablePointLight> 
         pointLight->setIndex(pointLights_.size());
         pointLight->setShaderProgram(mainShaderProgram_);
         pointLight->initializeOnGPU();
+
+        // Allocate shared shadow array on first point light
+        if (!pointLightShadowArrayInitialized_) {
+            pointLightShadowArrayInitialized_ = pointLightShadowArray_.allocate(10, MAX_POINT_LIGHTS);
+        }
     }
     pointLights_[id] = pointLight;
 }

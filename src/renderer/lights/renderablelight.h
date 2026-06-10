@@ -10,6 +10,7 @@
 #include "renderer/shader/shader.h"
 #include "renderer/shadows/cascadedshadow.h"
 #include "renderer/shadows/shadowmap.h"
+#include "renderer/shadows/pointlightshadow.h"
 #include "spotlight.h"
 
 // !!SYNC THIS WITH THE RENDERER.FRAG SHADER!!
@@ -74,8 +75,22 @@ public:
     void initializeOnGPU() override;
     void render() override;
 
+    void updateShadows(PointLightShadowArray &shadowArray);
+
     void setIndex(int index) {
         index_ = index;
+    }
+
+    int getIndex() const {
+        return index_;
+    }
+
+    const std::array<Mat4x4, 6> &getLightSpaceMatrices() const {
+        return lightSpaceMatrices_;
+    }
+
+    float getFarPlane() const {
+        return farPlane_;
     }
 
     void setLight(std::shared_ptr<BaseLight> light) override {
@@ -86,6 +101,9 @@ private:
     std::shared_ptr<PointLight> light_;
     uint64_t id_ = -1;
     int index_;
+
+    std::array<Mat4x4, 6> lightSpaceMatrices_;
+    float farPlane_ = 0.0f;
 };
 
 class RenderableSpotlight : public RenderableLight {
