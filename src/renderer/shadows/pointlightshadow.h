@@ -13,7 +13,7 @@ public:
     bool allocate(int powerOfTwo, int maxLights);
 
     std::array<Mat4x4, 6> getViewProjectionMatrices(const Vec3 &lightPos, float nearPlane,
-                                                     float farPlane);
+                                                    float farPlane);
 
     uint32_t getDepthMap() const {
         return depthMap_;

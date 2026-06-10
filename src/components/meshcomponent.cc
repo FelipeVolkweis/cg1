@@ -9,6 +9,7 @@
 #include "shapes/semisphere.h"
 #include "shapes/sphere.h"
 #include "shapes/torus.h"
+#include "utils/logger.h"
 
 void MeshComponent::load(const YAML::Node &data) {
     if (data["shape"]) {
@@ -31,25 +32,51 @@ void MeshComponent::load(const YAML::Node &data) {
 
         if (shape_) {
             shape_->parse(data);
+            parseMaterials(data);
+            renderableMesh_ = shape_->asRenderable();
+        }
+    }
+}
 
-            if (data["materials"] && data["materials"].IsSequence()) {
-                std::vector<Material> overrideMaterials;
-                for (const auto &matNode : data["materials"]) {
-                    overrideMaterials.push_back(Material::fromYaml(matNode.as<std::string>()));
+void MeshComponent::parseMaterials(const YAML::Node &data) {
+    if (data["materials"]) {
+        auto meshGroups = shape_->getMeshGroups();
+
+        if (data["materials"].IsSequence()) {
+            std::vector<std::string> overrideNames;
+            for (const auto &matNode : data["materials"]) {
+                overrideNames.push_back(matNode.as<std::string>());
+            }
+
+            if (!overrideNames.empty()) {
+                for (size_t i = 0; i < meshGroups->size() && i < overrideNames.size(); ++i) {
+                    (*meshGroups)[i].material =
+                        Material::overlayYaml((*meshGroups)[i].material, overrideNames[i]);
+                    (*meshGroups)[i].translucent = (*meshGroups)[i].material.getDissolve() < 1.0f;
+                }
+            }
+        } else if (data["materials"].IsMap()) {
+            for (auto it = data["materials"].begin(); it != data["materials"].end(); ++it) {
+                std::string targetName = it->first.as<std::string>();
+                std::string matYaml = it->second.as<std::string>();
+
+                bool found = false;
+                for (auto &mg : *meshGroups) {
+                    if (mg.name == targetName) {
+                        mg.material = Material::overlayYaml(mg.material, matYaml);
+                        mg.translucent = mg.material.getDissolve() < 1.0f;
+                        found = true;
+                    }
                 }
 
-                if (!overrideMaterials.empty()) {
-                    auto meshGroups = shape_->getMeshGroups();
-                    for (size_t i = 0; i < meshGroups->size(); ++i) {
-                        size_t matIdx = std::min(i, overrideMaterials.size() - 1);
-                        (*meshGroups)[i].material = overrideMaterials[matIdx];
-                        // If it's translucent, update the translucent flag
-                        (*meshGroups)[i].translucent = overrideMaterials[matIdx].getDissolve() < 1.0f;
+                if (!found) {
+                    Logger::Warn("Material override '", targetName, "' not found in shape.");
+                    Logger::Warn("Available material names:");
+                    for (auto &mg : *meshGroups) {
+                        Logger::Warn("  - ", mg.name);
                     }
                 }
             }
         }
-
-        renderableMesh_ = shape_->asRenderable();
     }
 }

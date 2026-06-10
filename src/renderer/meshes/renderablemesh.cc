@@ -29,8 +29,8 @@ void RenderableMesh::render(const Mat4x4 &model, bool renderTranslucent) {
     glBindVertexArray(vao_);
 
     shaderProgram_->setMat4x4("model", model);
-    shaderProgram_->setInt("material.diffuse", 0);
-    shaderProgram_->setInt("material.specular", 1);
+    shaderProgram_->setInt("material.diffuseMap", 0);
+    shaderProgram_->setInt("material.specularMap", 1);
 
     for (const auto &mesh : *meshGroups_) {
         if (renderTranslucent && mesh.translucent || !renderTranslucent && !mesh.translucent) {
@@ -39,13 +39,16 @@ void RenderableMesh::render(const Mat4x4 &model, bool renderTranslucent) {
             } else {
                 glDepthMask(GL_TRUE);
             }
+            shaderProgram_->setVec3("material.ambientColor", mesh.material.getAmbientColor());
+            shaderProgram_->setVec3("material.diffuseColor", mesh.material.getDiffuseColor());
+            shaderProgram_->setVec3("material.specularColor", mesh.material.getSpecularColor());
             shaderProgram_->setFloat("material.shininess", mesh.material.getShininess());
             shaderProgram_->setFloat("material.dissolve", mesh.material.getDissolve());
 
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, mesh.material.getDiffuse());
+            glBindTexture(GL_TEXTURE_2D, mesh.material.getDiffuseMap());
             glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, mesh.material.getSpecular());
+            glBindTexture(GL_TEXTURE_2D, mesh.material.getSpecularMap());
             glDrawArrays(GL_TRIANGLES, mesh.start, mesh.count);
         }
     }
@@ -57,7 +60,6 @@ void RenderableMesh::renderShadow() {
     glBindVertexArray(vao_);
 
     for (const auto &mesh : *meshGroups_) {
-        // Just draw all meshes for the depth pass
         glDrawArrays(GL_TRIANGLES, mesh.start, mesh.count);
     }
 }

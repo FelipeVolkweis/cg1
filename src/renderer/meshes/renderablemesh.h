@@ -21,6 +21,7 @@ struct MeshGroup {
     size_t count;
 
     bool translucent;
+    std::string name;
 };
 
 /**

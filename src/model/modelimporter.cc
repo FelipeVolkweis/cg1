@@ -57,10 +57,6 @@ MaterialMaps loadMaterialTextures(const std::vector<tinyobj::material_t> &materi
             if (diffuseTid != 0) {
                 m.diffuse[i] = diffuseTid;
             }
-        } else {
-            Vec3 color(materials[i].diffuse[0], materials[i].diffuse[1], materials[i].diffuse[2]);
-            uint32_t tid = Texture::createColorTexture(color);
-            m.diffuse[i] = tid;
         }
 
         if (!materials[i].specular_texname.empty()) {
@@ -70,11 +66,6 @@ MaterialMaps loadMaterialTextures(const std::vector<tinyobj::material_t> &materi
             if (specularTid != 0) {
                 m.specular[i] = specularTid;
             }
-        } else {
-            Vec3 color(materials[i].specular[0], materials[i].specular[1],
-                       materials[i].specular[2]);
-            uint32_t tid = Texture::createColorTexture(color);
-            m.specular[i] = tid;
         }
         m.shininess[i] = materials[i].shininess;
         m.dissolve[i] = materials[i].dissolve;
@@ -174,8 +165,24 @@ buildShapeGeometry(const tinyobj::attrib_t &attrib, const std::vector<tinyobj::s
         float shininess = textureMaps.shininess.at(matId);
         float dissolve = textureMaps.dissolve.at(matId);
 
-        Material material(diffuseTid, specularTid, shininess, dissolve);
-        package.groups->push_back({material, groupStart, groupCount, isTransparent});
+        Vec3 ambientColor(0.2f, 0.2f, 0.2f);
+        Vec3 diffuseColor(0.8f, 0.8f, 0.8f);
+        Vec3 specularColor(1.0f, 1.0f, 1.0f);
+
+        std::string matName = "default";
+        if (matId >= 0 && matId < (int)materials.size()) {
+            matName = materials[matId].name;
+            ambientColor = Vec3(materials[matId].ambient[0], materials[matId].ambient[1],
+                                materials[matId].ambient[2]);
+            diffuseColor = Vec3(materials[matId].diffuse[0], materials[matId].diffuse[1],
+                                materials[matId].diffuse[2]);
+            specularColor = Vec3(materials[matId].specular[0], materials[matId].specular[1],
+                                 materials[matId].specular[2]);
+        }
+
+        Material material(diffuseTid, specularTid, ambientColor, diffuseColor, specularColor,
+                          shininess, dissolve);
+        package.groups->push_back({material, groupStart, groupCount, isTransparent, matName});
     }
 
     return package;

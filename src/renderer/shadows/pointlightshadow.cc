@@ -44,8 +44,8 @@ bool PointLightShadowArray::allocate(int powerOfTwo, int maxLights) {
 }
 
 std::array<Mat4x4, 6> PointLightShadowArray::getViewProjectionMatrices(const Vec3 &lightPos,
-                                                                        float nearPlane,
-                                                                        float farPlane) {
+                                                                       float nearPlane,
+                                                                       float farPlane) {
     // 90 degrees FOV, aspect 1:1
     Mat4x4 projection = Projection::getPerspective(90.0f, 1.0f, nearPlane, farPlane);
 

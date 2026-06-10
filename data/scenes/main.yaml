@@ -214,6 +214,9 @@ root:
             - type: "Mesh"
               shape: "model" 
               path: "data/models/van/van.obj"
+              materials:
+                Paint_main: "red_paint"
+                glass: "dark_glass"
         - name: "steeringAnchor"
           rotation: [0, -90, 0]
           scale: [0.5, 0.5, 0.5]

@@ -23,12 +23,12 @@ void BaseShape::parseCommon(const YAML::Node &node) {
             hasColor_ = true;
         }
     }
-    
+
     if (!isModel() && (node["color"] || node["materials"])) {
         Vec3 gray(0.5, 0.5, 0.5);
         float defaultShininess = 1.0f;
-        Material material(Texture::createColorTexture(color_),
-                          Texture::createColorTexture(gray), defaultShininess);
-        meshGroups_->push_back({material, 0, vertices_->size(), false});
+        Material material(Texture::createWhiteTexture(), Texture::createWhiteTexture(), color_,
+                          color_, gray, defaultShininess);
+        meshGroups_->push_back({material, 0, vertices_->size(), false, "default"});
     }
 }

@@ -9,8 +9,8 @@
 #include "renderer/renderable.h"
 #include "renderer/shader/shader.h"
 #include "renderer/shadows/cascadedshadow.h"
-#include "renderer/shadows/shadowmap.h"
 #include "renderer/shadows/pointlightshadow.h"
+#include "renderer/shadows/shadowmap.h"
 #include "spotlight.h"
 
 // !!SYNC THIS WITH THE RENDERER.FRAG SHADER!!

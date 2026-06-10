@@ -92,8 +92,8 @@ void RenderableSpotlight::updateShadows() {
         return;
     float near = 0.5f;
     float far = 200.0f;
-    lightSpaceMatrix_ = shadowCalc_.getLightSpaceMatrix(light_->getPosition(), light_->getDirection(),
-                                                        light_->getOuterCutoff(), near, far);
+    lightSpaceMatrix_ = shadowCalc_.getLightSpaceMatrix(
+        light_->getPosition(), light_->getDirection(), light_->getOuterCutoff(), near, far);
 }
 
 void RenderableSpotlight::render() {

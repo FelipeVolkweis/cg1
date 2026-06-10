@@ -31,6 +31,8 @@ public:
     }
 
 private:
+    void parseMaterials(const YAML::Node &data);
+
     std::unique_ptr<BaseShape> shape_;
     std::shared_ptr<RenderableMesh> renderableMesh_;
 };

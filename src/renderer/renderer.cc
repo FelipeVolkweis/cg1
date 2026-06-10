@@ -66,7 +66,6 @@ void Renderer::mainPass() {
             skybox_->render(activeCamera->lookAt(), activeCamera->perspective());
         }
 
-        mainShaderProgram_->use();
         const auto &view = activeCamera->lookAt();
         const auto &projection = activeCamera->perspective();
         const auto &viewPos = activeCamera->getPosition();
@@ -256,7 +255,6 @@ void Renderer::renderOpaqueMeshes() {
 }
 
 void Renderer::renderTransluscenteMeshes() {
-
     for (auto &renderable : renderables_) {
         auto &model = transforms_[renderable.first].getTransformationMatrix();
         renderable.second->render(model, true);
@@ -297,7 +295,8 @@ void Renderer::addPointLight(uint64_t id, std::shared_ptr<RenderablePointLight> 
 
         // Allocate shared shadow array on first point light
         if (!pointLightShadowArrayInitialized_) {
-            pointLightShadowArrayInitialized_ = pointLightShadowArray_.allocate(10, MAX_POINT_LIGHTS);
+            pointLightShadowArrayInitialized_ =
+                pointLightShadowArray_.allocate(10, MAX_POINT_LIGHTS);
         }
     }
     pointLights_[id] = pointLight;
