@@ -61,6 +61,11 @@ public:
     }
 
 private:
+    static constexpr int kCascadeSplitCount = 3;
+    static constexpr float kShadowDistance = 160.0f;
+    static constexpr float kCascadeSplitNear = 0.5f;
+    static constexpr float kCascadeSplitLambda = 0.75f;
+
     std::shared_ptr<DirectionalLight> light_;
     uint64_t id_ = -1;
 

@@ -11,7 +11,8 @@
 
 class CascadedShadow {
 public:
-    std::vector<float> getShadowCascadeLevels(int levels, float startingDenominator, float zFar);
+    std::vector<float> getShadowCascadeLevels(int levels, float zNear, float zFar,
+                                              float splitLambda);
     bool allocateShadowMap(int powerOfTwo, int levels);
     std::vector<Mat4x4> getLightSpaceMatrices(std::shared_ptr<Camera> camera,
                                               float frameBufferAspect, const Mat4x4 &cameraView,
@@ -36,9 +37,10 @@ private:
 
     std::vector<float> shadowCascadeLevels_;
 
-    int levels_;
-    float startingDenominator_;
-    float zFar_;
+    int levels_ = 0;
+    float zNear_ = 0.0f;
+    float zFar_ = 0.0f;
+    float splitLambda_ = 0.0f;
 };
 
 #endif

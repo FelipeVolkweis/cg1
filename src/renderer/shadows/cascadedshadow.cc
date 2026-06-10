@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 
+#include <cmath>
 #include <memory>
 
 #include "camera/camera.h"
@@ -11,26 +12,25 @@
 
 // https://learnopengl.com/Guest-Articles/2021/CSM
 
-std::vector<float> CascadedShadow::getShadowCascadeLevels(int levels, float startingDenominator,
-                                                          float zFar) {
-    if (!shadowCascadeLevels_.empty() && levels == levels_ &&
-        abs(startingDenominator_ - startingDenominator) <= 1e-3 && abs(zFar_ - zFar) <= 1e-3) {
+std::vector<float> CascadedShadow::getShadowCascadeLevels(int levels, float zNear, float zFar,
+                                                          float splitLambda) {
+    if (!shadowCascadeLevels_.empty() && levels == levels_ && std::abs(zNear_ - zNear) <= 1e-3f &&
+        std::abs(zFar_ - zFar) <= 1e-3f && std::abs(splitLambda_ - splitLambda) <= 1e-3f) {
         return shadowCascadeLevels_;
     }
 
     levels_ = levels;
-    startingDenominator_ = startingDenominator;
+    zNear_ = zNear;
     zFar_ = zFar;
+    splitLambda_ = splitLambda;
 
     shadowCascadeLevels_.clear();
-    float den = startingDenominator;
-    for (int i = 0; i < levels; i++) {
-        if (den >= 1) {
-            shadowCascadeLevels_.push_back(zFar / den);
-        } else {
-            break;
-        }
-        den /= 2;
+    const int cascadeCount = levels + 1;
+    for (int i = 1; i < cascadeCount; ++i) {
+        float ratio = static_cast<float>(i) / static_cast<float>(cascadeCount);
+        float logarithmic = zNear * std::pow(zFar / zNear, ratio);
+        float uniform = zNear + (zFar - zNear) * ratio;
+        shadowCascadeLevels_.push_back(splitLambda * logarithmic + (1.0f - splitLambda) * uniform);
     }
 
     return shadowCascadeLevels_;
@@ -91,7 +91,7 @@ std::vector<Mat4x4> CascadedShadow::getLightSpaceMatrices(std::shared_ptr<Camera
             zFar = shadowCascadeLevels_[i];
         } else {
             zNear = shadowCascadeLevels_[i - 1];
-            zFar = camera->getZFar();
+            zFar = zFar_;
         }
 
         Mat4x4 cameraProjection =

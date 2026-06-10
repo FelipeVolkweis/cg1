@@ -85,7 +85,7 @@ layout (std140) uniform LightSpaceMatrices {
 uniform float cascadePlaneDistances[16];
 uniform int cascadeCount; 
 uniform mat4 view;
-uniform float zFar;
+uniform float directionalShadowDistance;
 
 void main() {
     vec3 result = vec3(0.0);
@@ -124,7 +124,7 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     
     float shadow = shadowCalculation(fragPos, normal, lightDir);
 
-    return ((specular + diffuse) * (1.0 - shadow) + ambient);
+    return (specular + diffuse) * (1.0 - shadow) + ambient;
 }
 
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, int index) {
@@ -190,7 +190,8 @@ float sampleShadowCascade(vec3 offsetPosWorld, int layer, vec3 normal, vec3 ligh
         return 0.0;
     }
 
-    float bias = 0.0005;
+    float slope = 1.0 - max(dot(normal, lightDir), 0.0);
+    float bias = mix(0.00005, 0.0005, slope);
     vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
     
     float litFactor = 0.0;
@@ -213,6 +214,10 @@ float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir) {
     vec4 fragPosViewSpace = view * vec4(fragPosWorldSpace, 1.0);
     float depthValue = abs(fragPosViewSpace.z);
 
+    if (depthValue > directionalShadowDistance) {
+        return 0.0;
+    }
+
     int layer = -1;
     for (int i = 0; i < cascadeCount; ++i) {
         if (depthValue < cascadePlaneDistances[i]) {
@@ -224,7 +229,8 @@ float shadowCalculation(vec3 fragPosWorldSpace, vec3 normal, vec3 lightDir) {
         layer = cascadeCount;
     }
 
-    float cascadeDistance = (layer == cascadeCount) ? zFar : cascadePlaneDistances[layer];
+    float cascadeDistance =
+        (layer == cascadeCount) ? directionalShadowDistance : cascadePlaneDistances[layer];
     float normalOffsetScale = (1.0 - max(dot(normal, lightDir), 0.0)) * (0.001 * cascadeDistance);
     vec3 offsetPosWorld = fragPosWorldSpace + normal * normalOffsetScale;
     float shadow = sampleShadowCascade(offsetPosWorld, layer, normal, lightDir);

@@ -74,7 +74,6 @@ void Renderer::mainPass() {
         mainShaderProgram_->setMat4x4("view", view);
         mainShaderProgram_->setMat4x4("projection", projection);
         mainShaderProgram_->setVec3("viewPos", viewPos);
-        mainShaderProgram_->setFloat("zFar", activeCamera->getZFar());
 
         renderDirectionalLight();
         renderPointLights();

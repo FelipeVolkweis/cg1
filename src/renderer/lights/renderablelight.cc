@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 
+#include <algorithm>
 #include <iostream>
 
 #include "math/projections/projection.h"
@@ -43,14 +44,16 @@ void RenderableDirectionalLight::initializeOnGPU() {
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    shadow_.allocateShadowMap(10, 3);
+    shadow_.allocateShadowMap(10, kCascadeSplitCount);
 }
 
 void RenderableDirectionalLight::updateShadows() {
     if (!light_ || !camera_)
         return;
 
-    shadow_.getShadowCascadeLevels(3, 50, camera_->getZFar());
+    float shadowFar = std::min(camera_->getZFar(), kShadowDistance);
+    float splitNear = std::min(shadowFar, std::max(camera_->getZNear(), kCascadeSplitNear));
+    shadow_.getShadowCascadeLevels(kCascadeSplitCount, splitNear, shadowFar, kCascadeSplitLambda);
     const auto lightMatrices = shadow_.getLightSpaceMatrices(
         camera_, frameBufferAspect_, camera_->lookAt(), light_->getDirection());
 
@@ -74,9 +77,13 @@ void RenderableDirectionalLight::render() {
         return;
 
     shaderProgram_->setInt("shadowMap", 2);
-    const auto &shadowCascadeLevels = shadow_.getShadowCascadeLevels(3, 50, camera_->getZFar());
+    float shadowFar = std::min(camera_->getZFar(), kShadowDistance);
+    float splitNear = std::min(shadowFar, std::max(camera_->getZNear(), kCascadeSplitNear));
+    const auto &shadowCascadeLevels = shadow_.getShadowCascadeLevels(
+        kCascadeSplitCount, splitNear, shadowFar, kCascadeSplitLambda);
 
     shaderProgram_->setInt("cascadeCount", shadowCascadeLevels.size());
+    shaderProgram_->setFloat("directionalShadowDistance", shadowFar);
     for (size_t i = 0; i < shadowCascadeLevels.size(); ++i) {
         shaderProgram_->setFloat("cascadePlaneDistances[" + std::to_string(i) + "]",
                                  shadowCascadeLevels[i]);
