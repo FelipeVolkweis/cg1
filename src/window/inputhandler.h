@@ -21,6 +21,7 @@ public:
     void handleWireframe_P();
     void handleCameraCycle_C();
     void handleBrakes_SpaceBar();
+    void handleLightControls();
 
     /**
      * @brief Gets the current dimensions of the window.
@@ -76,6 +77,42 @@ public:
         return spaceHeldDown_;
     }
 
+    /**
+     * @brief Gets the currently selected light index (0-9), or -1 if none.
+     * @return The selected light index.
+     */
+    int getSelectedLightIndex() const {
+        return selectedLightIndex_;
+    }
+
+    /**
+     * @brief Returns true once per press of the toggle key (U).
+     * Resets after being read.
+     * @return true if toggle was requested.
+     */
+    bool consumeLightToggleRequest();
+
+    /**
+     * @brief Gets the ambient adjustment direction: +1, -1, or 0.
+     */
+    int getLightAmbientDelta() const {
+        return lightAmbientDelta_;
+    }
+
+    /**
+     * @brief Gets the diffuse adjustment direction: +1, -1, or 0.
+     */
+    int getLightDiffuseDelta() const {
+        return lightDiffuseDelta_;
+    }
+
+    /**
+     * @brief Gets the specular adjustment direction: +1, -1, or 0.
+     */
+    int getLightSpecularDelta() const {
+        return lightSpecularDelta_;
+    }
+
     const int W_KEY = 0;
     const int A_KEY = 1;
     const int S_KEY = 2;
@@ -96,6 +133,13 @@ private:
     uint32_t cycleClicked_ = 0;
     bool cycleKeyPressed_ = false;
     bool spaceHeldDown_ = false;
+
+    int selectedLightIndex_ = -1;
+    bool lightToggleRequested_ = false;
+    bool lightToggleKeyPressed_ = false;
+    int lightAmbientDelta_ = 0;
+    int lightDiffuseDelta_ = 0;
+    int lightSpecularDelta_ = 0;
 };
 
 #endif

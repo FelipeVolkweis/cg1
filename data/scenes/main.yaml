@@ -18,6 +18,8 @@ root:
       ambient: [0.3, 0.3, 0.3]
       diffuse: [1.0, 0.95, 0.85]
       specular: [1.0, 1.0, 1.0]
+    - type: "LightController"
+      index: 0
   children:
     - name: "Ground"
       origin: [0, 0, 0]
@@ -258,6 +260,8 @@ root:
               diffuse: [1, 1, 0.9]
               specular: [1, 1, 1]
               fadeDistance: 65
+            - type: "LightController"
+              index: 1
         - name: "HeadlightRight"
           origin: [0.6, 0.125, 2.1]
           components:
@@ -269,6 +273,8 @@ root:
               diffuse: [1, 1, 0.9]
               specular: [1, 1, 1]
               fadeDistance: 65
+            - type: "LightController"
+              index: 2
         - name: "CarInternalLight"
           origin: [0, 1.0, 0.2]
           components:
@@ -277,6 +283,8 @@ root:
               diffuse: [0.8, 0.7, 0.2]
               specular: [0.8, 0.7, 0.2]
               fadeDistance: 5
+            - type: "LightController"
+              index: 3
     - name: "WheelFrontLeft"
       rotation: [0, -90, 0]
       scale: [0.5, 0.5, 0.5]

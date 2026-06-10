@@ -89,3 +89,42 @@ std::pair<int, int> InputHandler::getFrameBufferDimensions() const {
 
     return {w, h};
 }
+
+void InputHandler::handleLightControls() {
+    for (int i = 0; i <= 9; i++) {
+        if (glfwGetKey(window_, GLFW_KEY_0 + i) == GLFW_PRESS) {
+            selectedLightIndex_ = i;
+            break;
+        }
+    }
+
+    bool toggleKey = glfwGetKey(window_, GLFW_KEY_U) == GLFW_PRESS;
+    if (toggleKey && !lightToggleKeyPressed_) {
+        lightToggleRequested_ = true;
+    }
+    lightToggleKeyPressed_ = toggleKey;
+
+    lightAmbientDelta_ = 0;
+    if (glfwGetKey(window_, GLFW_KEY_R) == GLFW_PRESS)
+        lightAmbientDelta_ += 1;
+    if (glfwGetKey(window_, GLFW_KEY_F) == GLFW_PRESS)
+        lightAmbientDelta_ -= 1;
+
+    lightDiffuseDelta_ = 0;
+    if (glfwGetKey(window_, GLFW_KEY_T) == GLFW_PRESS)
+        lightDiffuseDelta_ += 1;
+    if (glfwGetKey(window_, GLFW_KEY_G) == GLFW_PRESS)
+        lightDiffuseDelta_ -= 1;
+
+    lightSpecularDelta_ = 0;
+    if (glfwGetKey(window_, GLFW_KEY_Y) == GLFW_PRESS)
+        lightSpecularDelta_ += 1;
+    if (glfwGetKey(window_, GLFW_KEY_H) == GLFW_PRESS)
+        lightSpecularDelta_ -= 1;
+}
+
+bool InputHandler::consumeLightToggleRequest() {
+    bool val = lightToggleRequested_;
+    lightToggleRequested_ = false;
+    return val;
+}

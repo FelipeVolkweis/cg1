@@ -5,6 +5,7 @@
 #include "components/cameracyclecomponent.h"
 #include "components/carcontrollercomponent.h"
 #include "components/lightcomponent.h"
+#include "components/lightcontrollercomponent.h"
 #include "components/meshcomponent.h"
 #include "components/orbitalcameracontrollercomponent.h"
 #include "components/rigidbodycomponent.h"
@@ -25,6 +26,8 @@ ComponentFactory::ComponentFactory() {
     registerComponent("SteeringAnimation",
                       []() { return std::make_shared<SteeringAnimationComponent>(); });
     registerComponent("Light", []() { return std::make_shared<LightComponent>(); });
+    registerComponent("LightController",
+                      []() { return std::make_shared<LightControllerComponent>(); });
 }
 
 ComponentFactory &ComponentFactory::getInstance() {

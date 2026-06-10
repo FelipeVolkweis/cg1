@@ -62,6 +62,7 @@ void Window::processInput() {
     inputHandler_->handleWireframe_P();
     inputHandler_->handleCameraCycle_C();
     inputHandler_->handleBrakes_SpaceBar();
+    inputHandler_->handleLightControls();
 
     bool wireframeKey = inputHandler_->getWireframeEnabled();
     if (wireframeKey) {

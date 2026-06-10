@@ -1,5 +1,6 @@
 #include "lightcomponent.h"
 
+#include <algorithm>
 #include <iostream>
 
 #include <yaml-cpp/yaml.h>
@@ -71,6 +72,19 @@ void LightComponent::onUpdate(float dt) {
     if (!node)
         return;
 
+    Vec3 amb, dif, spc;
+    if (enabled_) {
+        auto clamp01 = [](const Vec3 &v) {
+            return Vec3(std::clamp(v.x(), 0.0f, 1.0f), std::clamp(v.y(), 0.0f, 1.0f),
+                        std::clamp(v.z(), 0.0f, 1.0f));
+        };
+        amb = clamp01(ambient_ + ambientOffset_);
+        dif = clamp01(diffuse_ + diffuseOffset_);
+        spc = clamp01(specular_ + specularOffset_);
+    } else {
+        amb = dif = spc = Vec3::Zero();
+    }
+
     Transformation globalTransform;
     auto current = node;
     while (current != nullptr) {
@@ -83,14 +97,13 @@ void LightComponent::onUpdate(float dt) {
     Vec3 worldDirection = (mat.block<3, 3>(0, 0) * direction_).normalized();
 
     if (kind_ == Kind::Directional) {
-        light_ = std::make_shared<DirectionalLight>(ambient_, diffuse_, specular_, worldDirection);
+        light_ = std::make_shared<DirectionalLight>(amb, dif, spc, worldDirection);
     } else if (kind_ == Kind::Point) {
-        light_ =
-            std::make_shared<PointLight>(ambient_, diffuse_, specular_, position, fadeDistance_);
+        light_ = std::make_shared<PointLight>(amb, dif, spc, position, fadeDistance_);
     } else if (kind_ == Kind::Spot) {
-        light_ =
-            std::make_shared<Spotlight>(ambient_, diffuse_, specular_, position, worldDirection,
-                                        cutoff_ * DEG2RAD, outerCutoff_ * DEG2RAD, fadeDistance_);
+        light_ = std::make_shared<Spotlight>(amb, dif, spc, position, worldDirection,
+                                              cutoff_ * DEG2RAD, outerCutoff_ * DEG2RAD,
+                                              fadeDistance_);
     }
 
     if (renderableLight_)
