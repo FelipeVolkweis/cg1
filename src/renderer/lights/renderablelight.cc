@@ -43,7 +43,7 @@ void RenderableDirectionalLight::initializeOnGPU() {
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    shadow_.allocateShadowMap(11, 3);
+    shadow_.allocateShadowMap(10, 3);
 }
 
 void RenderableDirectionalLight::updateShadows() {
