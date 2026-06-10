@@ -70,6 +70,10 @@ public:
         return std::make_shared<RenderableMesh>(vertices_, meshGroups_);
     }
 
+    std::shared_ptr<std::vector<MeshGroup>> getMeshGroups() const {
+        return meshGroups_;
+    }
+
 protected:
     std::shared_ptr<std::vector<Vertex>> vertices_;
     Vec3 color_;

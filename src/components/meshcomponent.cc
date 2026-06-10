@@ -31,6 +31,23 @@ void MeshComponent::load(const YAML::Node &data) {
 
         if (shape_) {
             shape_->parse(data);
+
+            if (data["materials"] && data["materials"].IsSequence()) {
+                std::vector<Material> overrideMaterials;
+                for (const auto &matNode : data["materials"]) {
+                    overrideMaterials.push_back(Material::fromYaml(matNode.as<std::string>()));
+                }
+
+                if (!overrideMaterials.empty()) {
+                    auto meshGroups = shape_->getMeshGroups();
+                    for (size_t i = 0; i < meshGroups->size(); ++i) {
+                        size_t matIdx = std::min(i, overrideMaterials.size() - 1);
+                        (*meshGroups)[i].material = overrideMaterials[matIdx];
+                        // If it's translucent, update the translucent flag
+                        (*meshGroups)[i].translucent = overrideMaterials[matIdx].getDissolve() < 1.0f;
+                    }
+                }
+            }
         }
 
         renderableMesh_ = shape_->asRenderable();

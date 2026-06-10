@@ -1,0 +1,4 @@
+diffuse: [0.2, 0.8, 0.2]
+specular: [0.1, 0.1, 0.1]
+shininess: 4.0
+dissolve: 0.5

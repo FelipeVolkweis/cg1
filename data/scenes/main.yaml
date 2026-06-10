@@ -29,7 +29,7 @@ root:
           width: 120.0
           height: 0.5
           depth: 100.0
-          color: [0.4, 0.4, 0.4]
+          materials: ["asphalt"]
         - type: "RigidBody"
           mass: 0.0
     - name: "House"
@@ -197,7 +197,7 @@ root:
             - type: "Camera"
             - type: "OrbitalCameraController"
               orbitRadius: 7
-              sensitivity: 50
+              sensitivity: 75
         - name: "InnerCameraAnchor"
           origin: [0.5, 0.6, 1]
           rotation: [0, 180, 0]
