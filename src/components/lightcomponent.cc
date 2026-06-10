@@ -97,13 +97,24 @@ void LightComponent::onUpdate(float dt) {
     Vec3 worldDirection = (mat.block<3, 3>(0, 0) * direction_).normalized();
 
     if (kind_ == Kind::Directional) {
-        light_ = std::make_shared<DirectionalLight>(amb, dif, spc, worldDirection);
+        auto dl = std::static_pointer_cast<DirectionalLight>(light_);
+        dl->setAmbient(amb);
+        dl->setDiffuse(dif);
+        dl->setSpecular(spc);
+        dl->setDirection(worldDirection);
     } else if (kind_ == Kind::Point) {
-        light_ = std::make_shared<PointLight>(amb, dif, spc, position, fadeDistance_);
+        auto pl = std::static_pointer_cast<PointLight>(light_);
+        pl->setAmbient(amb);
+        pl->setDiffuse(dif);
+        pl->setSpecular(spc);
+        pl->setPosition(position);
     } else if (kind_ == Kind::Spot) {
-        light_ = std::make_shared<Spotlight>(amb, dif, spc, position, worldDirection,
-                                              cutoff_ * DEG2RAD, outerCutoff_ * DEG2RAD,
-                                              fadeDistance_);
+        auto sl = std::static_pointer_cast<Spotlight>(light_);
+        sl->setAmbient(amb);
+        sl->setDiffuse(dif);
+        sl->setSpecular(spc);
+        sl->setPosition(position);
+        sl->setDirection(worldDirection);
     }
 
     if (renderableLight_)

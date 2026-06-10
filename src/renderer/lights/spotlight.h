@@ -17,8 +17,16 @@ public:
         return position_;
     }
 
+    void setPosition(const Vec3 &v) {
+        position_ = v;
+    }
+
     const Vec3 getDirection() const {
         return direction_;
+    }
+
+    void setDirection(const Vec3 &v) {
+        direction_ = v;
     }
 
     float getCutoff() const {

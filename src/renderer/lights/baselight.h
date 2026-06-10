@@ -51,6 +51,18 @@ public:
         return specular_;
     }
 
+    void setAmbient(const Vec3 &v) {
+        ambient_ = v;
+    }
+
+    void setDiffuse(const Vec3 &v) {
+        diffuse_ = v;
+    }
+
+    void setSpecular(const Vec3 &v) {
+        specular_ = v;
+    }
+
 protected:
     Vec3 ambient_;
     Vec3 diffuse_;

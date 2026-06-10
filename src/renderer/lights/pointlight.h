@@ -15,6 +15,10 @@ public:
         return position_;
     }
 
+    void setPosition(const Vec3 &v) {
+        position_ = v;
+    }
+
     float getFadeDistance() const {
         return fadeDistance_;
     }

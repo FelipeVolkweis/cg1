@@ -85,7 +85,7 @@ public:
         return world;
     }
 
-    std::vector<std::shared_ptr<BaseComponent>> getComponents() {
+    const std::vector<std::shared_ptr<BaseComponent>> &getComponents() const {
         return components_;
     }
 

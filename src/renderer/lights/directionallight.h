@@ -14,6 +14,10 @@ public:
         return direction_;
     }
 
+    void setDirection(const Vec3 &v) {
+        direction_ = v;
+    }
+
 private:
     Vec3 direction_;
 };
