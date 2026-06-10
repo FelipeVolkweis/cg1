@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 
 #include "math/projections/projection.h"
+#include "utils/deg2rad.h"
 #include "utils/logger.h"
 
 bool ShadowMap::allocateShadowMap(int powerOfTwo) {
@@ -44,7 +45,7 @@ bool ShadowMap::allocateShadowMap(int powerOfTwo) {
 
 Mat4x4 ShadowMap::getLightSpaceMatrix(const Vec3 &lightPos, const Vec3 &lightDir,
                                       float outerCutoffAngle, float nearPlane, float farPlane) {
-    float fov = outerCutoffAngle * 2.0f;
+    float fov = (outerCutoffAngle / DEG2RAD) * 2.0f;
     float aspect = 1.0f; // shadowMapRes / shadowMapRes = 1
 
     Mat4x4 lightProjection = Projection::getPerspective(fov, aspect, nearPlane, farPlane);
@@ -52,4 +53,42 @@ Mat4x4 ShadowMap::getLightSpaceMatrix(const Vec3 &lightPos, const Vec3 &lightDir
     Mat4x4 lightView = Projection::getLookAt(lightPos, lightPos + lightDir, up);
 
     return lightProjection * lightView;
+}
+
+bool SpotlightShadowArray::allocate(int powerOfTwo, int maxLayers) {
+    resolution_ = 1 << powerOfTwo;
+    maxLayers_ = maxLayers;
+
+    glGenTextures(1, &depthMap_);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, depthMap_);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, resolution_, resolution_,
+                 maxLayers, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+    constexpr float bordercolor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, bordercolor);
+
+    layerFbos_.resize(maxLayers);
+    for (int i = 0; i < maxLayers; ++i) {
+        glGenFramebuffers(1, &layerFbos_[i]);
+        glBindFramebuffer(GL_FRAMEBUFFER, layerFbos_[i]);
+        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMap_, 0, i);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+
+        int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE) {
+            Logger::Error("Spotlight shadow FBO layer ", i, " is not complete!");
+            return false;
+        }
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    return true;
 }

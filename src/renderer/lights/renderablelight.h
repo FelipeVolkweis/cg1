@@ -97,16 +97,16 @@ public:
 
     void updateShadows();
 
-    ShadowMap &getShadow() {
-        return shadow_;
-    }
-
     Mat4x4 getLightSpaceMatrix() const {
         return lightSpaceMatrix_;
     }
 
     void setIndex(int index) {
         index_ = index;
+    }
+
+    int getIndex() const {
+        return index_;
     }
 
     void setLight(std::shared_ptr<BaseLight> light) override {
@@ -118,7 +118,7 @@ private:
     uint64_t id_ = -1;
     int index_;
 
-    ShadowMap shadow_;
+    ShadowMap shadowCalc_;
     Mat4x4 lightSpaceMatrix_;
 };
 

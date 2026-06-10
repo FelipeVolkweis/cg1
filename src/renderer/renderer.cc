@@ -124,38 +124,51 @@ void Renderer::cascadedShadowPass() {
 }
 
 void Renderer::spotlightShadowPass() {
+    if (!spotlightShadowArrayInitialized_ || spotlights_.empty())
+        return;
+
+    int res = spotlightShadowArray_.getResolution();
+    if (res <= 0)
+        return;
+
     for (auto &pair : spotlights_) {
         auto &sl = pair.second;
         if (!sl)
             continue;
 
         sl->updateShadows();
-        auto &shadow = sl->getShadow();
-        int res = shadow.getResolution();
+        int layer = sl->getIndex();
 
-        if (res > 0) {
-            glBindFramebuffer(GL_FRAMEBUFFER, shadow.getDepthMapFbo());
-            glViewport(0, 0, res, res);
-            glClear(GL_DEPTH_BUFFER_BIT);
-            glCullFace(GL_FRONT);
+        if (layer >= spotlightShadowArray_.getMaxLayers())
+            continue;
 
-            spotlightShadowShaderProgram_->use();
-            for (auto &renderable : renderables_) {
-                auto &modelMatrix = transforms_[renderable.first].getTransformationMatrix();
-                Mat4x4 mvp = sl->getLightSpaceMatrix() * modelMatrix;
-                spotlightShadowShaderProgram_->setMat4x4("model", mvp);
-                renderable.second->renderShadow();
-            }
+        glBindFramebuffer(GL_FRAMEBUFFER, spotlightShadowArray_.getFboForLayer(layer));
+        glViewport(0, 0, res, res);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glCullFace(GL_FRONT);
 
-            glCullFace(GL_BACK);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        spotlightShadowShaderProgram_->use();
+        for (auto &renderable : renderables_) {
+            auto &modelMatrix = transforms_[renderable.first].getTransformationMatrix();
+            Mat4x4 mvp = sl->getLightSpaceMatrix() * modelMatrix;
+            spotlightShadowShaderProgram_->setMat4x4("model", mvp);
+            renderable.second->renderShadow();
         }
+
+        glCullFace(GL_BACK);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, spotlightShadowArray_.getDepthMap());
 }
 
 void Renderer::renderDirectionalLight() {
     if (directionalLight_) {
+        mainShaderProgram_->setInt("hasDirectionalLight", 1);
         directionalLight_->render();
+    } else {
+        mainShaderProgram_->setInt("hasDirectionalLight", 0);
     }
 }
 
@@ -185,6 +198,7 @@ void Renderer::renderSpotlights() {
         slCount++;
     }
     mainShaderProgram_->setInt("numSpotlights", slCount);
+    mainShaderProgram_->setInt("spotlightShadowMap", 3);
 }
 
 void Renderer::renderOpaqueMeshes() {
@@ -246,6 +260,12 @@ void Renderer::addSpotlight(uint64_t id, std::shared_ptr<RenderableSpotlight> sp
             Logger::Warn("Maximum Spotlights Reached");
             return;
         }
+
+        // Allocate shared shadow array on first spotlight
+        if (!spotlightShadowArrayInitialized_) {
+            spotlightShadowArrayInitialized_ = spotlightShadowArray_.allocate(10, MAX_SPOTLIGHTS);
+        }
+
         spotlight->setIndex(spotlights_.size());
         spotlight->setShaderProgram(mainShaderProgram_);
         spotlight->initializeOnGPU();

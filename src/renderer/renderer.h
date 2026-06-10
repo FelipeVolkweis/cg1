@@ -79,6 +79,9 @@ private:
     std::unordered_map<uint64_t, std::shared_ptr<RenderablePointLight>> pointLights_;
     std::unordered_map<uint64_t, std::shared_ptr<RenderableSpotlight>> spotlights_;
 
+    SpotlightShadowArray spotlightShadowArray_;
+    bool spotlightShadowArrayInitialized_ = false;
+
     void renderDirectionalLight();
     void renderPointLights();
     void renderSpotlights();

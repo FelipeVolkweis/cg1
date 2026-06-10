@@ -33,4 +33,31 @@ private:
     int resolution_ = 0;
 };
 
+class SpotlightShadowArray {
+public:
+    bool allocate(int powerOfTwo, int maxLayers);
+
+    uint32_t getDepthMap() const {
+        return depthMap_;
+    }
+
+    uint32_t getFboForLayer(int layer) const {
+        return layerFbos_[layer];
+    }
+
+    int getResolution() const {
+        return resolution_;
+    }
+
+    int getMaxLayers() const {
+        return maxLayers_;
+    }
+
+private:
+    uint32_t depthMap_ = 0;
+    std::vector<uint32_t> layerFbos_;
+    int resolution_ = 0;
+    int maxLayers_ = 0;
+};
+
 #endif

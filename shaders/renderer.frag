@@ -63,12 +63,13 @@ in vec4 FragPosLightSpace;
 uniform Material material;
 uniform vec3 viewPos;
 uniform DirectionalLight directionalLight;
+uniform bool hasDirectionalLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int numPointLights;
 uniform Spotlight spotlights[MAX_SPOTLIGHTS];
 uniform int numSpotlights;
 
-uniform sampler2DShadow spotlightShadowMaps[MAX_SPOTLIGHTS];
+uniform sampler2DArrayShadow spotlightShadowMap;
 
 uniform sampler2DArrayShadow shadowMap;
 layout (std140) uniform LightSpaceMatrices {
@@ -84,7 +85,9 @@ void main() {
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
     
-    result += calculateDirectionalLight(directionalLight, norm, viewDir, FragPos);
+    if (hasDirectionalLight) {
+        result += calculateDirectionalLight(directionalLight, norm, viewDir, FragPos);
+    }
 
     for (int i = 0; i < numPointLights; i++) {
         result += calculatePointLight(pointLights[i], norm, FragPos, viewDir);
@@ -234,14 +237,14 @@ float spotlightShadowCalculation(vec4 fragPosLightSpace, int index, vec3 normal,
     }
 
     float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
-    vec2 texelSize = 1.0 / textureSize(spotlightShadowMaps[index], 0);
+    vec2 texelSize = 1.0 / vec2(textureSize(spotlightShadowMap, 0));
     
     float litFactor = 0.0;
     int samples = 0;
     for(int x = -1; x <= 1; ++x) {
         for(int y = -1; y <= 1; ++y) {
             vec2 offset = vec2(x, y) * texelSize;
-            litFactor += texture(spotlightShadowMaps[index], vec3(projCoords.xy + offset, projCoords.z - bias));
+            litFactor += texture(spotlightShadowMap, vec4(projCoords.xy + offset, index, projCoords.z - bias));
             samples++;
         }    
     }
