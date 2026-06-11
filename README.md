@@ -78,6 +78,20 @@ Ou via Makefile:
 make run
 ```
 
+### Via AppImage
+
+Para gerar o AppImage:
+
+```bash
+make appimage
+```
+
+O arquivo será criado em `bin/cg.AppImage`. Para executá-lo sem instalar dependências ou FUSE:
+
+```bash
+make run-appimage
+```
+
 ## Controles
 
 - **W, A, S, D:** Movimenta o veículo.

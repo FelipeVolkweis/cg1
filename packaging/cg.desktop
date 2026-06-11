@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Computacao Grafica
+Comment=OpenGL 3D rendering project
+Exec=cg
+Icon=cg
+Categories=Graphics;
+Terminal=false

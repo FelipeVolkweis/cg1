@@ -1,6 +1,10 @@
-# Warthog Robotics' edit
-bin/
-tmp/
+# Generated project artifacts
+/bin/*
+!/bin/cg.AppImage
+/tmp/
+/build/
+/build-*/
+/cmake-build-*/
 
 # Created by https://www.toptal.com/developers/gitignore/api/c++,qt,qtcreator,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++,qt,qtcreator,visualstudiocode
@@ -59,7 +63,6 @@ qrc_*.cpp
 ui_*.h
 *.qmlc
 *.jsc
-*build-*
 *.qm
 *.prl
 
@@ -117,12 +120,7 @@ compile_commands.json
 
 
 ### VisualStudioCode ###
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
+/.vscode/
 
 # Local History for Visual Studio Code
 .history/
@@ -139,18 +137,3 @@ compile_commands.json
 
 # Protobuf files
 *.pb.*
-
-# Config files for VSCode and Clion
-.vscode
-.idea
-
-# Build related directories
-*build*/
-
-# Library files for Torch
-dependencies/
-
-# Log files
-/logs
-
-cmake-build-debug/
