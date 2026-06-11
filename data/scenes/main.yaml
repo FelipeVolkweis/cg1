@@ -301,24 +301,25 @@ root:
                 Material.008: "brushed_metal"
                 Material.009: "matte"
         - name: "PortalVisuals"
-          scale: [8, 8, 8]
-          rotation: [0, 0, 0]
+          scale: [0.6, 0.6, 0.6]
+          rotation: [90, 0, 0]
           origin: [0, -0.35, -0.35]
           components:
             - type: "Mesh"
               shape: "model" 
               path: "data/models/portal/portal.obj"
               materials:
-                material_0: "metal"
-                material_1: "brushed_metal"
+                039BE5: "magic"
+                00BCD4: "magic"
+                FFFFFF: "magic"
           children:
             - name: "PortalLight" 
               origin: [0, 0.1, 0]
               components:
                 - type: "Light"
                   kind: "point"
-                  diffuse: [0.1, 0.8, 0.1]
-                  specular: [0.1, 0.8, 0.1]
+                  diffuse: [0.1, 0.1, 0.8]
+                  specular: [0.1, 0.1, 0.8]
                   fadeDistance: 5
                 - type: "LightController"
                   index: 4
