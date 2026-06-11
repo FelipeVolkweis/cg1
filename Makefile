@@ -31,7 +31,7 @@ $(APPIMAGE): Makefile $(TARGET) $(ASSETS) packaging/cg.desktop packaging/cg.png 
 
 appimage: $(APPIMAGE)
 
-run-appimage: $(APPIMAGE)
+run-appimage: 
 	@./$(APPIMAGE) --appimage-extract-and-run
 
 clean:
