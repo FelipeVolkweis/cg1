@@ -80,13 +80,13 @@ make run
 
 ### Via AppImage
 
-Para gerar o AppImage:
+Para gerar o AppImage (o AppImage já está pré gerado em bin/):
 
 ```bash
 make appimage
 ```
 
-O arquivo será criado em `bin/cg.AppImage`. Para executá-lo sem instalar dependências ou FUSE:
+O arquivo será criado em `bin/cg.AppImage`. Para executá-lo sem instalar dependências. Recomenda-se usar esse método para rodar sem necessidade de compilar o programa e instalar todas as dependências.
 
 ```bash
 make run-appimage
