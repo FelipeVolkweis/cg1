@@ -42,7 +42,7 @@ root:
           path: "data/models/house/house.obj"
           materials:
             base: "matte"
-            windows: "glass"
+            windows: "matte"
             yellow_house_dark: "matte"
             yellow_house_light: "matte"
       children:
@@ -68,7 +68,7 @@ root:
             hotel_dark: "matte"
             hotel_light: "matte"
             posters: "matte"
-            windows: "glass"
+            windows: "matte"
       children:
         - name: "HotelCollider"
           components:
@@ -97,7 +97,7 @@ root:
             gray_street: "concrete"
             orange.001: "matte"
             r_light_off: "metal"
-            windows: "glass"
+            windows: "matte"
       children:
         - name: "GasCollider1"
           origin: [4.5, 0, 0.75]
@@ -314,7 +314,7 @@ root:
                 FFFFFF: "magic"
           children:
             - name: "PortalLight" 
-              origin: [0, 0.1, 0]
+              origin: [0, 0.8, 0]
               components:
                 - type: "Light"
                   kind: "point"
