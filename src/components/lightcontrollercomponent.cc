@@ -1,6 +1,6 @@
 #include "lightcontrollercomponent.h"
 
-#include <iostream>
+#include <algorithm>
 
 #include <yaml-cpp/yaml.h>
 
@@ -8,6 +8,21 @@
 #include "core/node.h"
 #include "window/inputhandler.h"
 #include "window/window.h"
+
+namespace {
+Vec3 clampColor(const Vec3 &color) {
+    return Vec3(std::clamp(color.x(), 0.0f, 1.0f), std::clamp(color.y(), 0.0f, 1.0f),
+                std::clamp(color.z(), 0.0f, 1.0f));
+}
+
+void adjustOffset(Vec3 &offset, const Vec3 &baseColor, int direction, float delta) {
+    if (direction == 0)
+        return;
+
+    Vec3 color = baseColor + offset + Vec3::Ones() * (direction * delta);
+    offset = clampColor(color) - baseColor;
+}
+} // namespace
 
 void LightControllerComponent::load(const YAML::Node &data) {
     if (data["index"])
@@ -40,17 +55,12 @@ void LightControllerComponent::onUpdate(float dt) {
 
     float delta = adjustSpeed_ * dt;
 
-    int ambDelta = inputHandler.getLightAmbientDelta();
-    if (ambDelta != 0)
-        ambientOffset_ += Vec3(1, 1, 1) * (ambDelta * delta);
-
-    int difDelta = inputHandler.getLightDiffuseDelta();
-    if (difDelta != 0)
-        diffuseOffset_ += Vec3(1, 1, 1) * (difDelta * delta);
-
-    int spcDelta = inputHandler.getLightSpecularDelta();
-    if (spcDelta != 0)
-        specularOffset_ += Vec3(1, 1, 1) * (spcDelta * delta);
+    adjustOffset(ambientOffset_, lightComp->getAmbient(), inputHandler.getLightAmbientDelta(),
+                 delta);
+    adjustOffset(diffuseOffset_, lightComp->getDiffuse(), inputHandler.getLightDiffuseDelta(),
+                 delta);
+    adjustOffset(specularOffset_, lightComp->getSpecular(), inputHandler.getLightSpecularDelta(),
+                 delta);
 
     lightComp->setAmbientOffset(ambientOffset_);
     lightComp->setDiffuseOffset(diffuseOffset_);
