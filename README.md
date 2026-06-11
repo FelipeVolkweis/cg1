@@ -87,6 +87,7 @@ make appimage
 ```
 
 O arquivo será criado em `bin/cg.AppImage`. Para executá-lo sem instalar dependências. Recomenda-se usar esse método para rodar sem necessidade de compilar o programa e instalar todas as dependências.
+O AppImage ainda depende *GLIBC 2.43*, a falta desse pacote impedirá que o binário pré compilado rode corretamente.
 
 ```bash
 make run-appimage
